@@ -3,10 +3,10 @@
     
 Usage:
     
-   graph_pButtons.py </input/file/name.csv>  
+   graph_pButtons.py </input/file/name.csv> <file_type> 
     
     Example: 
-        graph_pButtons.py ./pB_test_24hours_30sec.html
+        graph_pButtons.py ./metrics/mgstat.csv mgstat
 """
 import argparse
 import sys
