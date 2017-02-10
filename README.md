@@ -25,4 +25,4 @@ Version .01 10 Feb 2017
 
 ## Notes.
 
-Ultimately this could become once utility.
+Ultimately this could become one utility.
