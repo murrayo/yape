@@ -13,7 +13,7 @@ Extract intereasting sections from pButtons to .csv file for opening with excel 
 Version .01 10 Feb 2017
 
 - mgstat extracted for all pButtons.
-- vmstat and iostat for RH only.
+- vmstat and iostat for Red Hat only.
 - windows perfmon.
 
 **Step 2.** `graph_pButtons.py`
