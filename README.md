@@ -5,6 +5,7 @@ yet another pButtons extractor
 At the moment this project is in two steps.
 
 **Step 1.** extract_pButtons.py
+
 Extract intereasting sections from pButtons to .csv file for opening with excel or passing to charting.
 
 Version .01 10 Feb 2017
@@ -15,6 +16,7 @@ Version .01 10 Feb 2017
 
 
 **Step 2.** graph_pButtons.py
+
 Chart files created at step 1.
 
 Version .01 10 Feb 2017
