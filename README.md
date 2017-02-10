@@ -6,7 +6,7 @@ At the moment this project is in two steps.
 
 **Step 1.** extract_pButtons.py
 
-Extract intereasting sections from pButtons to .csv file for opening with excel or passing to charting.
+Extract intereasting sections from pButtons to .csv file for opening with excel or processing with charting.
 
 Version .01 10 Feb 2017
 
