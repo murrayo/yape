@@ -36,8 +36,8 @@ Chart files created at step 1. Currently just simple `.png`
 Version .01 10 Feb 2017
 
 - png output for:
-- - mgstat.
-- - vmstat Red Hat only.
+..- mgstat.
+..- vmstat Red Hat only.
 
 Plans:
 
