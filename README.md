@@ -3,6 +3,15 @@ yet another pButtons extractor
 
 For quickly processing and charting InterSystems Caché pButtons support files.
 
+## Python version
+
+For writing and testing I am using Python 3. Specifically:
+
+    python --version
+    Python 3.5.2 :: Anaconda 4.2.0 (x86_64)
+
+For example if you are running default on OSX you will have Python 2.7. You can run 2.7 and 3 side by side.
+
 ## Overview
 At the moment this process has _two_ steps.
 
@@ -29,9 +38,4 @@ Version .01 10 Feb 2017
 Will be expanded to cover AIX, Itanium, etc.
 Ultimately the two separate processes could become one utility. 
 
-## Python
 
-For writing and testing I am using:
-
-`python --version`
-`Python 3.5.2 :: Anaconda 4.2.0 (x86_64)`
