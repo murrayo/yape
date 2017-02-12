@@ -17,13 +17,17 @@ At the moment this process has _two_ steps.
 
 **Step 1.** `extract_pButtons.py`
 
-Extract intereasting sections from pButtons to .csv file for opening with excel or processing with charting.
+Extract interesting sections from pButtons and write to .csv files for opening with excel or processing with charting.
 
 Version .01 10 Feb 2017
 
-- mgstat extracted for all pButtons.
+- mgstat extracted for all operatings systems.
 - vmstat and iostat for Red Hat only.
-- windows perfmon.
+- windows perfmon for Windows.
+
+Plans:
+
+- Expand to all operating systems, for example variants of vmstat and iostat.
 
 **Step 2.** `graph_pButtons.py`
 
@@ -31,11 +35,12 @@ Chart files created at step 1. Currently just simple `.png`
 
 Version .01 10 Feb 2017
 
-- mgstat and vmstat only charted.
+- png output for:
+- - mgstat.
+- - vmstat Red Hat only.
 
-## Other Notes.
+Plans:
 
-Will be expanded to cover AIX, Itanium, etc.
-Ultimately the two separate processes could become one utility. 
-
-
+- Expand charting to all formats from step 1. 
+- Create interactive html via Bokeh (as per Fabians InterSystems Community Posts).
+- Create standard set of multi-file charts for trouble-shooting and performance analysis.
