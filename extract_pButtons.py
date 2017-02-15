@@ -7,6 +7,9 @@ Usage:
     
     Example: 
         extract_pButtons.py ./pB_test_24hours_30sec.html
+        
+    Changes:
+        MO - replace / with _ in column headings. eg iostat
 """
 import argparse
 import sys
@@ -53,11 +56,23 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                         headerLine[1]='Time'
                     
                         outfile.write(' '.join(headerLine))
+                    
+                    if os_details == 'AIX':
+                        line = ' '.join(line.split()) # strip leading and multiple spaces
+
+                        headerLine = line.split('<pre> ',1)[1] # get right hand part of ugly line            
+                        headerLine = ''.join(headerLine) # convert part to a string 
+                        headerLine = headerLine.replace('sy','sy_call',1) # who thought duplicate column headings is a good idea?
+                        headerLine = headerLine.replace('hr mi se','')
+                        headerLine = headerLine + 'Time' + '\n'
+                        headerLine = headerLine.split(' ')
+                        
+                        outfile.write(' '.join(headerLine))
+    
                     else:
                         # TBD
                         pass
-                        
-                        
+                                              
             elif endString in line:     
                 if copy == True:
                     break             # only ever one block (even iostat)
@@ -116,7 +131,7 @@ def split_iostat(inputListFile, inputDataFile):
                     if 'Device:' in diskline and header == False:
                         header = True
                         outfile.write(diskline) 
-                
+                               
                     if disk[0] in diskline:
                         outfile.write(diskline) 
     
@@ -193,6 +208,16 @@ def mainline(SearchFileName):
     elif os_details == 'Windows':
         get_section(SearchFileName, 'win_perfmon.csv', 'beg_win_perfmon', 'end_win_perfmon', os_details)
     
+    elif os_details == 'AIX':
+        get_section(SearchFileName, 'vmstat.txt', 'beg_vmstat', 'end_vmstat', os_details)
+        csv_converter('vmstat.txt', 'vmstat.csv')
+        
+        # AIX iostat is very messy, strip down and comma separate only
+        get_section(SearchFileName, 'iostat_tmp.txt', 'id=iostat', '#Topofpage', os_details)
+        csv_converter('iostat_tmp.txt', 'iostat_AIX.txt')
+        os.remove('iostat_tmp.txt')
+        
+    
     else:
         # Still work to do on other OS's.
         print('Only mgstat supported on ' + os_details)
@@ -201,18 +226,17 @@ def mainline(SearchFileName):
     # move csv files somewhere
     os.makedirs('./metrics', exist_ok = True)
 
-    for checkFile in ['vmstat.csv', 'mgstat.csv', 'win_perfmon.csv']:
+    for checkFile in ['vmstat.csv', 'mgstat.csv', 'win_perfmon.csv', 'iostat_AIX.txt']:
         if os.path.isfile(checkFile):
             os.rename(checkFile, './metrics/' + checkFile)
 
-    if os.path.isfile('all_iostat.csv'):        
-        os.makedirs('./metrics/iostat', exist_ok = True)
-        os.rename('all_iostat.csv', './metrics/all_iostat.csv')
-
+    if os.path.isfile('all_iostat.csv'):
+        os.remove('all_iostat.csv')
+        
         files = os.listdir('.')
         for f in files:
             if (f.startswith('iostat_')):
-                shutil.move(f, './metrics/iostat/' + f)
+                shutil.move(f, './metrics/' + f)
     
                 
 if __name__ == '__main__':
