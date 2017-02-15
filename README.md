@@ -19,7 +19,7 @@ For example if you are running default on OSX you will have Python 2.7. You can 
 ## Overview
 At the moment this process has _two_ steps.
 
-### Step 1.** `extract_pButtons.py`
+### Step 1. `extract_pButtons.py`
 
 Extract interesting sections from pButtons and write to .csv files for opening with excel or processing with charting.
 
@@ -39,7 +39,7 @@ Version .02 15 Feb 2017
 - iostat for RH (AIX output to .txt file)
 - windows perfmon for Windows.
 
-### Step 2.** `graph_pButtons.py`
+### Step 2. `graph_pButtons.py`
 
 Chart files created at step 1. Currently just simple `.png`
 
