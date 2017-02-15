@@ -30,7 +30,7 @@ For more info:
 Example:
 `./extract_pButtons.py my_pbuttons_file_name.html`
 
-Will create a folder `./metrics` with .csv files. Which .csv details depend on the OS pButtons was run on.
+Will create a folder `./metrics` with .csv files. Which .csv depends on the OS pButtons was run on.
 
 Version .02 15 Feb 2017
 
