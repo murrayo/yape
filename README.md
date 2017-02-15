@@ -54,7 +54,7 @@ For more info:
 Example:
 `./graph_pButtons.py -s ./metrics`
 
-Will scan ./metrics for files created by extract_pButtons and output png files to ./charts
+Will scan `./metrics` for files created by extract_pButtons and output png files to ./charts
 
 Plans:
 
