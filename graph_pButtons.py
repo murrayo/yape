@@ -88,11 +88,27 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
 
             plt.figure(num=None, figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
         
-            if graph_style == 'dots':
-                plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
-            else:    
-                plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
+            if DateTimeIndexed == 'NoIndex':
+                if graph_style == 'dots':
+                    plt.plot(data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:    
+                    plt.plot(data[ColumnName], color='dimgrey')
+                    
+            elif DateTimeIndexed == 'DateTimeIndexed':
             
+                if graph_style == 'dots':
+                    plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:    
+                    plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
+ 
+            elif DateTimeIndexed == 'TimeIndexed':
+            
+                if graph_style == 'dots':
+                    plt.plot(data.Time, data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:    
+                    plt.plot(data.Time, data[ColumnName], color='dimgrey')
+ 
+ 
             plt.grid()
 
             plt.title(ColumnName, fontsize=10)
@@ -115,7 +131,7 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
             #plt.show()
             plt.savefig(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
             plt.close('all')
-
+            
     
 def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn):
         
@@ -163,6 +179,8 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             header=0
            )
 
+        data.columns=data.columns.str.strip()
+        
     plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn, data)
             
             
@@ -313,3 +331,4 @@ if __name__ == '__main__':
         mainline(args.csv_dir_name, args.subset, args.Iostat, args.Bokeh)
     except OSError as e:
         print('Could not process csv file because: {}'.format(str(e)))
+    
