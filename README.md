@@ -10,7 +10,7 @@ Please check you have the correct Python version. For writing and testing I am u
     python --version
     Python 3.5.2 :: Anaconda 4.2.0 (x86_64)
     
-New to Python? See Fabians areticle on InterSystems Community or google :) 
+I have also tested on 3.6. New to Python? See Fabians article on InterSystems Community or google :) 
 
 https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
 
