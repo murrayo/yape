@@ -30,6 +30,8 @@ For more info:
 Example:
 `./extract_pButtons.py my_pbuttons_file_name.html`
 
+Will create a folder `./metrics` with .csv files. Which .csv details depend on the OS pButtons was run on.
+
 Version .02 15 Feb 2017
 
 - mgstat extracted for all operatings systems.
@@ -52,6 +54,7 @@ For more info:
 Example:
 `./graph_pButtons.py -s ./metrics`
 
+Will scan ./metrics for files created by extract_pButtons and output png files to ./charts
 
 Plans:
 
