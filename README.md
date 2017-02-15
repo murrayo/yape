@@ -16,16 +16,14 @@ https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make
 
 Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip install matplotlib` and `sudo pip install pandas`
 
-For example if you are running default on OSX you will have Python 2.7. You can run 2.7 and 3 side by side.
-
-
+For example if you are running default on OSX you will have Python 2.7. You can run Python 2.7 and Python 3.x side by side.
 
 ## Overview
 At the moment this process has _two_ steps.
 
 ### Step 1. `extract_pButtons.py`
 
-Extract interesting sections from pButtons and write to .csv files for opening with excel or processing with charting.
+Extract interesting sections from pButtons and write to .csv files for opening with excel or processing with charting with `graph_pButtons.py`.
 
 For more info:
 
