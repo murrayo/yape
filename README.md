@@ -45,7 +45,7 @@ Version .02 15 Feb 2017
 
 Chart files created at step 1. Currently just simple `.png`
 
-Version .02 15 Feb 2017
+Version .03 16 Feb 2017
 
 - png output.  
 
@@ -54,7 +54,7 @@ For more info:
 `graph_pButtons.py  --help`
 
 Example:
-`./graph_pButtons.py -s ./metrics`
+`./graph_pButtons.py ./metrics`
 
 Will scan `./metrics` for files created by extract_pButtons and output png files to `./charts`
 
