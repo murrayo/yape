@@ -43,14 +43,24 @@ def parse_datetimeWin(x):
         year will be messed up (1900)
     '''
     dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S.%f')
-        
+    
     return dt    
     
+def parse_timeWin(x):
+    '''
+    Parses datetime from windows perfmon as:
+        `[day/month-hour:minute:second.ms]`
+        year will be messed up (1900)
+    '''
+    dt = datetime.strptime(x, '%H:%M:%S.%f')
+    
+    return dt    
 
 def parse_windows_perfmon(CsvFullName):
 
     '''
     Lets make our life easier and tidy up windows perfmon file
+    Windows is ugly. There seem to be several formats
     '''
     
     with open(CsvFullName, mode='rt') as infile, \
@@ -66,15 +76,33 @@ def parse_windows_perfmon(CsvFullName):
                 HeaderLine = True
             
                 line = line.split(',') # split to change column headings
-                line[0]='DateTime'
                 
-                ServerName=line[2]
-                elems = ServerName.split('\\')
-                ServerName =elems[2]
-                line = ','.join(line)
-                line = line.replace('\\\\' + ServerName + '\\', '') # strip Servername
+                # Work out if date time one field or two and any other format diff
+                if line[1] != 'Time':
+                
+                    line[0]='DateTime'
+                    
+                    # strip Servername - Single back slash
+                    ServerName=line[2]
+                    elems = ServerName.split('\\')
+                    ServerName =elems[2]
+                     
+                    line = ','.join(line)
+                    line = line.replace('\\\\' + ServerName + '\\', '') 
 
-            outfile.write(''.join(line))
+                else:
+                    line[0] ='Date'    
+                
+                    # Remove first leading slash
+                    line = [cols.replace('\\', '',1) for cols in line]
+                    # No Server name
+                    line = ','.join(line)
+
+            strLine = ''.join(line)
+            strLine = line.replace(',,', ',0,') # #Blank field blows up matplotlib
+                                                # Find better way
+            
+            outfile.write(strLine)
 
 
 def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn, data):
@@ -94,14 +122,14 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
                 else:    
                     plt.plot(data[ColumnName], color='dimgrey')
                     
-            elif DateTimeIndexed == 'DateTimeIndexed':
+            elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
             
                 if graph_style == 'dots':
                     plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:    
                     plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
  
-            elif DateTimeIndexed == 'TimeIndexed':
+            elif DateTimeIndexed == 'TimeIndexed' or DateTimeIndexed == 'WinTimeIndexed':
             
                 if graph_style == 'dots':
                     plt.plot(data.Time, data[ColumnName], ".", markersize=2, color='dimgrey')
@@ -128,26 +156,13 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
     
             ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
-            #plt.show()
             plt.savefig(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
             plt.close('all')
             
     
 def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn):
-        
-    if CsvFileType == 'win_perfmon' :
-    
-        data = pd.read_csv(
-            CsvFullName, 
-            header=0,
-            converters={0: parse_datetimeWin}
-           )
-        
-            # data.info()
-        data.columns=data.columns.str.strip()
-        data.index=data.DateTime
-
-    elif DateTimeIndexed == 'DateTimeIndexed':
+               
+    if DateTimeIndexed == 'DateTimeIndexed':
 
         data = pd.read_csv(
             CsvFullName, 
@@ -155,10 +170,33 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             parse_dates=[[0,1]] # Combine columns 0 and 1 and parse as a single date column.
            )
 
-        # data.info()
+        # data.info() # Debug
         data.columns=data.columns.str.strip()
         data=data.rename(columns={'Date_Time':'DateTime'})
         data.index=data.DateTime
+
+    elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinDateTimeIndexed':
+    
+        data = pd.read_csv(
+            CsvFullName, 
+            header=0,
+            converters={0: parse_datetimeWin}
+           )
+        
+        data.columns=data.columns.str.strip()
+        data.index=data.DateTime
+
+    elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinTimeIndexed' :
+
+        data = pd.read_csv(
+            CsvFullName, 
+            header=0,
+            converters={1: parse_timeWin}
+           )
+        
+        data.columns=data.columns.str.strip()
+        data.index=data.Time
+    
         
     elif DateTimeIndexed == 'TimeIndexed':
 
@@ -185,6 +223,9 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             
             
 def GetColumnHeadings(CsvDirName, CsvFileType):
+    ''' 
+        Build the header column list and work out where the indexes are.
+    '''
 
     DateTimeIndexed = 'NoIndex'
     IndexColumn = 0
@@ -197,40 +238,48 @@ def GetColumnHeadings(CsvDirName, CsvFileType):
             
     InterestingColumns[-1] = InterestingColumns[-1].strip()   # Remove new line   
 
-    if 'Date' in InterestingColumns[0] and 'Time' in InterestingColumns[1]:
+    if  CsvFileType == 'win_perfmon' and InterestingColumns[0] == 'DateTime':
+        DateTimeIndexed = 'WinDateTimeIndexed'
+        IndexColumn = 0 
+        InterestingColumns.remove('DateTime') 
+
+    elif CsvFileType == 'win_perfmon' and InterestingColumns[0] == 'Date':
+        DateTimeIndexed = 'WinTimeIndexed'
+        IndexColumn = 0 
+        InterestingColumns.remove('Date')
+        InterestingColumns.remove('Time')
+        
+    elif 'Date' in InterestingColumns[0] and 'Time' in InterestingColumns[1]:
         DateTimeIndexed = 'DateTimeIndexed'
         IndexColumn = 0
         InterestingColumns.remove('Date')
         InterestingColumns.remove('Time')
-        
-    elif CsvFileType == 'win_perfmon' :
-        DateTimeIndexed = 'TimeIndexed'
-        IndexColumn = 0 
-        InterestingColumns.remove('DateTime')    
-    
-    elif 'Time' in InterestingColumns:
+
+    elif 'Time' in InterestingColumns:      # No date but time is somewhere, eg. vmstat
         DateTimeIndexed = 'TimeIndexed'
         IndexColumn = InterestingColumns.index('Time')
         InterestingColumns.remove('Time')
         
-    if 'Device:' in line :
+    if 'Device:' in line :                  # eg. iostat
         InterestingColumns.remove('Device:')
  
     return InterestingColumns, DateTimeIndexed, IndexColumn
 
 
-def mainline(CsvDirName, CsvSubset, DoNotIostat, BokehSample):
+def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
 
     """Chart input file.
     
     Args: 
         CsvDirName  = path for csv files.
-        CsvSubset   = if True only print key metrics
+        Csvkitchen_sink   = if True only print key metrics
         DoNotIostat = do not process iostat
     
     Output: 
         outputs graphs for csv columns
     """
+    
+    print('Prefix: ' + filePrefix)
         
     files = os.listdir(CsvDirName)
     
@@ -245,10 +294,8 @@ def mainline(CsvDirName, CsvSubset, DoNotIostat, BokehSample):
             
                 CsvFileType = os.path.basename(csvFilename).split('.')[0]
                 fullName = CsvDirName + '/' + csvFilename
- 
-                 # Windows is special
-                
-                if CsvFileType == 'win_perfmon' :
+  
+                if CsvFileType == 'win_perfmon' :       # Windows needs clean up
                     parse_windows_perfmon(fullName)
                     fullName = 'temp_perfmon.csv'
 
@@ -259,9 +306,10 @@ def mainline(CsvDirName, CsvSubset, DoNotIostat, BokehSample):
                 if BokehSample:  
                     pass
     
-                if CsvSubset:                    
+                if not Csvkitchen_sink:                    
                     if CsvFileType == 'mgstat' :
-                        InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs', 'WDQsz', 'WDphase', 'Jrnwrts', 'BytSnt', 'BytRcd', 'WIJwri', 'RouCMs', 'Rourefs', 'WDtmpq']
+                        InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs', 'WDQsz', \
+                                              'WDphase', 'Jrnwrts', 'BytSnt', 'BytRcd', 'WIJwri', 'RouCMs', 'Rourefs', 'WDtmpq']
                     elif CsvFileType == 'vmstat' :
                         InterestingColumns = ['r','b','us','sy','id','wa']
                     elif CsvFileType == 'win_perfmon' :
@@ -276,7 +324,7 @@ def mainline(CsvDirName, CsvSubset, DoNotIostat, BokehSample):
                                                 'PhysicalDisk(_Total)\DiskTransfers/sec',\
                                                 'System\Processes',\
                                                 'System\ProcessorQueueLength']
-
+                                                
                 graph_column(fullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn)
 
 
@@ -322,13 +370,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Graph metrics from pButtons csv files')
     parser.add_argument("csv_dir_name", help="Path to directory containing .csv files to chart")
-    parser.add_argument("-s", "--subset", help="Only subset of key metric columns will be charted", action="store_true")
+    parser.add_argument("-k", "--kitchen_sink", help="Kitchen sink mode, ALL columns will be charted", action="store_true")
     parser.add_argument("-I", "--Iostat", help="Do NOT process iostat if exists", action="store_true")
-    parser.add_argument("-B", "--Bokeh", help="Subset of mgstat as bokeh", action="store_true")
+    parser.add_argument("-B", "--Bokeh", help="Charts interactive using Bokeh", action="store_true")
     args = parser.parse_args()
  
     try:
-        mainline(args.csv_dir_name, args.subset, args.Iostat, args.Bokeh)
+        mainline(args.csv_dir_name, args.kitchen_sink, args.Iostat, args.Bokeh, args.prefix)
     except OSError as e:
         print('Could not process csv file because: {}'.format(str(e)))
     
