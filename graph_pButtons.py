@@ -25,6 +25,9 @@ import matplotlib.ticker as tick
 from datetime import datetime
 from matplotlib.dates import DateFormatter
 
+#from bokeh.plotting import *
+from bokeh.plotting import figure, output_file, show, save
+from bokeh.models import NumeralTickFormatter
 
 def parse_datetimeVM(x):
     '''
@@ -110,33 +113,47 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
     Generic plotter
     '''
     
+    graph_style = args.style
+    TOOLS="pan,box_zoom,reset,save" # Defaults for Bokeh
+    
+      
     for ColumnName in InterestingColumns:
     
-        for graph_style in ['dots', 'lines']:
-
-            plt.figure(num=None, figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
+        if graph_style == 'interactive' :
+            
+            BokehChart = figure(tools=TOOLS,x_axis_type='datetime', title=ColumnName,width=1024, height=768,x_axis_label='time')
+            BokehChart.line(data.index,data[ColumnName],legend=ColumnName,line_width=2)   
+            
+            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+            
+            output_file(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_interactive.html')
+            save(BokehChart)
         
+        else:
+        
+            plt.figure(num=None, figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
+    
             if DateTimeIndexed == 'NoIndex':
-                if graph_style == 'dots':
+                if graph_style == 'dot':
                     plt.plot(data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:    
                     plt.plot(data[ColumnName], color='dimgrey')
-                    
+                
             elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
-            
-                if graph_style == 'dots':
+        
+                if graph_style == 'dot':
                     plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:    
                     plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
- 
+
             elif DateTimeIndexed == 'TimeIndexed' or DateTimeIndexed == 'WinTimeIndexed':
-            
-                if graph_style == 'dots':
+        
+                if graph_style == 'dot':
                     plt.plot(data.Time, data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:    
                     plt.plot(data.Time, data[ColumnName], color='dimgrey')
- 
- 
+
+
             plt.grid()
 
             plt.title(ColumnName, fontsize=10)
@@ -153,10 +170,11 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
                 ax.set_ylim(ymax=100)
             elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id':
                 ax.set_ylim(ymax=100)
-    
+
             ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
             plt.savefig(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
+            
             plt.close('all')
             
     
@@ -266,7 +284,7 @@ def GetColumnHeadings(CsvDirName, CsvFileType):
     return InterestingColumns, DateTimeIndexed, IndexColumn
 
 
-def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
+def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
 
     """Chart input file.
     
@@ -278,9 +296,7 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
     Output: 
         outputs graphs for csv columns
     """
-    
-    print('Prefix: ' + filePrefix)
-        
+            
     files = os.listdir(CsvDirName)
     
     for csvFilename in files:
@@ -302,10 +318,6 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
                 # Get column headers and decide if indexed    
                 InterestingColumns,  DateTimeIndexed, IndexColumn = GetColumnHeadings(fullName, CsvFileType)
 
-                # Bokeh experiment
-                if BokehSample:  
-                    pass
-    
                 if not Csvkitchen_sink:                    
                     if CsvFileType == 'mgstat' :
                         InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs', 'WDQsz', \
@@ -327,9 +339,8 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
                                                 
                 graph_column(fullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn)
 
-
                 # move files to new home
-                os.makedirs('./charts', exist_ok = True)
+                os.makedirs('./' + FILEPREFIX + 'charts', exist_ok = True)
 
                 iostatMade  = False
                 mgstatMade  = False
@@ -338,30 +349,30 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat, BokehSample, filePrefix):
             
                 files = os.listdir('.')
                 for pngFilename in files:
-                    if (pngFilename.endswith('.png')):
+                    if (pngFilename.endswith('.png')) or (pngFilename.endswith('_interactive.html')) :
                 
                         if (pngFilename.startswith('iostat_')) :
                             if not iostatMade:
                                 iostatMade = True
-                                os.makedirs('./charts/iostat', exist_ok = True)
-                            shutil.move(pngFilename, './charts/iostat/' + pngFilename)  
+                                os.makedirs('./' + FILEPREFIX + 'charts/iostat', exist_ok = True)
+                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/iostat/' + pngFilename)  
                         elif (pngFilename.startswith('mgstat_')) :
                             if not mgstatMade:
                                 mgstatMade = True
-                                os.makedirs('./charts/mgstat', exist_ok = True)
-                            shutil.move(pngFilename, './charts/mgstat/' + pngFilename)                                
+                                os.makedirs('./' + FILEPREFIX + 'charts/mgstat', exist_ok = True)
+                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/mgstat/' + pngFilename)                                
                         elif (pngFilename.startswith('vmstat_')) :
                             if not vmstatMade:
                                 vmstatMade = True
-                                os.makedirs('./charts/vmstat', exist_ok = True)
-                            shutil.move(pngFilename, './charts/vmstat/' + pngFilename)        
+                                os.makedirs('./' + FILEPREFIX + 'charts/vmstat', exist_ok = True)
+                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/vmstat/' + pngFilename)        
                         elif (pngFilename.startswith('win_perfmon_')) :
                             if not perfmonMade:
                                 perfmonMade = True
-                                os.makedirs('./charts/win_perfmon', exist_ok = True)
-                            shutil.move(pngFilename, './charts/win_perfmon/' + pngFilename)        
+                                os.makedirs('./' + FILEPREFIX + 'charts/win_perfmon', exist_ok = True)
+                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/win_perfmon/' + pngFilename)        
                         else:        
-                            shutil.move(pngFilename, './charts/' + pngFilename)
+                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/' + pngFilename)
                 
                 if os.path.isfile('temp_perfmon.csv'):
                     os.remove('temp_perfmon.csv')
@@ -372,11 +383,17 @@ if __name__ == '__main__':
     parser.add_argument("csv_dir_name", help="Path to directory containing .csv files to chart")
     parser.add_argument("-k", "--kitchen_sink", help="Kitchen sink mode, ALL columns will be charted", action="store_true")
     parser.add_argument("-I", "--Iostat", help="Do NOT process iostat if exists", action="store_true")
-    parser.add_argument("-B", "--Bokeh", help="Charts interactive using Bokeh", action="store_true")
+    parser.add_argument("-s", "--style", help="Chart style: line (default), dots, interactive html", choices=['line', 'dot', 'interactive'], default='line')
+    parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
     args = parser.parse_args()
- 
+
+    if args.prefix is not None:
+        FILEPREFIX = args.prefix
+    else:
+        FILEPREFIX = ''
+
     try:
-        mainline(args.csv_dir_name, args.kitchen_sink, args.Iostat, args.Bokeh, args.prefix)
+        mainline(args.csv_dir_name, args.kitchen_sink, args.Iostat)
     except OSError as e:
         print('Could not process csv file because: {}'.format(str(e)))
     
