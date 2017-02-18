@@ -14,7 +14,7 @@ I have also tested on 3.6. New to Python? See Fabians article on InterSystems Co
 
 https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
 
-Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip3 install matplotlib` and `sudo pip3 install pandas`. Also since February 18th version: `sudo pip install bokeh` for interactive charts.
+Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip3 install matplotlib` and `sudo pip3 install pandas`. Also since February 18th version: `sudo pip3 install bokeh` for interactive charts.
 
 For example if you are running default on OSX you will have Python 2.7. You can run Python 2.7 and Python 3.x side by side.
 
