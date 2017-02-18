@@ -224,11 +224,11 @@ def mainline(SearchFileName):
           
     
     # move csv files somewhere
-    os.makedirs('./metrics', exist_ok = True)
+    os.makedirs('./' + FILEPREFIX + 'metrics', exist_ok = True)
 
     for checkFile in ['vmstat.csv', 'mgstat.csv', 'win_perfmon.csv', 'iostat_AIX.txt']:
         if os.path.isfile(checkFile):
-            os.rename(checkFile, './metrics/' + checkFile)
+            os.rename(checkFile, './' + FILEPREFIX + 'metrics/' + checkFile)
 
     if os.path.isfile('all_iostat.csv'):
         os.remove('all_iostat.csv')
@@ -236,14 +236,21 @@ def mainline(SearchFileName):
         files = os.listdir('.')
         for f in files:
             if (f.startswith('iostat_')):
-                shutil.move(f, './metrics/' + f)
+                shutil.move(f, './' + FILEPREFIX + 'metrics/' + f)
     
                 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Extract useful metrics from pButtons to csv files')
     parser.add_argument("pButtons_file_name", help="Path and pButtons file name to extract")
+    parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
     args = parser.parse_args()
+    
+    
+    if args.prefix is not None:
+        FILEPREFIX = args.prefix
+    else:
+        FILEPREFIX = ''
  
     try:
         mainline(args.pButtons_file_name)
