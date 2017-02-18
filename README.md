@@ -16,7 +16,9 @@ https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make
 
 Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip3 install matplotlib` and `sudo pip3 install pandas`. Also since February 18th version: `sudo pip3 install bokeh` for interactive charts.
 
-For example if you are running default on OSX you will have Python 2.7. You can run Python 2.7 and Python 3.x side by side.
+For example if you are running default on OSX you will have Python 2.7. 
+
+You can run Python 2.7 and Python 3.x side by side.
 
 ## Overview
 At the moment this process has _two_ steps.
@@ -43,7 +45,7 @@ Version .02 15 Feb 2017
 
 ### Step 2. `graph_pButtons.py`
 
-Chart files created at step 1. Currently just simple `.png`
+Chart files created at step 1. Currently `.png` or `interactive .html`
 
 Version .03 16 Feb 2017
 
@@ -61,7 +63,7 @@ For more info:
 Example:
 `./graph_pButtons.py ./metrics`
 
-Will scan `./metrics` for files created by extract_pButtons and output png files to `./charts` by default.
+Will scan `./metrics` for files created by extract_pButtons and output selected chart type. Line chart to `./charts` by default.
 
 Plans:
 
