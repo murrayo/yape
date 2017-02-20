@@ -63,7 +63,8 @@ def parse_windows_perfmon(CsvFullName):
 
     '''
     Lets make our life easier and tidy up windows perfmon file
-    Windows is ugly. There seem to be several formats
+    Windows is ugly. There seem to be several formats, examples shown, but you may have to 
+    adjust for your site.
     '''
     
     with open(CsvFullName, mode='rt') as infile, \
@@ -82,6 +83,8 @@ def parse_windows_perfmon(CsvFullName):
                 
                 # Work out if date time one field or two and any other format diff
                 if line[1] != 'Time':
+    # Example:            
+    # "(PDH-CSV 4.0) (Eastern Standard Time)(300)","\\SERVER_NAME\Memory\Available MBytes"                
                 
                     line[0]='DateTime'
                     
@@ -94,6 +97,8 @@ def parse_windows_perfmon(CsvFullName):
                     line = line.replace('\\\\' + ServerName + '\\', '') 
 
                 else:
+    # Example:            
+    # "Date \\SERVER_NAME (PDH-CSV 4.0) (SE Asia Standard Time)(-420)","Time","\Memory\Available MBytes"                
                     line[0] ='Date'    
                 
                     # Remove first leading slash
@@ -102,7 +107,7 @@ def parse_windows_perfmon(CsvFullName):
                     line = ','.join(line)
 
             strLine = ''.join(line)
-            strLine = line.replace(',,', ',0,') # #Blank field blows up matplotlib
+            strLine = line.replace(',,', ',0,') # #Blank (space) field blows up matplotlib
                                                 # Find better way
             
             outfile.write(strLine)
@@ -396,4 +401,3 @@ if __name__ == '__main__':
         mainline(args.csv_dir_name, args.kitchen_sink, args.Iostat)
     except OSError as e:
         print('Could not process csv file because: {}'.format(str(e)))
-    
