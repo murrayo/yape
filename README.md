@@ -9,14 +9,14 @@ Please check you have the correct Python version. For writing and testing I am u
 
     python --version
     Python 3.5.2 :: Anaconda 4.2.0 (x86_64)
-    
-I have also tested on 3.6. New to Python? See Fabians article on InterSystems Community or google :) 
+
+I have also tested on 3.6. New to Python? See Fabians article on InterSystems Community or google :)
 
 https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
 
 Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip3 install matplotlib` and `sudo pip3 install pandas`. Also since February 18th version: `sudo pip3 install bokeh` for interactive charts.
 
-For example if you are running default on OSX you will have Python 2.7. 
+For example if you are running default on OSX you will have Python 2.7.
 
 You can run Python 2.7 and Python 3.x side by side.
 
@@ -49,7 +49,7 @@ Chart files created at step 1. Currently `.png` or `interactive .html`
 
 Version .03 16 Feb 2017
 
-- png output.  
+- png output.
 
 Version .04 18 Feb 2018
 
@@ -68,4 +68,10 @@ Will scan `./metrics` for files created by extract_pButtons and output selected 
 Plans:
 
 - Create standard set of multi-file charts for trouble-shooting and performance analysis.
+
+### Community
+
+[See InterSystems Community post:](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts)
+
+
 
