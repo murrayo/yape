@@ -8,8 +8,6 @@ Usage:
     Example: 
         extract_pButtons.py ./pB_test_24hours_30sec.html
         
-    Changes:
-        MO - replace / with _ in column headings. eg iostat
 """
 import argparse
 import sys

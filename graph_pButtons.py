@@ -7,6 +7,8 @@ Usage:
     
     Example: 
         graph_pButtons.py ./metrics/mgstat.csv mgstat
+        
+        Use --help to see all options
 """
 import argparse
 import sys
