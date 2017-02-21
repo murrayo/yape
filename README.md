@@ -71,7 +71,7 @@ Plans:
 
 ### Community
 
-[See InterSystems Community post:](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts)
+[See InterSystems Community post](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts) for context information.
 
 
 
