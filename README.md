@@ -69,9 +69,6 @@ Plans:
 
 - Create standard set of multi-file charts for trouble-shooting and performance analysis.
 
-### Community
-
-[See InterSystems Community post](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts) for context information.
-
-
-
+## Related Discussion
+See the detailed description and discussion [in this article](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts).
+Have a look at [InterSystems Developer Community](community.intersystems.com) to learn about InterSystems technology, sharing solutions and staying up-to-date on the latest developments.
