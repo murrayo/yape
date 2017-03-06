@@ -165,12 +165,13 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
             plt.grid()
 
             plt.title(ColumnName + CHART_TITLE, fontsize=10)
+            
+            if ColumnName == 'id':
+                plt.title('Total CPU Utilization (100-id) ' + CHART_TITLE, fontsize=10)
+                
             plt.xlabel("Time", fontsize=10)
             plt.tick_params(labelsize=8)
-            #plt.title(ColumnName + " of %s" %(CsvFullName), fontsize=10)
-            #plt.ylabel(ColumnName, fontsize=10)
-
-
+ 
             ax = plt.gca()
             
             if DateTimeIndexed != 'NoIndex':
@@ -184,7 +185,11 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
             elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id':
                 ax.set_ylim(ymax=100)
 
-            ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+            if ColumnName == 'id':
+                ax.invert_yaxis()
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(100-int(x))))
+            else:       
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
             plt.savefig(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
             
