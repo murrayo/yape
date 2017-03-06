@@ -45,7 +45,7 @@ Functionality notes:
 
 ### Step 2. `graph_pButtons.py`
 
-Chart files created at step 1. Currently `.png` (lines (default) or dots or interactive `.html`
+Chart files created at step 1. Currently `.png` charts as lines (default) or dot or interactive `.html`
 
 For more info:
 
