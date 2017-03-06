@@ -36,7 +36,7 @@ Example:
 
 Will create a folder `./metrics` with .csv files. Which .csv depends on the OS pButtons was run on.
 
-Version .02 15 Feb 2017
+Functionality notes:
 
 - mgstat extracted for all operatings systems.
 - vmstat for RH and AIX
@@ -45,16 +45,7 @@ Version .02 15 Feb 2017
 
 ### Step 2. `graph_pButtons.py`
 
-Chart files created at step 1. Currently `.png` or `interactive .html`
-
-Version .03 16 Feb 2017
-
-- png output.
-
-Version .04 18 Feb 2018
-
-- Added support for output using Bokeh (interactive html files)
-- Changed command line options, so look at --help.
+Chart files created at step 1. Currently `.png` (lines (default) or dots or interactive `.html`
 
 For more info:
 
