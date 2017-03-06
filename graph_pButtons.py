@@ -25,11 +25,11 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
 
 from datetime import datetime
-from matplotlib.dates import DateFormatter
+from matplotlib.dates import DateFormatter, HourLocator
 
 #from bokeh.plotting import *
 from bokeh.plotting import figure, output_file, show, save
-from bokeh.models import NumeralTickFormatter
+from bokeh.models import NumeralTickFormatter, DatetimeTickFormatter
 
 def parse_datetimeVM(x):
     '''
@@ -131,7 +131,8 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
             BokehChart = figure(tools=TOOLS,x_axis_type='datetime', title=ColumnName,width=1024, height=768,x_axis_label='time')
             BokehChart.line(data.index,data[ColumnName],legend=ColumnName,line_width=2)   
             
-            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")        
+            BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days = [''])
             
             output_file(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_interactive.html')
             save(BokehChart)
@@ -171,6 +172,10 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
 
 
             ax = plt.gca()
+            
+            ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
+            ax.xaxis.set_minor_locator(HourLocator())
+            
             ax.set_ylim(ymin=0) # Always zero start
 
             if '%' in ColumnName:
