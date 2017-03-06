@@ -128,7 +128,7 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
     
         if graph_style == 'interactive' :
             
-            BokehChart = figure(tools=TOOLS,x_axis_type='datetime', title=ColumnName,width=1024, height=768,x_axis_label='time')
+            BokehChart = figure(tools=TOOLS,x_axis_type='datetime', title=ColumnName + CHART_TITLE,width=1024, height=768,x_axis_label='time')
             BokehChart.line(data.index,data[ColumnName],legend=ColumnName,line_width=2)   
             
             BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")        
@@ -164,7 +164,7 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
 
             plt.grid()
 
-            plt.title(ColumnName, fontsize=10)
+            plt.title(ColumnName + CHART_TITLE, fontsize=10)
             plt.xlabel("Time", fontsize=10)
             plt.tick_params(labelsize=8)
             #plt.title(ColumnName + " of %s" %(CsvFullName), fontsize=10)
@@ -173,8 +173,9 @@ def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, Index
 
             ax = plt.gca()
             
-            ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
-            ax.xaxis.set_minor_locator(HourLocator())
+            if DateTimeIndexed != 'NoIndex':
+                ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
+                ax.xaxis.set_minor_locator(HourLocator())
             
             ax.set_ylim(ymin=0) # Always zero start
 
@@ -397,12 +398,19 @@ if __name__ == '__main__':
     parser.add_argument("-I", "--Iostat", help="Do NOT process iostat if exists", action="store_true")
     parser.add_argument("-s", "--style", help="Chart style: line (default), dots, interactive html", choices=['line', 'dot', 'interactive'], default='line')
     parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
+    parser.add_argument("-t", "--title", help="Title for all charts, eg pass file name")
+    
     args = parser.parse_args()
 
     if args.prefix is not None:
         FILEPREFIX = args.prefix
     else:
         FILEPREFIX = ''
+
+    if args.title is not None:
+        CHART_TITLE = ' : ' + args.title
+    else:
+        CHART_TITLE = ''
 
     try:
         mainline(args.csv_dir_name, args.kitchen_sink, args.Iostat)
