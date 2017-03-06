@@ -319,7 +319,7 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
             
         else:
             if os.path.basename(csvFilename).split('.')[1] == 'csv' :
-                print('Charting: ' + csvFilename)
+                print('Charting: ' + csvFilename + ' - ' + args.style + ' ' + CHART_TITLE )
             
                 CsvFileType = os.path.basename(csvFilename).split('.')[0]
                 fullName = CsvDirName + '/' + csvFilename

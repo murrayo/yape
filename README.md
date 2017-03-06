@@ -56,6 +56,18 @@ Example:
 
 Will scan `./metrics` for files created by extract_pButtons and output selected chart type. Line chart to `./charts` by default.
 
+Example walk a directory of one or more pbuttons.html, create different chart types and add filename to title.
+
+#### Extract to .csv
+
+    for i in `ls *.html`; do /path_to/extract_pButtons.py $i -p ${i}_; done
+
+#### Chart all types
+
+    for j in line dot interactive; do for i in `ls *.html`; do /path_to/graph_pButtons.py ./${i}_metrics -p ${j}_${i}_ -s ${j} -t ${i} -I; done; done
+
+
+
 Plans:
 
 - Create standard set of multi-file charts for trouble-shooting and performance analysis.
