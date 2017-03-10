@@ -19,9 +19,9 @@ import matplotlib.ticker as tick
 from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator
 
-#from bokeh.plotting import *
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.models import NumeralTickFormatter, DatetimeTickFormatter
+from bokeh.palettes import magma
 
 def parse_datetimeVM(x):
     """
@@ -111,7 +111,6 @@ def parse_windows_perfmon(CsvFullName):
 def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn):
 
     graph_style = args.style
-    TOOLS = "pan,box_zoom,reset,save"  # Defaults for Bokeh
 
     # Depending on file type read in data and set indexes
     if DateTimeIndexed == 'DateTimeIndexed':
@@ -167,24 +166,26 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             CsvFullName, 
             header=0
            )
-
         data.columns=data.columns.str.strip()
-
-    # file name - important for iostat
-
-
 
     # Now plot each column
     for ColumnName in InterestingColumns:
 
         if graph_style == 'interactive':
 
-            BokehChart = figure(tools=TOOLS, x_axis_type='datetime', title=ColumnName + CHART_TITLE, width=1024,
+            if 'iostat' not in CsvFileType:
+                BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' ' + ColumnName + CHART_TITLE, width=1024,
                                 height=768, x_axis_label='time')
-            BokehChart.line(data.index, data[ColumnName], legend=ColumnName, line_width=2)
+            else:
+                BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' ' + ColumnName + CHART_TITLE, width=1024,
+                                height=768, x_axis_label='time ->')
+
+            BokehChart.line(data.index, data[ColumnName], legend=ColumnName, line_width=1)
 
             BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
-            BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
+
+            if 'iostat' not in CsvFileType:
+                BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
 
             output_file(CsvFileType + '_' + ColumnName.replace('/', '_') + '_interactive.html')
             save(BokehChart)
@@ -245,8 +246,40 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             plt.savefig(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
 
             plt.close('all')
-            
-            
+
+    # Now create a few combined plots. Useful but also a guide to creating your own.
+    colors = magma(7)
+
+    if graph_style == 'interactive' and CsvFileType == 'mgstat':
+
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Reads and Writes' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time')
+
+        BokehChart.line(data.index, data['PhyWrs'], legend='PhyWrs', line_width=1, alpha=0.8, line_color=colors[4])
+        BokehChart.line(data.index, data['PhyRds'], legend='PhyRds', line_width=1, line_color=colors[0])
+        # BokehChart.line(data.index, data['Jrnwrts'], legend='Jrnwrts', line_width=1, alpha=0.8, line_color=colors[5])
+        # BokehChart.line(data.index, data['WIJwri'], legend='WIJwri', line_width=1, alpha=0.8, line_color=colors[6])
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
+
+        output_file(CsvFileType + '_Reads_and_Writes_interactive.html')
+        save(BokehChart)
+
+    if graph_style == 'interactive' and 'iostat' in CsvFileType:
+
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and Writes' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time ->')
+
+        BokehChart.line(data.index, data['w/s'], legend='Writes per second', line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.line(data.index, data['r/s'], legend='Reads per second', line_width=1, line_color=colors[0])
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+
+        output_file(CsvFileType + '_Reads_and_Writes_interactive.html')
+        save(BokehChart)
+
+
 def GetColumnHeadings(CsvDirName, CsvFileType):
     """ 
         Build the header column list and work out where the indexes are.
