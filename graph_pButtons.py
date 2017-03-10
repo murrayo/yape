@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 """Graph input files.
-    
-Usage:
-    
-    graph_pButtons.py </input/file/name.csv> <file_type> 
-    
-    Example: 
-        graph_pButtons.py ./metrics/mgstat.csv mgstat
-        
-        Use --help to see all options
+
 """
 import argparse
 import sys
@@ -32,42 +24,43 @@ from bokeh.plotting import figure, output_file, show, save
 from bokeh.models import NumeralTickFormatter, DatetimeTickFormatter
 
 def parse_datetimeVM(x):
-    '''
+    """
     Parses datetime from vmstat as:
         `[hour:minute:second]`
-    '''
+    """
     dt = datetime.strptime(x, '%H:%M:%S')
         
     return dt
     
     
 def parse_datetimeWin(x):
-    '''
+    """
     Parses datetime from windows perfmon as:
         `[day/month-hour:minute:second.ms]`
         year will be messed up (1900)
-    '''
+    """
     dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S.%f')
     
     return dt    
     
 def parse_timeWin(x):
-    '''
+    """
     Parses datetime from windows perfmon as:
         `[day/month-hour:minute:second.ms]`
         year will be messed up (1900)
-    '''
+    """
     dt = datetime.strptime(x, '%H:%M:%S.%f')
     
     return dt    
 
+
 def parse_windows_perfmon(CsvFullName):
 
-    '''
+    """
     Lets make our life easier and tidy up windows perfmon file
     Windows is ugly. There seem to be several formats, examples shown, but you may have to 
     adjust for your site.
-    '''
+    """
     
     with open(CsvFullName, mode='rt') as infile, \
          open('temp_perfmon.csv', mode='wt') as outfile:
@@ -115,89 +108,12 @@ def parse_windows_perfmon(CsvFullName):
             outfile.write(strLine)
 
 
-def plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn, data):
-    ''' 
-    Generic plotter
-    '''
-    
-    graph_style = args.style
-    TOOLS="pan,box_zoom,reset,save" # Defaults for Bokeh
-    
-      
-    for ColumnName in InterestingColumns:
-    
-        if graph_style == 'interactive' :
-            
-            BokehChart = figure(tools=TOOLS,x_axis_type='datetime', title=ColumnName + CHART_TITLE,width=1024, height=768,x_axis_label='time')
-            BokehChart.line(data.index,data[ColumnName],legend=ColumnName,line_width=2)   
-            
-            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")        
-            BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days = [''])
-            
-            output_file(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_interactive.html')
-            save(BokehChart)
-        
-        else:
-        
-            plt.figure(num=None, figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
-    
-            if DateTimeIndexed == 'NoIndex':
-                if graph_style == 'dot':
-                    plt.plot(data[ColumnName], ".", markersize=2, color='dimgrey')
-                else:    
-                    plt.plot(data[ColumnName], color='dimgrey')
-                
-            elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
-        
-                if graph_style == 'dot':
-                    plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
-                else:    
-                    plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
-
-            elif DateTimeIndexed == 'TimeIndexed' or DateTimeIndexed == 'WinTimeIndexed':
-        
-                if graph_style == 'dot':
-                    plt.plot(data.Time, data[ColumnName], ".", markersize=2, color='dimgrey')
-                else:    
-                    plt.plot(data.Time, data[ColumnName], color='dimgrey')
-
-
-            plt.grid()
-
-            plt.title(ColumnName + CHART_TITLE, fontsize=10)
-            
-            if ColumnName == 'id':
-                plt.title('Total CPU Utilization (100-id) ' + CHART_TITLE, fontsize=10)
-                
-            plt.xlabel("Time", fontsize=10)
-            plt.tick_params(labelsize=8)
- 
-            ax = plt.gca()
-            
-            if DateTimeIndexed != 'NoIndex':
-                ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
-                ax.xaxis.set_minor_locator(HourLocator())
-            
-            ax.set_ylim(ymin=0) # Always zero start
-
-            if '%' in ColumnName:
-                ax.set_ylim(ymax=100)
-            elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id':
-                ax.set_ylim(ymax=100)
-
-            if ColumnName == 'id':
-                ax.invert_yaxis()
-                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(100-int(x))))
-            else:       
-                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
-
-            plt.savefig(CsvFileType  + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
-            
-            plt.close('all')
-            
-    
 def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn):
-               
+
+    graph_style = args.style
+    TOOLS = "pan,box_zoom,reset,save"  # Defaults for Bokeh
+
+    # Depending on file type read in data and set indexes
     if DateTimeIndexed == 'DateTimeIndexed':
 
         data = pd.read_csv(
@@ -232,7 +148,6 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         
         data.columns=data.columns.str.strip()
         data.index=data.Time
-    
         
     elif DateTimeIndexed == 'TimeIndexed':
 
@@ -254,14 +169,88 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
            )
 
         data.columns=data.columns.str.strip()
-        
-    plot_it(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn, data)
+
+    # file name - important for iostat
+
+
+
+    # Now plot each column
+    for ColumnName in InterestingColumns:
+
+        if graph_style == 'interactive':
+
+            BokehChart = figure(tools=TOOLS, x_axis_type='datetime', title=ColumnName + CHART_TITLE, width=1024,
+                                height=768, x_axis_label='time')
+            BokehChart.line(data.index, data[ColumnName], legend=ColumnName, line_width=2)
+
+            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+            BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
+
+            output_file(CsvFileType + '_' + ColumnName.replace('/', '_') + '_interactive.html')
+            save(BokehChart)
+
+        else:
+
+            plt.figure(num=None, figsize=(10, 6), dpi=80, facecolor='w', edgecolor='dimgrey')
+
+            if DateTimeIndexed == 'NoIndex':
+                if graph_style == 'dot':
+                    plt.plot(data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:
+                    plt.plot(data[ColumnName], color='dimgrey')
+
+            elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
+
+                if graph_style == 'dot':
+                    plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:
+                    plt.plot(data.DateTime, data[ColumnName], color='dimgrey')
+
+            elif DateTimeIndexed == 'TimeIndexed' or DateTimeIndexed == 'WinTimeIndexed':
+
+                if graph_style == 'dot':
+                    plt.plot(data.Time, data[ColumnName], ".", markersize=2, color='dimgrey')
+                else:
+                    plt.plot(data.Time, data[ColumnName], color='dimgrey')
+
+            plt.grid()
+
+            plt.title(CsvFileType + ' ' + ColumnName + CHART_TITLE, fontsize=10)
+
+            if ColumnName == 'id':
+                plt.title(CsvFileType + ' Total CPU Utilization (100-id) ' + CHART_TITLE, fontsize=10)
+
+            plt.xlabel("Time", fontsize=10)
+            plt.tick_params(labelsize=8)
+
+            ax = plt.gca()
+
+            if DateTimeIndexed != 'NoIndex':
+                ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
+                ax.xaxis.set_minor_locator(HourLocator())
+
+            ax.set_ylim(ymin=0)  # Always zero start
+
+            if '%' in ColumnName:
+                ax.set_ylim(ymax=100)
+            elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id':
+                ax.set_ylim(ymax=100)
+
+            if ColumnName == 'id':
+                ax.invert_yaxis()
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(100 - int(x))))
+            else:
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+
+            plt.savefig(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
+
+            plt.close('all')
             
             
 def GetColumnHeadings(CsvDirName, CsvFileType):
-    ''' 
+    """ 
         Build the header column list and work out where the indexes are.
-    '''
+    """
 
     DateTimeIndexed = 'NoIndex'
     IndexColumn = 0
@@ -296,7 +285,7 @@ def GetColumnHeadings(CsvDirName, CsvFileType):
         IndexColumn = InterestingColumns.index('Time')
         InterestingColumns.remove('Time')
         
-    if 'Device:' in line :                  # eg. iostat
+    if 'Device:' in line:                  # eg. iostat
         InterestingColumns.remove('Device:')
  
     return InterestingColumns, DateTimeIndexed, IndexColumn
@@ -323,13 +312,14 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
             pass
             
         else:
-            if os.path.basename(csvFilename).split('.')[1] == 'csv' :
+            if os.path.basename(csvFilename).split('.')[1] == 'csv':
                 print('Charting: ' + csvFilename + ' - ' + args.style + ' ' + CHART_TITLE )
             
                 CsvFileType = os.path.basename(csvFilename).split('.')[0]
                 fullName = CsvDirName + '/' + csvFilename
-  
-                if CsvFileType == 'win_perfmon' :       # Windows needs clean up
+
+                # Windows needs clean up, override filename to temp file
+                if CsvFileType == 'win_perfmon' :
                     parse_windows_perfmon(fullName)
                     fullName = 'temp_perfmon.csv'
 
@@ -338,23 +328,24 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
 
                 if not Csvkitchen_sink:                    
                     if CsvFileType == 'mgstat' :
-                        InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs', 'WDQsz', \
+                        InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs', 'WDQsz',
                                               'WDphase', 'Jrnwrts', 'BytSnt', 'BytRcd', 'WIJwri', 'RouCMs', 'Rourefs', 'WDtmpq']
                     elif CsvFileType == 'vmstat' :
                         InterestingColumns = ['r','b','us','sy','id','wa']
                     elif CsvFileType == 'win_perfmon' :
-                        InterestingColumns = [  'Processor(_Total)\%PrivilegedTime', \
-                                                'Processor(_Total)\%UserTime',\
-                                                'Processor(_Total)\%ProcessorTime',\
-                                                'Processor(_Total)\Interrupts/sec',\
-                                                'Memory\AvailableMBytes',\
-                                                'Memory\PageReads/sec',\
-                                                'Memory\PageWrites/sec',\
-                                                'PagingFile(_Total)\%Usage',\
-                                                'PhysicalDisk(_Total)\DiskTransfers/sec',\
-                                                'System\Processes',\
+                        InterestingColumns = [  'Processor(_Total)\%PrivilegedTime',
+                                                'Processor(_Total)\%UserTime',
+                                                'Processor(_Total)\%ProcessorTime',
+                                                'Processor(_Total)\Interrupts/sec',
+                                                'Memory\AvailableMBytes',
+                                                'Memory\PageReads/sec',
+                                                'Memory\PageWrites/sec',
+                                                'PagingFile(_Total)\%Usage',
+                                                'PhysicalDisk(_Total)\DiskTransfers/sec',
+                                                'System\Processes',
                                                 'System\ProcessorQueueLength']
-                                                
+
+                # Chart each column
                 graph_column(fullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn)
 
                 # move files to new home
