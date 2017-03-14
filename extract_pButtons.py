@@ -26,7 +26,7 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
     with open(SearchFileName, mode='rt', encoding='ISO-8859-1') as infile, \
             open(outputFileName, mode='wt') as outfile:
         # Note: I had to use ISO-8859-1 encoding NOT std utf-8.  
-        # I suspect characters from non-english, Thai for example. You can also try utf-8.
+        # Single byte encoding sometimes? why? You can also try utf-8.
 
         copy = False
         for line in infile:
