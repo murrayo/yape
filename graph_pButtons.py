@@ -99,11 +99,11 @@ def parse_windows_perfmon(CsvFullName):
                     line[0] = 'Date'
                 
                     # Remove first leading slash
-                    line = [cols.replace('\\', '', 1) for cols in line]
+                    line = [cols.replace('\\', '', 1) for cols in line]  # iterable comprehension
                     # No Server name
                     line = ','.join(line)  # Comma separate
 
-            line = ''.join(line)  # concatinate it all back together
+            line = ''.join(line)  # concatenate it all back together
             line = line.replace(',,', ',0,')  # #Blank (space) field blows up matplotlib
 
             outfile.write(line)
@@ -196,12 +196,18 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
 
             BokehChart.line(data.index, data[ColumnName], legend=ColumnName, line_width=1)
 
-            BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+            if 'Disksec' in ColumnName or 'svctm' in ColumnName:  # Outputs in milliseconds
+                BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0.000")
+            else:
+                BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
 
             if 'iostat' not in CsvFileType:
                 BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
 
-            output_file(CsvFileType + '_' + ColumnName.replace('/', '_') + '_interactive.html')
+            ColumnNameOut = ColumnName.replace('/', '_')
+            ColumnNameOut = ColumnNameOut.replace('\\', '_')
+
+            output_file(CsvFileType + '_' + ColumnNameOut + '_interactive.html')
             save(BokehChart)
 
         else:
@@ -248,7 +254,10 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id Total CPU':
                 ax.set_ylim(ymax=100)
 
-            ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+            if 'Disksec' in ColumnName or 'svctm' in ColumnName:  # Outputs in milliseconds
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x))))
+            else:
+                ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
             plt.savefig(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
 
