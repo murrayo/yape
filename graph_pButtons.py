@@ -202,7 +202,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
                 BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
 
             if 'iostat' not in CsvFileType:
-                BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
+                BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
 
             ColumnNameOut = ColumnName.replace('/', '_')
             ColumnNameOut = ColumnNameOut.replace('\\', '_')
@@ -277,7 +277,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         # BokehChart.line(data.index, data['WIJwri'], legend='WIJwri', line_width=1, alpha=0.8, line_color=colors[6])
 
         BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
-        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=[''])
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
 
         output_file(CsvFileType + '_Reads_and_Writes_interactive.html')
         save(BokehChart)
