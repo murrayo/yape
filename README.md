@@ -67,10 +67,12 @@ Example walk a directory of one or more pbuttons.html, create different chart ty
     for j in line dot interactive; do for i in `ls *.html`; do /path_to/graph_pButtons.py ./${i}_metrics -p ${j}_${i}_ -s ${j} -t ${i} -I; done; done
 
 
+#### Process multiple pButtons .html files in the same directory
 
-Plans:
+Be sure to change the variable "YAPE_PATH"
 
-- Create standard set of multi-file charts for trouble-shooting and performance analysis.
+    ./yape_week.sh -d ../path/to/pbuttons/files -I -v
+
 
 ## Related Discussion
 See the detailed description and discussion [in this article](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts).

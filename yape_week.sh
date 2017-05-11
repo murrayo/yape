@@ -2,12 +2,13 @@
 
 # This script loops through multiple pButtons html files (eg a weeks worth) to create a single graph
 
-# Usage:    ./yape_week.sh -d ../ZCust/201705-DHS/DH_pButtons/p01319 -I -v
+# Usage:    ./yape_week.sh -d ../ZCust/201705/pButtons/xyz_server -I -v
 
 # Beware spaces in file path
 
 
-YAPE_PATH="/Users/moldfiel/zISC/600_Tools/zgit/sourcetree/yape"
+YAPE_PATH="/path/to/yape/source_files"
+
 line=""
 dot=""
 interactive=""
