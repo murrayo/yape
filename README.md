@@ -56,6 +56,8 @@ Example:
 
 Will scan `./metrics` for files created by extract_pButtons and output selected chart type. Line chart to `./charts` by default.
 
+## Examples
+
 Example walk a directory of one or more pbuttons.html, create different chart types and add filename to title.
 
 #### Extract to .csv
