@@ -112,6 +112,7 @@ def parse_windows_perfmon(CsvFullName):
 def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn):
 
     graph_style = args.style
+    Number_Days=0
 
     # Depending on file type read in data and set indexes
     if DateTimeIndexed == 'DateTimeIndexed':
@@ -126,6 +127,9 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         data.columns = data.columns.str.strip()
         data = data.rename(columns={'Date_Time': 'DateTime'})
         data.index = data.DateTime
+        
+        Number_Days = (data.DateTime.max() - data.DateTime.min()).days
+        #print('Days: ', Number_Days)
 
     elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinDateTimeIndexed':
     
@@ -137,6 +141,9 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         
         data.columns = data.columns.str.strip()
         data.index = data.DateTime
+
+        Number_Days = (data.DateTime.max() - data.DateTime.min()).days
+        #print('Days; ', Number_Days)
 
     elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinTimeIndexed':
 
@@ -221,7 +228,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
                     plt.plot(data[ColumnName], color='dimgrey')
 
             elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
-
+                
                 if graph_style == 'dot':
                     plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:
@@ -244,7 +251,12 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             ax = plt.gca()
 
             if DateTimeIndexed != 'NoIndex':
-                ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
+            
+                if Number_Days > 1:
+                    ax.xaxis.set_major_formatter(DateFormatter("%a %H:%M"))
+                else:
+                    ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
+                    
                 ax.xaxis.set_minor_locator(HourLocator())
 
             ax.set_ylim(ymin=0)  # Always zero start
