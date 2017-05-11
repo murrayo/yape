@@ -70,7 +70,7 @@ Example walk a directory of one or more pbuttons.html, create different chart ty
 
 #### Process multiple pButtons .html files in the same directory into a single graph (eg a weeks files)
 
-Be sure to change the variable "YAPE_PATH"
+Be sure to change the variable YAPE_PATH
 
     ./yape_week.sh -d ../path/to/pbuttons/files -I -v
 
