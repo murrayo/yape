@@ -10,7 +10,7 @@ Please check you have the correct Python version. For writing and testing I am u
     python3 --version
     Python 3.6.0
 
-New to Python? See Fabians article on InterSystems Community or google :)
+New to Python? See Fabian's article on InterSystems Community or google :)
 
 https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
 
@@ -74,6 +74,19 @@ Be sure to change the variable YAPE_PATH
 
     ./yape_week.sh -d ../path/to/pbuttons/files -I -v
 
+
+## Docker image
+To make usage of yape a little bit easier, we added a Dockerfile. Check out the repository and then run:
+
+    docker build -t yape .
+
+Afterwards you can run yape on your pButtons file like this:
+    docker run -v `pwd`/in:/data  --rm --name yape-test yape  \
+    ./extract_pButtons.py -o /data \ 
+    /data/pButtons.html
+
+    docker run -v `pwd`/in:/data  --rm --name yape-test yape  \ 
+    ./graph_pButtons.py -o /data/charts /data
 
 ## Related Discussion
 

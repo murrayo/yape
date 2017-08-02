@@ -12,9 +12,14 @@ import math
 import numpy as np
 import pandas as pd
 
+import matplotlib
+matplotlib.use('Agg')
+
+
 from mpl_toolkits.axes_grid1 import host_subplot
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
+
 
 from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator
@@ -412,8 +417,12 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                 # Chart each column
                 graph_column(fullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn)
 
+                if OUTDIR:
+                    TGTDIR=OUTDIR
+                else:
+                    TGTDIR='./' + FILEPREFIX + 'charts'
                 # move files to new home
-                os.makedirs('./' + FILEPREFIX + 'charts', exist_ok=True)
+                os.makedirs(TGTDIR, exist_ok=True)
 
                 iostatMade = False
                 mgstatMade = False
@@ -427,25 +436,25 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                         if pngFilename.startswith('iostat_'):
                             if not iostatMade:
                                 iostatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/iostat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/iostat/' + pngFilename)  
+                                os.makedirs(os.path.join(TGTDIR,'iostat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'iostat',pngFilename) )  
                         elif pngFilename.startswith('mgstat_'):
                             if not mgstatMade:
                                 mgstatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/mgstat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/mgstat/' + pngFilename)                                
+                                os.makedirs(os.path.join(TGTDIR,'mgstat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'mgstat',pngFilename) )                                
                         elif pngFilename.startswith('vmstat_'):
                             if not vmstatMade:
                                 vmstatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/vmstat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/vmstat/' + pngFilename)        
+                                os.makedirs(os.path.join(TGTDIR,'vmstat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'vmstat',pngFilename))        
                         elif pngFilename.startswith('win_perfmon_'):
                             if not perfmonMade:
                                 perfmonMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/win_perfmon', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/win_perfmon/' + pngFilename)        
+                                os.makedirs(os.path.join(TGTDIR,'win_perfmon'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'win_perfmon',pngFilename))      
                         else:        
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/' + pngFilename)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,pngFilename))
                 
                 if os.path.isfile('temp_perfmon.csv'):
                     os.remove('temp_perfmon.csv')
@@ -459,6 +468,7 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--style", help="Chart style: line (default), dots, interactive html", choices=['line', 'dot', 'interactive'], default='line')
     parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
     parser.add_argument("-t", "--title", help="Title for all charts, eg pass file name")
+    parser.add_argument("-o","--out",help="set output directory")
     
     args = parser.parse_args()
 
@@ -466,6 +476,11 @@ if __name__ == '__main__':
         FILEPREFIX = args.prefix
     else:
         FILEPREFIX = ''
+
+    if args.out is not None:
+        OUTDIR = args.out
+    else:
+        OUTDIR = ''
 
     if args.title is not None:
         CHART_TITLE = ' : ' + args.title
