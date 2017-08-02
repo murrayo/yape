@@ -81,6 +81,7 @@ To make usage of yape a little bit easier, we added a Dockerfile. Check out the 
     docker build -t yape .
 
 Afterwards you can run yape on your pButtons file like this:
+
     docker run -v `pwd`/in:/data  --rm --name yape-test yape  \
     ./extract_pButtons.py -o /data \ 
     /data/pButtons.html
