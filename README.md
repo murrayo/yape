@@ -78,16 +78,11 @@ Be sure to change the variable YAPE_PATH
 ## Docker image
 To make usage of yape a little bit easier, we added a Dockerfile. Check out the repository and then run:
 
-    docker build -t yape .
+    docker build -t kazamatzuri/yape:1.0 .
 
 Afterwards you can run yape on your pButtons file like this:
 
-    docker run -v `pwd`/in:/data  --rm --name yape-test yape  \
-    ./extract_pButtons.py -o /data \ 
-    /data/pButtons.html
-
-    docker run -v `pwd`/in:/data  --rm --name yape-test yape  \ 
-    ./graph_pButtons.py -o /data/charts /data
+    docker run -v `pwd`/:/data  --rm --name yape-test kazamatzuri/yape:1.0 pButtons.html
 
 ## Related Discussion
 

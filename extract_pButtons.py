@@ -235,7 +235,7 @@ def mainline(SearchFileName):
         files = os.listdir('.')
         for f in files:
             if f.startswith('iostat_'):
-                shutil.move(f, os.path.join(TGTDIR + f))
+                shutil.move(f, os.path.join(TGTDIR,f))
 
 
 if __name__ == '__main__':
