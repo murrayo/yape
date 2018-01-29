@@ -52,7 +52,7 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                     if os_details == 'AIX':
                         line = ' '.join(line.split())  # strip leading and multiple spaces
 
-                        header_line = line.split('<pre>', 1)[1]  # get right hand part of ugly line
+                        header_line = line.split('<!-- beg_vmstat --> ', 1)[1]  # get right hand part of ugly line
                         header_line = ''.join(header_line)  # convert part to a string
                         header_line = header_line.replace('sy', 'sy_call',
                                                           1)  # who thought duplicate column headings is a good idea?
