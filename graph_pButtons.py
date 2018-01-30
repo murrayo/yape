@@ -318,7 +318,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
     # Now create a few combined plots. Useful but also a guide to creating your own.
     colors = magma(7)
 
- if graph_style == 'interactive' and CsvFileType == 'vmstat':
+    if graph_style == 'interactive' and CsvFileType == 'vmstat':
 
         BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' vmstat' + CHART_TITLE, width=1024,
                             height=768, x_axis_label='time', toolbar_location="above")
@@ -341,7 +341,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         output_file(CsvFileType + '_CPU_vs_Blocked_interactive.html')
         save(BokehChart)
 
-if graph_style == 'interactive' and CsvFileType == 'mgstat':
+    if graph_style == 'interactive' and CsvFileType == 'mgstat':
         BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Reads and Writes' + CHART_TITLE,
                                 width=1024,
                                 height=768, x_axis_label='time', toolbar_location="above")
@@ -487,7 +487,7 @@ if graph_style == 'interactive' and CsvFileType == 'mgstat':
         output_file(CsvFileType + '_Glorefs_and_all_Writes_interactive.html')
         save(BokehChart)
 
-if graph_style == 'interactive' and 'iostat' in CsvFileType:
+    if graph_style == 'interactive' and 'iostat' in CsvFileType:
 
         BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and Writes' + CHART_TITLE, width=1024,
                             height=768, x_axis_label='time ->', toolbar_location="above")
