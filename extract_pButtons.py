@@ -40,7 +40,7 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                 if startString == 'beg_vmstat':  # write header
                     if os_details == 'RH':
                         line = ' '.join(line.split()) + '\n'  # strip leading and multiple spaces
-
+                        #might also need to change? see AIX section. Or maybe it's version dependent?
                         header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line
                         header_line = ''.join(header_line)  # convert part to a string
                         header_line = header_line.split(' ')  # split to change column headings
@@ -148,9 +148,9 @@ def detect_pbuttons_os(SearchFileName):
                     pbuttons_os = 'AIX'
                 elif 'Itanium' in line:
                     pbuttons_os = 'Itanium'
-                elif 'AIX' in line:
-                    pbuttons_os = 'AIX'
                 elif 'Red Hat Enterprise Linux' in line:
+                    pbuttons_os = 'RH'
+                elif 'SUSE Linux Enterprise Server for x86-64' in line:
                     pbuttons_os = 'RH'
                 elif 'Windows' in line:
                     pbuttons_os = 'Windows'
