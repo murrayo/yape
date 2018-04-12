@@ -7,7 +7,7 @@
 # Beware spaces in file path
 
 
-YAPE_PATH="/path/to/yape/source_files"
+YAPE_PATH="/Users/moldfiel/zISC/600_Tools/pButtonsTools/yape"
 
 line=""
 dot=""
@@ -86,6 +86,12 @@ then
     
     for i in `find . -name vmstat.csv`; do cat $i >>all_days/all_vm_inc_headers.txt; done
     sed '2,${/^Date/d;}' all_days/all_vm_inc_headers.txt >all_days/vmstat.csv
+    
+    # AIX will not display a week because it has no dates, need to somehow add dates
+    #sed -i '/^$/d' all_days/all_vm_inc_headers.txt
+    #sed '2,${/^r/d;}' all_days/all_vm_inc_headers.txt >all_days/vmstat.csv
+
+    
 fi
 
 if [ "${perfmon}" == "Y" ];

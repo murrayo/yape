@@ -20,7 +20,7 @@ from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator
 
 from bokeh.plotting import figure, output_file, show, save
-from bokeh.models import NumeralTickFormatter, DatetimeTickFormatter
+from bokeh.models import NumeralTickFormatter, DatetimeTickFormatter, Range1d, LinearAxis
 from bokeh.palettes import magma
 
 
@@ -42,7 +42,18 @@ def parse_datetimeWin(x):
     """
     dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S.%f')
     
-    return dt    
+    return dt
+
+
+def parse_datetimeEsx(x):
+    """
+    Parses datetime from esxtop as:
+        `[day/month-hour:minute:second]`
+        year will be messed up (1900)
+    """
+    dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S')
+
+    return dt
 
 
 def parse_timeWin(x):
@@ -103,6 +114,11 @@ def parse_windows_perfmon(CsvFullName):
                     # No Server name
                     line = ','.join(line)  # Comma separate
 
+                # esxtop
+                # "(PDH-CSV 4.0) (UTC)(0)","\\SYDTAVM1\Memory\Memory Overcommit (1 Minute Avg)"
+                # "05/15/2017 06:49:37","0.00"
+
+
             line = ''.join(line)  # concatenate it all back together
             line = line.replace(',,', ',0,')  # #Blank (space) field blows up matplotlib
 
@@ -130,6 +146,20 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         
         Number_Days = (data.DateTime.max() - data.DateTime.min()).days
         #print('Days: ', Number_Days)
+
+    elif CsvFileType == 'esxtop' and DateTimeIndexed == 'WinDateTimeIndexed':
+
+        data = pd.read_csv(
+            CsvFullName,
+            header=0,
+            converters={0: parse_datetimeEsx}
+        )
+
+        data.columns = data.columns.str.strip()
+        data.index = data.DateTime
+
+        Number_Days = (data.DateTime.max() - data.DateTime.min()).days
+        # print('Days; ', Number_Days)
 
     elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinDateTimeIndexed':
     
@@ -183,7 +213,14 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
 
     if CsvFileType == 'mgstat':
         # Create an average for charting benchmark results
-        data['Average Glorefs'] = data['Glorefs'].rolling(window=200, center=False).mean()
+        # Note the window of 100 -- if there are less than 100 data points will blow up script at plt.savefig
+        # If less than 100 data points divide by 10 and/or round up to even integer
+        if len(data.index) <= 100:
+            rolling_index=math.ceil((len(data.index)/10) / 2.) * 2
+        else:
+            rolling_index=100     
+
+        data['Average Glorefs'] = data['Glorefs'].rolling(window=rolling_index, center=False).mean()
 
         # Get rid of outliers for indicative graphs and stats collection
         # data['Smoothed reads'] = data[np.abs(data['PhyRds'] - data['PhyRds'].mean()) <= (3 * data['PhyRds'].std())]
@@ -203,7 +240,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
 
             BokehChart.line(data.index, data[ColumnName], legend=ColumnName, line_width=1)
 
-            if 'Disksec' in ColumnName or 'svctm' in ColumnName:  # Outputs in milliseconds
+            if 'Disksec' in ColumnName or 'svctm' in ColumnName or 'await' in ColumnName:  # Outputs in milliseconds
                 BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0.000")
             else:
                 BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
@@ -266,11 +303,12 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             elif CsvFileType == 'vmstat' and ColumnName in 'us sy wa id Total CPU':
                 ax.set_ylim(ymax=100)
 
-            if 'Disksec' in ColumnName or 'svctm' in ColumnName:  # Outputs in milliseconds
+            if 'Disksec' in ColumnName or 'svctm' in ColumnName or 'await' in ColumnName:  # Outputs in milliseconds
                 ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x))))
             else:
                 ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
+            #print(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')    
             plt.savefig(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
 
             plt.close('all')
@@ -278,15 +316,49 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
     # Now create a few combined plots. Useful but also a guide to creating your own.
     colors = magma(7)
 
+    if graph_style == 'interactive' and CsvFileType == 'vmstat':
+
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' vmstat' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time', toolbar_location="above")
+
+        myWrite_Legend = 'CPU max ' + str(max(data['Total CPU']))
+        BokehChart.line(data.index, data['Total CPU'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.yaxis.axis_label = "Total CPU"
+
+        myRead_Legend='b max ' + str(max(data['b']))
+        BokehChart.extra_y_ranges = {"b_y": Range1d(start=0, end=100)}
+        BokehChart.add_layout(LinearAxis(y_range_name="b_y", axis_label="b", formatter=NumeralTickFormatter(format="0,0")), 'right')
+        BokehChart.line(data.index, data['b'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="b_y")
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0,100)
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
+
+        output_file(CsvFileType + '_CPU_vs_Blocked_interactive.html')
+        save(BokehChart)
+
     if graph_style == 'interactive' and CsvFileType == 'mgstat':
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Reads and Writes' + CHART_TITLE,
+                                width=1024,
+                                height=768, x_axis_label='time', toolbar_location="above")
 
-        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Reads and Writes' + CHART_TITLE, width=1024,
-                            height=768, x_axis_label='time')
+        myWrite_Legend = 'PhyWrs max ' + str(max(data['PhyWrs']))
+        BokehChart.line(data.index, data['PhyWrs'], legend=myWrite_Legend, line_width=1, alpha=0.8,
+                            line_color=colors[4])
+        BokehChart.yaxis.axis_label = "PhyWrs"
 
-        BokehChart.line(data.index, data['PhyWrs'], legend='PhyWrs', line_width=1, alpha=0.8, line_color=colors[4])
-        BokehChart.line(data.index, data['PhyRds'], legend='PhyRds', line_width=1, line_color=colors[0])
-        # BokehChart.line(data.index, data['Jrnwrts'], legend='Jrnwrts', line_width=1, alpha=0.8, line_color=colors[5])
-        # BokehChart.line(data.index, data['WIJwri'], legend='WIJwri', line_width=1, alpha=0.8, line_color=colors[6])
+        myRead_Legend = 'Reads max ' + str(max(data['PhyRds']))
+        BokehChart.extra_y_ranges = {"PhyRds_y": Range1d(start=0, end=max(data['PhyRds']))}
+        BokehChart.add_layout(
+                LinearAxis(y_range_name="PhyRds_y", axis_label="PhyRds", formatter=NumeralTickFormatter(format="0,0")),
+                'right')
+        BokehChart.line(data.index, data['PhyRds'], legend=myRead_Legend, line_width=1, line_color=colors[0],
+                            y_range_name="PhyRds_y")
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0, max(data['PhyWrs']))
 
         BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
         BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
@@ -294,18 +366,225 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         output_file(CsvFileType + '_Reads_and_Writes_interactive.html')
         save(BokehChart)
 
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Glorefs and Writes' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time', toolbar_location="above")
+
+        myWrite_Legend = 'Glorefs max ' + str(max(data['Glorefs']))
+        BokehChart.line(data.index, data['Glorefs'], legend=myWrite_Legend, line_width=1, alpha=0.8,
+                        line_color=colors[4])
+        BokehChart.yaxis.axis_label = "Glorefs"
+
+        myRead_Legend = 'PhyWrs max ' + str(max(data['PhyWrs']))
+        BokehChart.extra_y_ranges = {"PhyWrs_y": Range1d(start=0, end=max(data['PhyWrs']))}
+        BokehChart.add_layout(
+            LinearAxis(y_range_name="PhyWrs_y", axis_label="PhyWrs", formatter=NumeralTickFormatter(format="0,0")),
+            'right')
+        BokehChart.line(data.index, data['PhyWrs'], legend=myRead_Legend, line_width=1, line_color=colors[0],
+                        y_range_name="PhyWrs_y")
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0, max(data['Glorefs']))
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
+
+        output_file(CsvFileType + '_Glorefs_and_Writes_interactive.html')
+        save(BokehChart)
+
+
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Glorefs and WIJ Writes' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time', toolbar_location="above")
+
+        myWrite_Legend = 'Glorefs max ' + str(max(data['Glorefs']))
+        BokehChart.line(data.index, data['Glorefs'], legend=myWrite_Legend, line_width=1, alpha=0.8,
+                        line_color=colors[4])
+        BokehChart.yaxis.axis_label = "Glorefs"
+
+        myRead_Legend = 'WIJwri max ' + str(max(data['WIJwri']))
+        BokehChart.extra_y_ranges = {"WIJwri_y": Range1d(start=0, end=max(data['WIJwri']))}
+        BokehChart.add_layout(
+            LinearAxis(y_range_name="WIJwri_y", axis_label="WIJwri", formatter=NumeralTickFormatter(format="0,0")),
+            'right')
+        BokehChart.line(data.index, data['WIJwri'], legend=myRead_Legend, line_width=1, line_color=colors[0],
+                        y_range_name="WIJwri_y")
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0, max(data['Glorefs']))
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
+
+        output_file(CsvFileType + '_Glorefs_and_WIJ_Writes_interactive.html')
+        save(BokehChart)
+
+
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Glorefs and Journal Writes' + CHART_TITLE,
+                            width=1024,
+                            height=768, x_axis_label='time', toolbar_location="above")
+
+        myWrite_Legend = 'Glorefs max ' + str(max(data['Glorefs']))
+        BokehChart.line(data.index, data['Glorefs'], legend=myWrite_Legend, line_width=1, alpha=0.8,
+                        line_color=colors[4])
+        BokehChart.yaxis.axis_label = "Glorefs"
+
+        myRead_Legend = 'Jrnwrts max ' + str(max(data['Jrnwrts']))
+        BokehChart.extra_y_ranges = {"Jrnwrts_y": Range1d(start=0, end=max(data['Jrnwrts']))}
+        BokehChart.add_layout(
+            LinearAxis(y_range_name="Jrnwrts_y", axis_label="Jrnwrts", formatter=NumeralTickFormatter(format="0,0")),
+            'right')
+        BokehChart.line(data.index, data['Jrnwrts'], legend=myRead_Legend, line_width=1, line_color=colors[0],
+                        y_range_name="Jrnwrts_y")
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0, max(data['Glorefs']))
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
+
+        output_file(CsvFileType + '_Glorefs_and_Journal_Writes_interactive.html')
+        save(BokehChart)
+
+
+        # Plot all writes
+
+        BokehChart = figure(x_axis_type='datetime', title=CsvFileType + ' Glorefs and all Writes' + CHART_TITLE,
+                            width=1024,
+                            height=768, x_axis_label='time', toolbar_location="above")
+
+        myWrite_Legend = 'Glorefs max ' + str(max(data['Glorefs']))
+        BokehChart.line(data.index, data['Glorefs'], legend=myWrite_Legend, line_width=2, alpha=0.8,
+                        line_color=colors[4])
+        BokehChart.yaxis.axis_label = "Glorefs"
+
+        BokehChart.extra_y_ranges={}
+        BokehChart.extra_y_ranges = {"allwrts_y": Range1d(start=0, end=max(max(data['Jrnwrts']),max(data['WIJwri'])))}
+        #BokehChart.extra_y_ranges = {"allwrts_y2": Range1d(start=0, end=max(data['PhyWrs']))}
+
+        BokehChart.add_layout(LinearAxis(y_range_name="allwrts_y", axis_label="Journal,WIJ and DB writes", formatter=NumeralTickFormatter(format="0,0")),'right')
+        #BokehChart.add_layout(LinearAxis(y_range_name="allwrts_y2", axis_label="DB writes", formatter=NumeralTickFormatter(format="0,0")),'left')
+
+
+        myRead_Legend = 'Jrnwrts max ' + str(max(data['Jrnwrts']))
+        BokehChart.line(data.index, data['Jrnwrts'], legend=myRead_Legend, line_width=2, line_color=colors[0],
+                        y_range_name="allwrts_y")
+
+        myWIJ_Legend = 'WIJ Writes per second max ' + str(max(data['WIJwri']))
+        BokehChart.line(data.index, data['WIJwri'], legend=myWIJ_Legend, line_width=2, line_color=colors[5],
+                        y_range_name="allwrts_y")
+
+        myWrite_Legend = 'PhyWrs max ' + str(max(data['PhyWrs']))
+        BokehChart.line(data.index, data['PhyWrs'], legend=myWrite_Legend, line_width=2, line_color=colors[3],y_range_name="allwrts_y")
+
+
+        # BokehChart.x_range = Range1d(0,data.index.max())
+        BokehChart.y_range = Range1d(0, max(data['Glorefs']))
+
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        BokehChart.xaxis[0].formatter = DatetimeTickFormatter(minutes=['%R'], hours=['%R'], days=['%a %d'])
+
+        output_file(CsvFileType + '_Glorefs_and_all_Writes_interactive.html')
+        save(BokehChart)
+
     if graph_style == 'interactive' and 'iostat' in CsvFileType:
 
         BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and Writes' + CHART_TITLE, width=1024,
-                            height=768, x_axis_label='time ->')
+                            height=768, x_axis_label='time ->', toolbar_location="above")
 
-        BokehChart.line(data.index, data['w/s'], legend='Writes per second', line_width=1, alpha=0.8,  line_color=colors[4])
-        BokehChart.line(data.index, data['r/s'], legend='Reads per second', line_width=1, line_color=colors[0])
+        myWrite_Legend = 'Writes per second max ' + str(max(data['w/s']))
+        BokehChart.line(data.index, data['w/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.yaxis.axis_label = "w/s"
 
+        myRead_Legend='Reads per second max ' + str(max(data['r/s']))
+        BokehChart.extra_y_ranges = {"Reads": Range1d(start=0, end=max(data['r/s']))}
+        BokehChart.add_layout(LinearAxis(y_range_name="Reads", axis_label="r/s", formatter=NumeralTickFormatter(format="0,0")), 'right')
+        BokehChart.line(data.index, data['r/s'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="Reads")
+
+        BokehChart.x_range = Range1d(0,max(data.index))
+        BokehChart.y_range = Range1d(0,max(data['w/s']))
         BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
 
         output_file(CsvFileType + '_Reads_and_Writes_interactive.html')
         save(BokehChart)
+
+
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' svctm and await' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time ->', toolbar_location="above")
+
+        mysvctm_Legend = 'svctm max ' + str(max(data['svctm']))
+        BokehChart.line(data.index, data['svctm'], legend=mysvctm_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.yaxis.axis_label = "svctm and await"
+
+        myawait_Legend='await max ' + str(max(data['await']))
+        #BokehChart.extra_y_ranges = {"await": Range1d(start=0, end=max(data['await']))}
+        #BokehChart.add_layout(LinearAxis(y_range_name="await", axis_label="await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
+        #BokehChart.line(data.index, data['await'], legend=myawait_Legend, line_width=1, line_color=colors[0], y_range_name="await")
+        BokehChart.line(data.index, data['await'], legend=myawait_Legend, line_width=1, line_color=colors[0])
+
+        BokehChart.x_range = Range1d(0,max(data.index))
+        BokehChart.y_range = Range1d(0,max(max(data['svctm']),max(data['await'])))
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0.000")
+
+        output_file(CsvFileType + '_svctm_and_await_interactive.html')
+        save(BokehChart)
+
+
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Writes and w_await' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time ->', toolbar_location="above")
+
+        myWrite_Legend = 'Writes per second max ' + str(max(data['w/s']))
+        BokehChart.line(data.index, data['w/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.yaxis.axis_label = "w/s"
+
+        myRead_Legend='w_await max ' + str(max(data['w_await']))
+        BokehChart.extra_y_ranges = {"w_Await": Range1d(start=0, end=max(data['w_await']))}
+        BokehChart.add_layout(LinearAxis(y_range_name="w_Await", axis_label="w_await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
+        BokehChart.line(data.index, data['w_await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="w_Await")
+
+        BokehChart.x_range = Range1d(0,max(data.index))
+        BokehChart.y_range = Range1d(0,max(data['w/s']))
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+
+        output_file(CsvFileType + '_Writes_and_w_await_interactive.html')
+        save(BokehChart)
+
+
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and r_await' + CHART_TITLE, width=1024,
+                            height=768, x_axis_label='time ->', toolbar_location="above")
+
+        myWrite_Legend = 'Reads per second max ' + str(max(data['r/s']))
+        BokehChart.line(data.index, data['r/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        BokehChart.yaxis.axis_label = "r/s"
+
+        myRead_Legend='r_await max ' + str(max(data['r_await']))
+        BokehChart.extra_y_ranges = {"r_Await": Range1d(start=0, end=max(data['r_await']))}
+        BokehChart.add_layout(LinearAxis(y_range_name="r_Await", axis_label="r_await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
+        BokehChart.line(data.index, data['r_await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="r_Await")
+
+        BokehChart.x_range = Range1d(0,max(data.index))
+        BokehChart.y_range = Range1d(0,max(data['r/s']))
+        BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+
+        output_file(CsvFileType + '_Reads_and_r_await_interactive.html')
+        save(BokehChart)
+
+        # BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Writes and Write kB/s' + CHART_TITLE, width=1024,
+        #                     height=768, x_axis_label='time ->', toolbar_location="above")
+        #
+        # myWrite_Legend = 'Writes per second max ' + str(max(data['w/s']))
+        # BokehChart.line(data.index, data['w/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
+        # BokehChart.yaxis.axis_label = "w/s"
+        #
+        # myRead_Legend='Write kB/s max ' + str(max(data['wkB/s']))
+        # BokehChart.extra_y_ranges = {"Right_y": Range1d(start=0, end=max(data['wkB/s']))}
+        # BokehChart.add_layout(LinearAxis(y_range_name="Right_y", axis_label="wkB/s", formatter=NumeralTickFormatter(format="0,0")), 'right')
+        # BokehChart.line(data.index, data['wkB/s'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="Right_y")
+        #
+        # BokehChart.x_range = Range1d(0,max(data.index))
+        # BokehChart.y_range = Range1d(0,max(data['w/s']))
+        # BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
+        #
+        # output_file(CsvFileType + '_w_s_and_wkB_s_interactive.html')
+        # save(BokehChart)
 
 
 def GetColumnHeadings(CsvDirName, CsvFileType):
@@ -382,7 +661,7 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                 fullName = CsvDirName + '/' + csvFilename
 
                 # Windows needs clean up, override filename to temp file
-                if CsvFileType == 'win_perfmon':
+                if CsvFileType == 'win_perfmon' or CsvFileType == 'esxtop':
                     parse_windows_perfmon(fullName)
                     fullName = 'temp_perfmon.csv'
 
@@ -408,12 +687,20 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                                               'PhysicalDisk(_Total)\DiskTransfers/sec',
                                               'System\Processes',
                                               'System\ProcessorQueueLength']
+                    elif CsvFileType == 'esxtop':
+                        InterestingColumns = ['PhysicalCpu(_Total)\%ProcessorTime',
+                                              'PhysicalCpu(_Total)\%UtilTime',
+                                              'PhysicalCpu(_Total)\%CoreUtilTime']
 
                 # Chart each column
                 graph_column(fullName, CsvFileType, InterestingColumns, DateTimeIndexed, IndexColumn)
 
+                if OUTDIR:
+                    TGTDIR=OUTDIR
+                else:
+                    TGTDIR='./' + FILEPREFIX + 'charts'
                 # move files to new home
-                os.makedirs('./' + FILEPREFIX + 'charts', exist_ok=True)
+                os.makedirs(TGTDIR, exist_ok=True)
 
                 iostatMade = False
                 mgstatMade = False
@@ -427,25 +714,25 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                         if pngFilename.startswith('iostat_'):
                             if not iostatMade:
                                 iostatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/iostat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/iostat/' + pngFilename)  
+                                os.makedirs(os.path.join(TGTDIR,'iostat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'iostat',pngFilename) )  
                         elif pngFilename.startswith('mgstat_'):
                             if not mgstatMade:
                                 mgstatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/mgstat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/mgstat/' + pngFilename)                                
+                                os.makedirs(os.path.join(TGTDIR,'mgstat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'mgstat',pngFilename) )                                
                         elif pngFilename.startswith('vmstat_'):
                             if not vmstatMade:
                                 vmstatMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/vmstat', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/vmstat/' + pngFilename)        
+                                os.makedirs(os.path.join(TGTDIR,'vmstat'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'vmstat',pngFilename))        
                         elif pngFilename.startswith('win_perfmon_'):
                             if not perfmonMade:
                                 perfmonMade = True
-                                os.makedirs('./' + FILEPREFIX + 'charts/win_perfmon', exist_ok=True)
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/win_perfmon/' + pngFilename)        
+                                os.makedirs(os.path.join(TGTDIR,'win_perfmon'), exist_ok=True)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'win_perfmon',pngFilename))      
                         else:        
-                            shutil.move(pngFilename, './' + FILEPREFIX + 'charts/' + pngFilename)
+                            shutil.move(pngFilename, os.path.join(TGTDIR,pngFilename))
                 
                 if os.path.isfile('temp_perfmon.csv'):
                     os.remove('temp_perfmon.csv')
@@ -459,6 +746,7 @@ if __name__ == '__main__':
     parser.add_argument("-s", "--style", help="Chart style: line (default), dots, interactive html", choices=['line', 'dot', 'interactive'], default='line')
     parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
     parser.add_argument("-t", "--title", help="Title for all charts, eg pass file name")
+    parser.add_argument("-o","--out",help="set output directory")
     
     args = parser.parse_args()
 
@@ -466,6 +754,11 @@ if __name__ == '__main__':
         FILEPREFIX = args.prefix
     else:
         FILEPREFIX = ''
+
+    if args.out is not None:
+        OUTDIR = args.out
+    else:
+        OUTDIR = ''
 
     if args.title is not None:
         CHART_TITLE = ' : ' + args.title

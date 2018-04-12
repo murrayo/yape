@@ -52,7 +52,7 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                     if os_details == 'AIX':
                         line = ' '.join(line.split())  # strip leading and multiple spaces
 
-                        header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line            
+                        header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line    
                         header_line = ''.join(header_line)  # convert part to a string 
                         header_line = header_line.replace('sy', 'sy_call',
                                                           1)  # who thought duplicate column headings is a good idea?
@@ -148,9 +148,9 @@ def detect_pbuttons_os(SearchFileName):
                     pbuttons_os = 'AIX'
                 elif 'Itanium' in line:
                     pbuttons_os = 'Itanium'
-                elif 'AIX' in line:
-                    pbuttons_os = 'AIX'
                 elif 'Red Hat Enterprise Linux' in line:
+                    pbuttons_os = 'RH'
+                elif 'SUSE Linux Enterprise Server for x86-64' in line:
                     pbuttons_os = 'RH'
                 elif 'Windows' in line:
                     pbuttons_os = 'Windows'
@@ -216,12 +216,18 @@ def mainline(SearchFileName):
         # Still work to do on other OS's.
         print('Only mgstat supported on ' + os_details)
 
+    if OUTDIR:
+        TGTDIR=OUTDIR
+    else:
+        TGTDIR='./' + FILEPREFIX + 'metrics'
+        
+        
     # move csv files somewhere
-    os.makedirs('./' + FILEPREFIX + 'metrics', exist_ok=True)
+    os.makedirs(TGTDIR, exist_ok=True)
 
     for checkFile in ['vmstat.csv', 'mgstat.csv', 'win_perfmon.csv', 'iostat_AIX.txt']:
         if os.path.isfile(checkFile):
-            os.rename(checkFile, './' + FILEPREFIX + 'metrics/' + checkFile)
+            shutil.move(checkFile, os.path.join(TGTDIR,checkFile))
 
     if os.path.isfile('all_iostat.csv'):
         os.remove('all_iostat.csv')
@@ -229,7 +235,7 @@ def mainline(SearchFileName):
         files = os.listdir('.')
         for f in files:
             if f.startswith('iostat_'):
-                shutil.move(f, "./" + FILEPREFIX + "metrics/" + f)
+                shutil.move(f, os.path.join(TGTDIR + "/" + f))
 
 
 if __name__ == '__main__':
@@ -237,12 +243,17 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extract useful metrics from pButtons to csv files')
     parser.add_argument("pButtons_file_name", help="Path and pButtons file name to extract")
     parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
+    parser.add_argument("-o","--out",help="set output directory")
     args = parser.parse_args()
 
     if args.prefix is not None:
         FILEPREFIX = args.prefix
     else:
         FILEPREFIX = ''
+    if args.out is not None:
+        OUTDIR = args.out
+    else:
+        OUTDIR = ''
 
     try:
         mainline(args.pButtons_file_name)
