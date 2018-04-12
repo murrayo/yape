@@ -8,7 +8,7 @@ For quickly processing and charting InterSystems Caché pButtons support files.
 Please check you have the correct Python version. For writing and testing I am using Python 3. Specifically:
 
     python3 --version
-    Python 3.6.0
+    Python 3.6.3
 
 New to Python? See Fabians article on InterSystems Community or google :)
 
