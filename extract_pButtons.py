@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Chop up key sections of pButtons and write to formatted .csv files.
-        
+
 """
 import argparse
 import sys
@@ -11,7 +11,7 @@ import shutil
 
 def get_section(SearchFileName, outputFileName, startString, endString, os_details):
     """Extracts blocks (eg vmstat). Trusts that pButtons has blocks of output between two key words.
-    
+
     Args:
         SearchFileName: path and file name to search.
         outputFileName: output file name
@@ -19,13 +19,13 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
         endString: tag to start extract
         os_details: what operating system
 
-        
+
     Output:
         Outputs text file of block of lines with context specific formatting.
     """
     with open(SearchFileName, mode='rt', encoding='ISO-8859-1') as infile, \
             open(outputFileName, mode='wt') as outfile:
-        # Note: I had to use ISO-8859-1 encoding NOT std utf-8.  
+        # Note: I had to use ISO-8859-1 encoding NOT std utf-8.
         # Single byte encoding sometimes? why? You can also try utf-8.
 
         copy = False
@@ -41,8 +41,8 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                     if os_details == 'RH':
                         line = ' '.join(line.split()) + '\n'  # strip leading and multiple spaces
 
-                        header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line            
-                        header_line = ''.join(header_line)  # convert part to a string                              
+                        header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line
+                        header_line = ''.join(header_line)  # convert part to a string
                         header_line = header_line.split(' ')  # split to change column headings
                         header_line[0] = 'Date'
                         header_line[1] = 'Time'
@@ -52,8 +52,8 @@ def get_section(SearchFileName, outputFileName, startString, endString, os_detai
                     if os_details == 'AIX':
                         line = ' '.join(line.split())  # strip leading and multiple spaces
 
-                        header_line = line.split('<pre> ', 1)[1]  # get right hand part of ugly line    
-                        header_line = ''.join(header_line)  # convert part to a string 
+                        header_line = line.split('<!-- beg_vmstat --> ', 1)[1]  # get right hand part of ugly line
+                        header_line = ''.join(header_line)  # convert part to a string
                         header_line = header_line.replace('sy', 'sy_call',
                                                           1)  # who thought duplicate column headings is a good idea?
                         header_line = header_line.replace('hr mi se', '')
@@ -92,13 +92,13 @@ def csv_converter(infile, outfile):
 
 
 def split_iostat(inputListFile, inputDataFile):
-    """ 
+    """
     Split preprocessed iostat into one text file per disk.
-    
+
     Args:
         inputListFile: file containing list of disks (first block of iostat).
         inputDataFile: full iostat file.
-        
+
     Output:
         Writes a csv file for each disk.
     """
@@ -164,15 +164,15 @@ def detect_pbuttons_os(SearchFileName):
 
 def mainline(SearchFileName):
     """Step through pButtons file gathering blocks of text and processing.
-    
-    Args: 
+
+    Args:
         SearchFileName = path and name of pButtons file.
-    
-    Output: 
+
+    Output:
         outputs formatted csv files for available pButtons sections.
     """
 
-    # get os details   
+    # get os details
     os_details = detect_pbuttons_os(SearchFileName)
 
     # mgstat
@@ -191,7 +191,7 @@ def mainline(SearchFileName):
 
         # sar is also messy, strip down and separate by disk in several steps
         get_section(SearchFileName, 'sar_tmp.txt', 'id=sar-d', 'Average:', os_details)
-        # To Do - homework ;)            
+        # To Do - homework ;)
 
         # tidy up, comment for debugging
         os.remove('vmstat.txt')
@@ -220,8 +220,8 @@ def mainline(SearchFileName):
         TGTDIR=OUTDIR
     else:
         TGTDIR='./' + FILEPREFIX + 'metrics'
-        
-        
+
+
     # move csv files somewhere
     os.makedirs(TGTDIR, exist_ok=True)
 
@@ -235,7 +235,7 @@ def mainline(SearchFileName):
         files = os.listdir('.')
         for f in files:
             if f.startswith('iostat_'):
-                shutil.move(f, os.path.join(TGTDIR + "/" + f))
+                shutil.move(f, os.path.join(TGTDIR,f))
 
 
 if __name__ == '__main__':
