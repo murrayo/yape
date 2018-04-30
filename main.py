@@ -51,8 +51,9 @@ try:
     vmstat_tab = vmstat_tab(db)
     iostat_tab = iostat_tab(db)
     windowsinfo_tab = generic_tab(db,"windowsinfo")
+    tasklist_tab = generic_tab(db,"tasklist")
     # Put all the tabs into one application
-    ts=[mgstat_tab,vmstat_tab,iostat_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab]
+    ts=[mgstat_tab,vmstat_tab,iostat_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
     tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
     #tabs = Tabs(tabs=[cstat_tab])
 

@@ -73,6 +73,13 @@ def parsepbuttons(file,db):
                 cursor.execute(query)
                 db.commit()
                 continue
+            if "id=tasklist" in line:
+                    mode="tasklist"
+                    print("starting "+mode)
+                    query="CREATE TABLE "+mode+" (line TEXT)"
+                    cursor.execute(query)
+                    db.commit()
+                    continue
             if "id=\"ss_1\"" in line:
                 mode="ss1"
                 print("starting "+mode)
@@ -440,7 +447,7 @@ def parsepbuttons(file,db):
             generic_items=["license","ifconfig","sysctl-a","df-m","mount","cpffile","fdisk-l","ss1",
             "ss2","ss3","ss4","linuxinfo","ipcs","cpu","cstatc11","cstatc12","cstatc13","cstatc14",
             "pselfy1","pselfy2","pselfy3","pselfy4","cstatD1","cstatD2","cstatD3","cstatD4","cstatD5",
-            "cstatD6","cstatD7","cstatD8","windowsinfo"]
+            "cstatD6","cstatD7","cstatD8","windowsinfo","tasklist"]
             if mode in generic_items:
                 query="insert into \""+mode+"\" values(?)"
                 db.execute(query,[line])
