@@ -129,7 +129,7 @@ def parsepbuttons(file,db):
                 cursor.execute(query)
                 db.commit()
                 continue
-            if "id=fidsk-l" in line:
+            if "id=fdisk-l" in line:
                 mode="fdisk-l"
                 print("starting "+mode)
                 query="CREATE TABLE \""+mode+"\" (line TEXT)"
