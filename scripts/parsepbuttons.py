@@ -171,6 +171,62 @@ def parsepbuttons(file,db):
                 cursor.execute(query)
                 db.commit()
                 continue
+            if "id=\"cstat -D_1\"" in line:
+                mode="cstatD1"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_2\"" in line:
+                mode="cstatD2"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_3\"" in line:
+                mode="cstatD3"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_4\"" in line:
+                mode="cstatD4"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_5\"" in line:
+                mode="cstatD5"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_6\"" in line:
+                mode="cstatD6"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_7\"" in line:
+                mode="cstatD7"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
+            if "id=\"cstat -D_8\"" in line:
+                mode="cstatD8"
+                print("starting "+mode)
+                query="CREATE TABLE "+mode+" (line TEXT)"
+                cursor.execute(query)
+                db.commit()
+                continue
             if "id=\"ps -elfy_1\"" in line:
                 mode="pselfy1"
                 print("starting "+mode)
@@ -376,7 +432,8 @@ def parsepbuttons(file,db):
 
             generic_items=["license","ifconfig","sysctl-a","df-m","mount","cpffile","fdisk-l","ss1",
             "ss2","ss3","ss4","linuxinfo","ipcs","cpu","cstatc11","cstatc12","cstatc13","cstatc14",
-            "pselfy1","pselfy2","pselfy3","pselfy4"]
+            "pselfy1","pselfy2","pselfy3","pselfy4","cstatD1","cstatD2","cstatD3","cstatD4","cstatD5",
+            "cstatD6","cstatD7","cstatD8"]
             if mode in generic_items:
                 query="insert into \""+mode+"\" values(?)"
                 db.execute(query,[line])
