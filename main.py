@@ -28,6 +28,7 @@ from scripts.cstat_tab import cstat_tab
 from scripts.ss_tab import ss_tab
 from scripts.pselfy_tab import pselfy_tab
 from scripts.vmstat_tab import vmstat_tab
+from scripts.iostat_tab import iostat_tab
 
 from scripts.parsepbuttons import parsepbuttons
 
@@ -48,9 +49,10 @@ try:
     ss_tab = ss_tab(db)
     pselfy_tab = pselfy_tab(db)
     vmstat_tab = vmstat_tab(db)
+    iostat_tab = iostat_tab(db)
 
     # Put all the tabs into one application
-    tabs = Tabs(tabs = [mgstat_tab,vmstat_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab])
+    tabs = Tabs(tabs = [mgstat_tab,vmstat_tab,iostat_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab])
     #tabs = Tabs(tabs=[cstat_tab])
 
     # Put the tabs in the current document for display

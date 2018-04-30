@@ -16,13 +16,20 @@ def parsepbuttons(file,db):
               "PPGupds":"INTEGER","CPU":"TEXT","%user":"REAL","%nice":"REAL","%system":"REAL","%iowait":"REAL",
               "%steal":"REAL","%idle":"REAL","r":"INTEGER","b":"INTEGER","swpd":"INTEGER","free":"INTEGER","buff":"INTEGER",
               "cache":"INTEGER","si":"INTEGER","so":"INTEGER","bi":"INTEGER","bo":"INTEGER","in":"INTEGER","cs":"INTEGER",
-              "us":"INTEGER","sy":"INTEGER","id":"INTEGER","wa":"INTEGER","st":"INTEGER"}
+              "us":"INTEGER","sy":"INTEGER","id":"INTEGER","wa":"INTEGER","st":"INTEGER",
+              "Device:":"TEXT","rrqm/s":"REAL","wrqm/s":"REAL","r/s":"REAL","w/s":"REAL",
+              "rkB/s":"REAL","wkB/s":"REAL","await":"REAL",
+              "r_await":"REAL","w_await":"REAL"}
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
     with open(file, encoding="latin-1") as f:
         insertquery=""
+        skipline=0
         for line in f:
+            if skipline>0:
+                skipline-=1
+                continue
             #determine parsing states
             if "Topofpage" in line and mode!="":
                 print("end of "+mode)
@@ -267,6 +274,36 @@ def parsepbuttons(file,db):
                 cols=line.split()
                 currentdate=cols[0]+" "+cols[1]
                 cols=[currentdate]+cols[2:]
+                db.execute(insertquery,cols)
+                count+=1
+                if (count%10000==0):
+                    db.commit()
+                    print(count)
+            if mode=="iostat":
+                if "Linux" in line:
+                    continue
+                if len(line.split())==3:
+                    currentdate=line
+                    continue
+                if "avg-cpu" in line:
+                    skipline=1
+                    continue
+                if "Device" in line and query=="":
+                    cols=list(map(lambda x: x.strip(), line.split()))
+                    query="CREATE TABLE iostat(\"datetime\" TEXT,"
+                    insertquery="INSERT INTO iostat VALUES (?,"
+                    for c in cols:
+                        query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                        insertquery+="?,"
+                    query=query[:-1]
+                    insertquery=insertquery[:-1]
+                    query+=")"
+                    insertquery+=")"
+                    cursor.execute(query)
+                    db.commit()
+                    continue
+                cols=line.split()
+                cols=[currentdate]+cols
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
