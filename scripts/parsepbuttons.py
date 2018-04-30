@@ -4,7 +4,6 @@ import pandas as pd
 import sqlite3
 
 def parsepbuttons(file,db):
-
     pbdtypes={"tps":"REAL","rd_sec/s":"REAL","wr_sec/s":"REAL","avgrq-sz":"REAL","avgqu-sz":"REAL","await":"REAL",
               "svctm":"REAL","%util":"REAL","Glorefs":"INTEGER", "RemGrefs":"INTEGER", "GRratio":"INTEGER",  "PhyRds":"INTEGER",
               "Rdratio":"INTEGER", "Gloupds":"INTEGER", "RemGupds":"INTEGER",
@@ -23,6 +22,7 @@ def parsepbuttons(file,db):
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
+    cursor.execute("CREATE TABLE sections (section TEXT)")
     with open(file, encoding="latin-1") as f:
         insertquery=""
         skipline=0

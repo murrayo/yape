@@ -52,7 +52,8 @@ try:
     iostat_tab = iostat_tab(db)
 
     # Put all the tabs into one application
-    tabs = Tabs(tabs = [mgstat_tab,vmstat_tab,iostat_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab])
+    ts=[mgstat_tab,vmstat_tab,iostat_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab]
+    tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
     #tabs = Tabs(tabs=[cstat_tab])
 
     # Put the tabs in the current document for display

@@ -40,6 +40,10 @@ def iostat_tab(db):
         return p
 
     #get data from DB, setup index
+    cur = db.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", ["iostat"])
+    if len(cur.fetchall()) == 0:
+        return None
     iostat=pd.read_sql_query("select * from iostat",db)
     iostat.index=pd.to_datetime(iostat['datetime'])
     iostat.index.name='datetime'

@@ -22,6 +22,10 @@ from .generic_tab import generic_tab
 
 def pselfy_tab(db):
 
+	cur=db.cursor()
+	cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?",["psefly"])
+	if len(cur.fetchall())==0:
+		return None
 	pselfy_1_tab = generic_tab(db,"pselfy1")
 	pselfy_2_tab = generic_tab(db,"pselfy2")
 	pselfy_3_tab = generic_tab(db,"pselfy3")
