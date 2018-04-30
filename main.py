@@ -23,6 +23,7 @@ import sqlite3
 
 # Each tab is drawn by one script
 from scripts.mgstat_tab import mgstat_tab
+from scripts.perfmon_tab import perfmon_tab
 from scripts.generic_tab import generic_tab
 from scripts.cstat_tab import cstat_tab
 from scripts.ss_tab import ss_tab
@@ -43,6 +44,7 @@ try:
 
     # Create each of the tabs
     mgstat_tab = mgstat_tab(db)
+    perfmon_tab = perfmon_tab(db)
     license_tab = generic_tab(db,"license")
     cpffile_tab = generic_tab(db,"cpffile")
     cstat_tab = cstat_tab(db)
@@ -53,7 +55,7 @@ try:
     windowsinfo_tab = generic_tab(db,"windowsinfo")
     tasklist_tab = generic_tab(db,"tasklist")
     # Put all the tabs into one application
-    ts=[mgstat_tab,vmstat_tab,iostat_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
+    ts=[mgstat_tab,vmstat_tab,perfmon_tab,iostat_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
     tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
     #tabs = Tabs(tabs=[cstat_tab])
 

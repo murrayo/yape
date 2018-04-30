@@ -36,8 +36,6 @@ def parsepbuttons(file,db):
                 query=""
                 insertquery=""
                 mode=""
-                #no continues in here, because sometimes the topofpage is in the same line as the start of a
-                #new section
             if "end_mgstat" in line:
                 print("end of "+mode)
                 query=""
@@ -321,6 +319,12 @@ def parsepbuttons(file,db):
                 mode="mgstat"
                 print("starting "+mode)
                 continue
+            if "id=perfmon" in line:
+                query=""
+                insertquery=""
+                mode="perfmon"
+                print("starting "+mode)
+                continue
             #actual parsing things
             if mode=="sar-d":
                 if "Linux" in line:
@@ -386,6 +390,31 @@ def parsepbuttons(file,db):
                 if len(cols)==0:
                     continue
                 cols=[(cols[0]+" "+cols[1])]+cols[2:]
+                db.execute(insertquery,cols)
+                count+=1
+                if (count%10000==0):
+                    db.commit()
+                    print(count)
+            if mode=="perfmon":
+                if "end_win_perfmon" in line:
+                    continue
+                if query=="":
+                    cols=line.split(",")
+                    cols=list(map(lambda x: x[1:-1].replace("\"",""), cols))
+                    query="CREATE TABLE perfmon(\"datetime\" TEXT,"
+                    insertquery="INSERT INTO perfmon VALUES (?,"
+                    for c in cols[1:]:
+                        query+="\""+c+"\" REAL,"
+                        insertquery+="?,"
+                    query=query[:-1]
+                    insertquery=insertquery[:-1]
+                    query+=")"
+                    insertquery+=")"
+                    cursor.execute(query)
+                    db.commit()
+                    continue
+                cols=list(map(lambda x: x[1:-1], line.split(",")))
+                cols=list(map(lambda x: 0.0 if x==" " else x,cols))
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
