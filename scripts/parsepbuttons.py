@@ -401,7 +401,7 @@ def parsepbuttons(file,db):
                 if query=="":
                     cols=line.split(",")
                     cols=list(map(lambda x: x[1:-1].replace("\"",""), cols))
-                    query="CREATE TABLE perfmon(\"datetime\" TEXT,"
+                    query="CREATE TABLE perfmon(datetime TEXT,"
                     insertquery="INSERT INTO perfmon VALUES (?,"
                     for c in cols[1:]:
                         query+="\""+c+"\" REAL,"

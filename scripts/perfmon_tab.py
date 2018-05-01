@@ -47,7 +47,6 @@ def perfmon_tab(db):
     perfmon=pd.read_sql_query("select * from perfmon",db)
     perfmon.index=pd.to_datetime(perfmon['datetime'])
     perfmon.index.name='datetime'
-
     src=make_dataset(perfmon.columns.values)
     plot = make_plot(src)
 
