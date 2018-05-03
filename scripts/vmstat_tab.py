@@ -6,7 +6,7 @@ import sqlite3
 from bokeh.plotting import Figure
 from bokeh.models import (CategoricalColorMapper, HoverTool,
                           ColumnDataSource, Panel,
-                          FuncTickFormatter, SingleIntervalTicker, LinearAxis)
+                          FuncTickFormatter, SingleIntervalTicker, LinearAxis,Legend)
 from bokeh.models.widgets import (CheckboxGroup, Slider, RangeSlider,
                                   Tabs, CheckboxButtonGroup,
                                   TableColumn, DataTable, Select)
@@ -32,16 +32,25 @@ def vmstat_tab(db):
         mypal = [cm(1. * i / numlines) for i in range(numlines)]
         mypal = list(map(lambda x: colors.rgb2hex(x), mypal))
         col = 0
+        legenditems=[]
         for key in src.data.keys():
             if key == 'datetime':
                 continue
             l = key + " "
             col = col + 1
-            p.line(vmstat.index.values, vmstat[key], line_width=1,
-                   alpha=0.8, name=key, legend=key, color=mypal[col])
+            cline=p.line(vmstat.index.values, vmstat[key], line_width=1,
+                   alpha=0.8, color=mypal[col])
+            legenditems+=[(key,[cline])]
         p.legend.click_policy = "hide"
+        legend = Legend(items=legenditems, location=(0, -30))
+        p.add_layout(legend, 'right')
         return p
 
+    def update(attr, old, new):
+        vmstats_to_plot = [vmstat_selection.labels[i] for i in vmstat_selection.active]
+        new_src = make_dataset(vmstats_to_plot)
+        plot=make_plot(new_src)
+        layout.children[1]=plot
 
     # get data from DB, setup index
     cur = db.cursor()
@@ -50,11 +59,17 @@ def vmstat_tab(db):
         return None
     vmstat = pd.read_sql_query("select * from vmstat", db)
     vmstat.index = pd.to_datetime(vmstat['datetime'])
+    vmstat=vmstat.drop(['datetime'],axis=1)
     vmstat.index.name = 'datetime'
 
-    src = make_dataset(vmstat.columns.values)
-    plot = make_plot(src)
+    vmstat_selection = CheckboxGroup(labels=list(vmstat.columns),
+                                      active = [0,5])
 
-    layout = row(plot)
+    vmstat_list=[vmstat_selection.labels[i] for i in vmstat_selection.active]
+    src=make_dataset(vmstat_list)
+    vmstat_selection.on_change('active', update)
+    plot = make_plot(src)
+    controls=WidgetBox(vmstat_selection)
+    layout = row(controls,plot)
     tab = Panel(child=layout, title='vmstat')
     return tab
