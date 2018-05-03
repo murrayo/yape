@@ -15,6 +15,8 @@ from bokeh.layouts import column, row, WidgetBox
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
+plot=""
+
 def mgstat_tab(db):
     def make_dataset(mgstat_list):
         newdf=mgstat[mgstat_list]
@@ -39,14 +41,28 @@ def mgstat_tab(db):
         p.legend.click_policy="hide"
         return p
 
+    def update(attr, old, new):
+        print("update called")
+        mgstats_to_plot = [mgstat_selection.labels[i] for i in mgstat_selection.active]
+        new_src = make_dataset(mgstats_to_plot)
+        src.data=new_src.data
+        plot=make_plot(src)
+        layout.children[1]=plot
+
     #get data from DB, setup index
     mgstat=pd.read_sql_query("select * from mgstat",db)
     mgstat.index=pd.to_datetime(mgstat['datetime'])
+    mgstat=mgstat.drop(['datetime'],axis=1)
     mgstat.index.name='datetime'
+    mgstat_selection = CheckboxGroup(labels=list(mgstat.columns),
+                                      active = [0,5])
 
-    src=make_dataset(mgstat.columns.values)
+    mgstat_list=[mgstat_selection.labels[i] for i in mgstat_selection.active]
+    src=make_dataset(mgstat_list)
     plot = make_plot(src)
 
-    layout = row(plot)
+    mgstat_selection.on_change('active', update)
+    controls=WidgetBox(mgstat_selection)
+    layout = row(controls,plot)
     tab = Panel(child=layout, title = 'mgstat')
     return tab
