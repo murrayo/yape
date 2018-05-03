@@ -18,10 +18,15 @@ def parsepbuttons(file,db):
               "us":"INTEGER","sy":"INTEGER","id":"INTEGER","wa":"INTEGER","st":"INTEGER",
               "Device:":"TEXT","rrqm/s":"REAL","wrqm/s":"REAL","r/s":"REAL","w/s":"REAL",
               "rkB/s":"REAL","wkB/s":"REAL","await":"REAL",
-              "r_await":"REAL","w_await":"REAL"}
+              "r_await":"REAL","w_await":"REAL","%usr":"INTEGER","%sys":"INTEGER","%win":"INTEGER","%idle":"INTEGER",
+              "%busy":"INTEGER","avque":"REAL","r+w/s":"INTEGER","blks/s":"INTEGER","avwait":"REAL","avserv":"REAL"}
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
+    sardate=""
+    sartime=""
+    osmode=""
+    numcols=0
     cursor.execute("CREATE TABLE sections (section TEXT)")
     with open(file, encoding="latin-1") as f:
         insertquery=""
@@ -277,15 +282,21 @@ def parsepbuttons(file,db):
             if "id=vmstat" in line:
                 # ugh :/
                 colnames=line.split("<pre>")[1].split()[2:]
+                added=[]
                 query="CREATE TABLE vmstat(\"datetime\" TEXT,"
                 insertquery="INSERT INTO vmstat VALUES (?,"
                 for c in colnames:
-                    query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                    t=c
+                    if c in added:
+                        t=c+"_1"
+                    added+=[t]
+                    query+="\""+t+"\" "+(pbdtypes.get(c) or "TEXT")+","
                     insertquery+="?,"
                 query=query[:-1]
                 insertquery=insertquery[:-1]
                 query+=")"
                 insertquery+=")"
+
                 cursor.execute(query)
                 db.commit()
                 count=0
@@ -295,6 +306,9 @@ def parsepbuttons(file,db):
             if "id=sar-u" in line:
                 query=""
                 count=0
+                if "SunOS" in line:
+                    osmode="sunos"
+                    sardate=line.split()[-1]
                 insertquery=""
                 mode="sar-u"
                 print("starting "+mode)
@@ -331,11 +345,19 @@ def parsepbuttons(file,db):
                     continue
                 if "Average" in line:
                     continue
-                if "tps" in line and query=="":
+                if "SunOS" in line:
+                    osmode="sunos"
+                    sardate=line.split()[-1]
+                    continue
+                if ("tps" in line or "device" in line) and query=="":
                     cols=list(map(lambda x: x.strip(), line.split()))
-                    query="CREATE TABLE sard(\"time\" TEXT,"
+                    numcols=len(cols)
+                    query="CREATE TABLE sard(datetime TEXT,"
                     insertquery="INSERT INTO sard VALUES (?,"
-                    for c in cols[2:]:
+                    skiprows=2
+                    if osmode=="sunos":
+                        skiprows=1
+                    for c in cols[skiprows:]:
                         query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
                         insertquery+="?,"
                     query=query[:-1]
@@ -346,8 +368,15 @@ def parsepbuttons(file,db):
                     db.commit()
                     continue
                 cols=line.split()
-                currentdate=cols[0]+" "+cols[1]
-                cols=[currentdate]+cols[2:]
+                if osmode=="sunos":
+                    if len(cols)==numcols:
+                        cols=[(sardate+" "+cols[0])]+cols[1:]
+                        sartime=cols[0]
+                    else:
+                        cols=[(sardate+" "+sartime)]+cols
+                else:
+                    currentdate=cols[0]+" "+cols[1]
+                    cols=[currentdate]+cols[2:]
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
@@ -450,6 +479,22 @@ def parsepbuttons(file,db):
                     continue
                 if "Average" in line:
                     continue
+                if "%usr" in line and osmode=="sunos":
+                    print("creating ins")
+                    cols=list(map(lambda x: x.strip(), line.split()[1:]))
+                    numcols=len(cols)+1
+                    query="CREATE TABLE \"sar-u\"(\"datetime\" TEXT,"
+                    insertquery="INSERT INTO \"sar-u\" VALUES (?,"
+                    for c in cols:
+                        query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                        insertquery+="?,"
+                    query=query[:-1]
+                    insertquery=insertquery[:-1]
+                    query+=")"
+                    insertquery+=")"
+                    cursor.execute(query)
+                    db.commit()
+                    continue
                 if "CPU" in line:
                     cols=list(map(lambda x: x.strip(), line.split()[2:]))
                     query="CREATE TABLE \"sar-u\"(\"datetime\" TEXT,"
@@ -465,7 +510,10 @@ def parsepbuttons(file,db):
                     db.commit()
                     continue
                 cols=list(map(lambda x: x.strip(), line.split()))
-                cols=[(sardate+" "+cols[0]+" "+cols[1])]+cols[2:]
+                if osmode=="sunos":
+                    cols=[(sardate+" "+cols[0])]+cols[1:]
+                else:
+                    cols=[(sardate+" "+cols[0]+" "+cols[1])]+cols[2:]
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
