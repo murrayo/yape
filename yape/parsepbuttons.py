@@ -16,7 +16,7 @@ def parsepbuttons(file,db):
               "%steal":"REAL","%idle":"REAL","r":"INTEGER","b":"INTEGER","swpd":"INTEGER","free":"INTEGER","buff":"INTEGER",
               "cache":"INTEGER","si":"INTEGER","so":"INTEGER","bi":"INTEGER","bo":"INTEGER","in":"INTEGER","cs":"INTEGER",
               "us":"INTEGER","sy":"INTEGER","id":"INTEGER","wa":"INTEGER","st":"INTEGER",
-              "Device:":"TEXT","rrqm/s":"REAL","wrqm/s":"REAL","r/s":"REAL","w/s":"REAL",
+              "Device":"TEXT","rrqm/s":"REAL","wrqm/s":"REAL","r/s":"REAL","w/s":"REAL",
               "rkB/s":"REAL","wkB/s":"REAL","await":"REAL",
               "r_await":"REAL","w_await":"REAL","%usr":"INTEGER","%sys":"INTEGER","%win":"INTEGER","%idle":"INTEGER",
               "%busy":"INTEGER","avque":"REAL","r+w/s":"INTEGER","blks/s":"INTEGER","avwait":"REAL","avserv":"REAL"}
@@ -410,7 +410,7 @@ def parsepbuttons(file,db):
                 if "Linux" in line:
                     continue
                 if len(line.split())==3:
-                    currentdate=line
+                    currentdate=line.strip()
                     continue
                 if "avg-cpu" in line:
                     skipline=1
@@ -420,7 +420,7 @@ def parsepbuttons(file,db):
                     query="CREATE TABLE iostat(\"datetime\" TEXT,"
                     insertquery="INSERT INTO iostat VALUES (?,"
                     for c in cols:
-                        query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                        query+="\""+c.replace(":","")+"\" "+(pbdtypes.get(c.replace(":","")) or "TEXT")+","
                         insertquery+="?,"
                     query=query[:-1]
                     insertquery=insertquery[:-1]
@@ -429,8 +429,10 @@ def parsepbuttons(file,db):
                     cursor.execute(query)
                     db.commit()
                     continue
+                elif "Device" in line:
+                    continue
                 cols=line.split()
-                cols=[currentdate]+cols
+                cols=[currentdate.strip()]+cols
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
