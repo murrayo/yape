@@ -280,23 +280,47 @@ def parsepbuttons(file,db):
                 db.commit()
                 continue
             if "id=vmstat" in line:
-                # ugh :/
-                colnames=line.split("<pre>")[1].split()[2:]
-                added=[]
-                query="CREATE TABLE vmstat(\"datetime\" TEXT,"
-                insertquery="INSERT INTO vmstat VALUES (?,"
-                for c in colnames:
-                    t=c
-                    if c in added:
-                        t=c+"_1"
-                    added+=[t]
-                    query+="\""+t+"\" "+(pbdtypes.get(c) or "TEXT")+","
-                    insertquery+="?,"
-                query=query[:-1]
-                insertquery=insertquery[:-1]
-                query+=")"
-                insertquery+=")"
-
+                if osmode=="sunos":
+                    colnames=line.split("<pre>")[1].split()
+                    colnames=list(map(lambda x: x.strip(), colnames))
+                    numcols=len(colnames)
+                    added=[]
+                    query="CREATE TABLE vmstat("
+                    insertquery="INSERT INTO vmstat VALUES ("
+                    for c in colnames:
+                        t=c
+                        if c in added:
+                            t=c+"_1"
+                            added.append(t)
+                        else:
+                            added.append(c)
+                        query+="\""+t+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                        insertquery+="?,"
+                    query=query[:-1]
+                    insertquery=insertquery[:-1]
+                    query+=")"
+                    insertquery+=")"
+                    print("sunos "+insertquery)
+                else:
+                    # ugh :/
+                    colnames=line.split("<pre>")[1].split()[2:]
+                    numcols=len(colnames)+2
+                    added=[]
+                    query="CREATE TABLE vmstat(\"datetime\" TEXT,"
+                    insertquery="INSERT INTO vmstat VALUES (?,"
+                    for c in colnames:
+                        t=c
+                        if c in added:
+                            t=c+"_1"
+                            added.append(t)
+                        else:
+                            added.append(c)
+                        query+="\""+t+"\" "+(pbdtypes.get(c) or "TEXT")+","
+                        insertquery+="?,"
+                    query=query[:-1]
+                    insertquery=insertquery[:-1]
+                    query+=")"
+                    insertquery+=")"
                 cursor.execute(query)
                 db.commit()
                 count=0
@@ -416,7 +440,7 @@ def parsepbuttons(file,db):
                 if "end_vmstat" in line:
                     continue
                 cols=line.split()
-                if len(cols)==0:
+                if len(cols)!=numcols:
                     continue
                 cols=[(cols[0]+" "+cols[1])]+cols[2:]
                 db.execute(insertquery,cols)

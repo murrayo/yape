@@ -51,13 +51,14 @@ try:
     ss_tab = ss_tab(db)
     pselfy_tab = pselfy_tab(db)
     vmstat_tab = vmstat_tab(db)
-    iostat_tab = iostat_tab(db)
+    #iostat_tab = iostat_tab(db)
     windowsinfo_tab = generic_tab(db,"windowsinfo")
     tasklist_tab = generic_tab(db,"tasklist")
     # Put all the tabs into one application
-    ts=[mgstat_tab,vmstat_tab,perfmon_tab,iostat_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
+    #ts=[mgstat_tab,vmstat_tab,perfmon_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
+    ts=[mgstat_tab,vmstat_tab,perfmon_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
     tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
-    #tabs = Tabs(tabs=[perfmon_tab])
+    #tabs = Tabs(tabs=[vmstat_tab])
 
     # Put the tabs in the current document for display
     curdoc().add_root(tabs)

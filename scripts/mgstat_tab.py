@@ -15,6 +15,16 @@ from bokeh.layouts import column, row, WidgetBox
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
+import holoviews as hv
+import datashader as ds
+from holoviews.operation.datashader import datashade, shade, dynspread, rasterize
+from holoviews.operation import decimate
+hv.extension('bokeh','matplotlib')
+
+decimate.max_samples=1000
+dynspread.max_px=20
+dynspread.threshold=0.5
+
 plot=""
 
 def mgstat_tab(db):
@@ -25,7 +35,7 @@ def mgstat_tab(db):
     def make_plot(src):
         # Blank plot with correct labels
         p = Figure(plot_width = 1024, plot_height = 768,x_axis_type="datetime",
-                  title = 'mgstat')
+                  title = 'mgstat',output_backend="webgl")
         cm = plt.get_cmap('gist_rainbow')
 
         numlines = len(mgstat.columns)

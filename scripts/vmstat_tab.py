@@ -25,7 +25,7 @@ def vmstat_tab(db):
     def make_plot(src):
         # Blank plot with correct labels
         p = Figure(plot_width=1024, plot_height=768, x_axis_type="datetime",
-                   title='vmstat')
+                   title='vmstat',output_backend="webgl")
         cm = plt.get_cmap('gist_rainbow')
 
         numlines = len(vmstat.columns)
