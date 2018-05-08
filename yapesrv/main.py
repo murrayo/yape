@@ -5,15 +5,9 @@ import pandas as pd
 from os.path import dirname, join
 import argparse
 
-#holoview
-import holoviews as hv
-import holoviews.operation.datashader as hd
 import sys
 import bokeh
 
-print("python:", sys.version)
-print("bokeh:", bokeh.__version__)
-print("holoviews:", hv.__version__)
 # Bokeh basics
 from bokeh.io import curdoc
 from bokeh.models.widgets import Tabs

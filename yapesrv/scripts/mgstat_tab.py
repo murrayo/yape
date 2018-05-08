@@ -15,15 +15,6 @@ from bokeh.layouts import column, row, WidgetBox
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
-import holoviews as hv
-import datashader as ds
-from holoviews.operation.datashader import datashade, shade, dynspread, rasterize
-from holoviews.operation import decimate
-hv.extension('bokeh','matplotlib')
-
-decimate.max_samples=1000
-dynspread.max_px=20
-dynspread.threshold=0.5
 
 plot=""
 
