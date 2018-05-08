@@ -27,7 +27,7 @@ def ss_tab(db):
 	ss_3_tab = generic_tab(db,"ss3")
 	ss_4_tab = generic_tab(db,"ss4")
 	ts = [ss_1_tab,ss_2_tab,ss_3_tab,ss_4_tab]
-    tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
+	tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
 	tab = Panel(child=tabs, title = "%SS")
 	#tab = Panel(child=layout, title = mode)
 	return tab

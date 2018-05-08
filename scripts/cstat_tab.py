@@ -34,7 +34,7 @@ def cstat_tab(db):
 	cstatD7=generic_tab(db,"cstatD7")
 	cstatD8=generic_tab(db,"cstatD8")
 	ts= [cstat1,cstat2,cstat3,cstat4,cstatD1,cstatD2,cstatD3,cstatD4,cstatD5,cstatD6,cstatD7,cstatD8]
-    tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
+	tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
 	tab = Panel(child=tabs, title = "cstats")
 	#tab = Panel(child=layout, title = mode)
 	return tab
