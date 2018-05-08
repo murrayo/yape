@@ -405,7 +405,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
             if mode=="iostat":
                 if "Linux" in line:
                     continue
@@ -435,7 +435,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
             if mode=="vmstat":
                 if "end_vmstat" in line:
                     continue
@@ -447,7 +447,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
             if mode=="perfmon":
                 if "end_win_perfmon" in line:
                     continue
@@ -472,7 +472,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
             if mode=="mgstat":
                 if "MGSTAT" in line:
                     continue
@@ -496,7 +496,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
             if mode=="sar-u":
                 if "Linux" in line:
                     sardate=line.split()[3]
@@ -542,7 +542,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(count)
+                    print(str(count)+".",end='',flush=True)
 
 
             generic_items=["license","ifconfig","sysctl-a","df-m","mount","cpffile","fdisk-l","ss1",

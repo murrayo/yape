@@ -31,7 +31,7 @@ from scripts.pselfy_tab import pselfy_tab
 from scripts.vmstat_tab import vmstat_tab
 from scripts.iostat_tab import iostat_tab
 
-from scripts.parsepbuttons import parsepbuttons
+from yape import parsepbuttons
 
 
 parser = argparse.ArgumentParser(description='Provide an interactive visualization to pButtons')
