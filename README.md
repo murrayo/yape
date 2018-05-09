@@ -20,27 +20,29 @@ git clone https://github.com/murrayo/yape.git
 git checkout 2.0
 pip3 install . --upgrade
 ```
-## Basic usage:
+## parameters
 ```
-yape -h
-usage: yape [-h] [--filedb FILEDB] [-c] pButtons_file_name
+usage: yape [-h] [--filedb FILEDB] [-c] [--mgstat] [--vmstat] [-a] [-o OUT]
+            pButtons_file_name
 
-Provide an interactive visualization to pButtons
+Yape 2.0
 
 positional arguments:
   pButtons_file_name  path to pButtons file to use
 
 optional arguments:
--h, --help          show this help message and exit
---filedb FILEDB     use specific file as DB, useful to be able to used
-                    afterwards or as standalone datasource
--c                  will output the parsed tables as csv files. useful for
-                    further processing
---mgstat            plot mgstat data
--a ALL, --all ALL   graph everything
--o OUT, --out OUT   specify base output directory, default to the same
-                    directory the pbuttons file is in (graphs are create in
-                    a subdirectory)
+  -h, --help          show this help message and exit
+  --filedb FILEDB     use specific file as DB, useful to be able to used
+                      afterwards or as standalone datasource
+  -c                  will output the parsed tables as csv files. useful for
+                      further processing. will currently create: mgstat,
+                      vmstat, sar-u. sar-d and iostat will be output per
+                      device
+  --mgstat            plot mgstat data
+  --vmstat            plot vmstat data
+  -a, --all           graph everything
+  -o OUT, --out OUT   specify base output directory, defaulting to
+                      <pbuttons_name>/
 ```
 
 ## Experimental usage
