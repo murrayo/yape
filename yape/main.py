@@ -1,5 +1,5 @@
 # os methods for manipulating paths
-from os.path import dirname, join
+import os
 import argparse
 
 import sys
@@ -8,7 +8,8 @@ import csv
 
 import sqlite3
 
-from .parsepbuttons import parsepbuttons
+from yape.parsepbuttons import parsepbuttons
+from yape.plotpbuttons import mgstat
 
 def fileout(db,filename,section):
     c = db.cursor()
@@ -24,11 +25,14 @@ def fileout(db,filename,section):
         csvWriter.writerow(columns)
         csvWriter.writerows(rows)
 
-def main():
-    parser = argparse.ArgumentParser(description='Provide an interactive visualization to pButtons')
-    parser.add_argument("pButtons_file_name", help="Path and pButtons to use")
+def yape2():
+    parser = argparse.ArgumentParser(description='Yape 2.0')
+    parser.add_argument("pButtons_file_name", help="path to pButtons file to use")
     parser.add_argument("--filedb",help="use specific file as DB, useful to be able to used afterwards or as standalone datasource")
     parser.add_argument("-c",dest='csv',help="will output the parsed tables as csv files. useful for further processing",action="store_true")
+    parser.add_argument("--mgstat",dest='graphmgstat',help="plot mgstat data",action="store_true")
+    parser.add_argument("-a","--all",dest='all',help="graph everything")
+    parser.add_argument("-o","--out",dest='out',help="specify base output directory, default to the same directory the pbuttons file is in (graphs are create in a subdirectory)")
     args = parser.parse_args()
 
     try:
@@ -47,7 +51,15 @@ def main():
             fileout(db,basefilename+".perfmon.csv","perfmon")
             fileout(db,basefilename+".sar-u.csv","sar-u")
 
+        if args.graphmgstat:
+            f=os.path.abspath(args.pButtons_file_name)
+            basename=f.split(".")[0]
+            mgstat(db,basename)
 
 
     except OSError as e:
         print('Could not process pButtons file because: {}'.format(str(e)))
+
+
+if __name__ == "__main__":
+    main()

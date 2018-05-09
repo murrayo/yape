@@ -28,14 +28,19 @@ usage: yape [-h] [--filedb FILEDB] [-c] pButtons_file_name
 Provide an interactive visualization to pButtons
 
 positional arguments:
-  pButtons_file_name  Path and pButtons to use
+  pButtons_file_name  path to pButtons file to use
 
 optional arguments:
-  -h, --help          show this help message and exit
-  --filedb FILEDB     use specific file as DB, useful to be able to used
-                      afterwards or as standalone datasource
-  -c                  will output the parsed tables as csv files. useful for
-                      further processing
+-h, --help          show this help message and exit
+--filedb FILEDB     use specific file as DB, useful to be able to used
+                    afterwards or as standalone datasource
+-c                  will output the parsed tables as csv files. useful for
+                    further processing
+--mgstat            plot mgstat data
+-a ALL, --all ALL   graph everything
+-o OUT, --out OUT   specify base output directory, default to the same
+                    directory the pbuttons file is in (graphs are create in
+                    a subdirectory)
 ```
 
 ## Experimental usage
