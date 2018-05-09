@@ -9,7 +9,7 @@ setup(name='yape',
       license='MIT',
       packages=['yape'],
       entry_points = {
-        'console_scripts': ['yape=yape.command_line:main'],
+        'console_scripts': ['yape=yape.command_line:main','yape-profile=yape.command_line:main_profile'],
       },
       install_requires=[
         'altgraph>=0.10.2','py-dateutil>=2.2',
