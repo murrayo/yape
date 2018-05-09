@@ -38,6 +38,15 @@ optional arguments:
                       further processing
 ```
 
+## Experimental usage
+
+Change to the base of your checked out yape directory and run:
+```
+bokeh serve --show yapesrv --args /Users/kazamatzuri/work/cases/898291/0503/squh-tc_TRAKCARE_20180503_000100_24hours_2_P1.html
+```
+
+This will give you (maybe) an interactive display of the pbuttons passed in. If you run into any errors, feel free to create an issue here: https://github.com/murrayo/yape/issues
+
 ## Related Discussion
 
 See the detailed description and discussion [in this article](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts).
