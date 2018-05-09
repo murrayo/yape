@@ -44,6 +44,7 @@ def main():
             fileout(db,basefilename+".vmstat.csv","vmstat")
             fileout(db,basefilename+".iostat.csv","iostat")
             fileout(db,basefilename+".sar-d.csv","sar-d")
+            fileout(db,basefilename+".perfmon.csv","perfmon")
             fileout(db,basefilename+".sar-u.csv","sar-u")
 
 
