@@ -16,14 +16,37 @@ def fileout(db,filename,section):
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
         return None
-    print("exporting "+section+" to "+filename)
+    file=os.path.join(filename,section+".csv")
+    print("exporting "+section+" to "+file)
     c.execute("select * from \""+section+"\"")
-    rows = c.fetchall()
     columns = [i[0] for i in c.description]
-    with open(filename, "w") as f:
+
+    with open(file, "w") as f:
         csvWriter = csv.writer(f)
         csvWriter.writerow(columns)
-        csvWriter.writerows(rows)
+        csvWriter.writerows(c)
+
+def ensure_dir(file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+def fileout_splitcols(db,filename,section,split_on):
+    c = db.cursor()
+    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
+    if len(c.fetchall()) == 0:
+        return None
+    c.execute("select distinct "+split_on+" from \""+section+"\"")
+    rows=c.fetchall()
+    for column in rows:
+        c.execute("select * from \""+section+"\" where "+split_on+"=?",[column[0]])
+        file=os.path.join(filename,section+"."+column[0]+".csv")
+        print("exporting "+section+"-"+column[0]+" to "+file)
+        columns = [i[0] for i in c.description]
+        with open(file, "w") as f:
+            csvWriter = csv.writer(f)
+            csvWriter.writerow(columns)
+            csvWriter.writerows(c)
 
 def yape2():
     parser = argparse.ArgumentParser(description='Yape 2.0')
@@ -44,14 +67,18 @@ def yape2():
             db=sqlite3.connect(":memory:")
         parsepbuttons(args.pButtons_file_name,db)
 
-        if args.csv:
+        if args.csv or args.graphmgstat or args.graphvmstat or args.all:
             basefilename=args.pButtons_file_name.split(".")[0]
-            fileout(db,basefilename+".mgstat.csv","mgstat")
-            fileout(db,basefilename+".vmstat.csv","vmstat")
-            fileout(db,basefilename+".iostat.csv","iostat")
-            fileout(db,basefilename+".sar-d.csv","sar-d")
-            fileout(db,basefilename+".perfmon.csv","perfmon")
-            fileout(db,basefilename+".sar-u.csv","sar-u")
+            ensure_dir(basefilename+os.sep)
+
+        if args.csv:
+            #basefilename=args.pButtons_file_name.split(".")[0]
+            fileout(db,basefilename,"mgstat")
+            fileout(db,basefilename,"vmstat")
+            fileout_splitcols(db,basefilename,"iostat","Device")
+            fileout_splitcols(db,basefilename,"sar-d","DEV")
+            fileout(db,basefilename,"perfmon")
+            fileout(db,basefilename,"sar-u")
 
         if args.graphmgstat or args.all:
             f=os.path.abspath(args.pButtons_file_name)

@@ -11,11 +11,6 @@ import mpl_toolkits.mplot3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-def ensure_dir(file_path):
-    directory = os.path.dirname(file_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
 def genericplot(df,column,outfile):
     fig,ax=plt.subplots(figsize=(24,16))
     plt.title(column)
@@ -43,7 +38,6 @@ def plot_subset(db,basename,subsetname):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
     data=fix_index(data)
-    ensure_dir(basename+os.sep)
     for key in data.columns.values:
         file=os.path.join(basename,subsetname+"."+key+".png")
         genericplot(data,key,file)
