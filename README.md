@@ -12,20 +12,7 @@ The goals for the rewrite are:
 To avoid any fighting with python versions, this revision is strictly distributed as
 docker image.
 
-## Docker image
-Currently published as kazamatzuri/yape2:latest
 
-You can create your own with (you're on your own;)):
-```
-docker image build -t <yourname>/yape2 .
-```
-To run, go to the directory in which you find your pbuttons and run:
-```
-     docker container run --rm -it -p 5006:5006 -v `pwd`:/data kazamatzuri/yape2 /data/pbuttons.html
-```
-The interface (and results) will then be available at http://localhost:5006/yape2
-
-Over time we will add a wrapper to make this less awkward ;)
 ## Related Discussion
 
 See the detailed description and discussion [in this article](https://community.intersystems.com/post/yape-yet-another-pbuttons-extractor-and-automatically-create-charts).
