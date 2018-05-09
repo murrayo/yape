@@ -12,6 +12,31 @@ The goals for the rewrite are:
 To avoid any fighting with python versions, this revision is strictly distributed as
 docker image.
 
+# Basic usage
+## Installation
+
+```
+git clone https://github.com/murrayo/yape.git
+git checkout 2.0
+pip3 install . --upgrade
+```
+## Basic usage:
+```
+yape -h
+usage: yape [-h] [--filedb FILEDB] [-c] pButtons_file_name
+
+Provide an interactive visualization to pButtons
+
+positional arguments:
+  pButtons_file_name  Path and pButtons to use
+
+optional arguments:
+  -h, --help          show this help message and exit
+  --filedb FILEDB     use specific file as DB, useful to be able to used
+                      afterwards or as standalone datasource
+  -c                  will output the parsed tables as csv files. useful for
+                      further processing
+```
 
 ## Related Discussion
 
