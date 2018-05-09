@@ -30,13 +30,34 @@ def genericplot(df,column,outfile):
     print("created: "+outfile)
     plt.close()
 
-def mgstat(db,basename):
-    mgstat=pd.read_sql_query("select * from mgstat",db)
-    mgstat.index=pd.to_datetime(mgstat['datetime'])
-    mgstat=mgstat.drop(['datetime'],axis=1)
-    mgstat.index.name='datetime'
-    numlines = len(mgstat.columns)
+#need this as utility, since pandas timestamps are not compaitble with sqlite3 timestamps
+#there's a possible other solution by using using converters in sqlite, but I haven't explored that yet
+def fix_index(df):
+    df.index=pd.to_datetime(df['datetime'])
+    df=df.drop(['datetime'],axis=1)
+    df.index.name='datetime'
+    return df
+
+def plot_subset(db,basename,subsetname):
+    if not check_data(db,subsetname):
+        return None
+    data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
+    data=fix_index(data)
     ensure_dir(basename+os.sep)
-    for key in mgstat.columns.values:
-        file=os.path.join(basename,"mgstat."+key+".png")
-        genericplot(mgstat,key,file)
+    for key in data.columns.values:
+        file=os.path.join(basename,subsetname+"."+key+".png")
+        genericplot(data,key,file)
+
+def check_data(db,name):
+    cur = db.cursor()
+    cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name])
+    if len(cur.fetchall()) == 0:
+        print("no data for:"+name)
+        return False
+    return True
+
+def mgstat(db,basename):
+    plot_subset(db,basename,"mgstat")
+
+def vmstat(db,basename):
+    plot_subset(db,basename,"vmstat")
