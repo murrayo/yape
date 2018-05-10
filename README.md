@@ -22,7 +22,8 @@ pip3 install . --upgrade
 ```
 ## parameters
 ```
-usage: yape [-h] [--filedb FILEDB] [-c] [--mgstat] [--vmstat] [-a] [-o OUT]
+usage: yape [-h] [--filedb FILEDB] [-c] [--mgstat] [--vmstat] [--iostat] [-a]
+            [-o OUT]
             pButtons_file_name
 
 Yape 2.0
@@ -40,6 +41,7 @@ optional arguments:
                       device
   --mgstat            plot mgstat data
   --vmstat            plot vmstat data
+  --iostat            plot iostat data
   -a, --all           graph everything
   -o OUT, --out OUT   specify base output directory, defaulting to
                       <pbuttons_name>/

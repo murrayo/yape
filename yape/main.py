@@ -9,7 +9,7 @@ import csv
 import sqlite3
 
 from yape.parsepbuttons import parsepbuttons
-from yape.plotpbuttons import mgstat,vmstat
+from yape.plotpbuttons import mgstat,vmstat,iostat
 
 def fileout(db,filename,section):
     c = db.cursor()
@@ -55,6 +55,7 @@ def yape2():
     parser.add_argument("-c",dest='csv',help="will output the parsed tables as csv files. useful for further processing. will currently create: mgstat, vmstat, sar-u. sar-d and iostat will be output per device",action="store_true")
     parser.add_argument("--mgstat",dest='graphmgstat',help="plot mgstat data",action="store_true")
     parser.add_argument("--vmstat",dest='graphvmstat',help="plot vmstat data",action="store_true")
+    parser.add_argument("--iostat",dest='graphiostat',help="plot iostat data",action="store_true")
 
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
@@ -92,7 +93,9 @@ def yape2():
         if args.graphvmstat or args.all:
             ensure_dir(basefilename+os.sep)
             vmstat(db,basefilename)
-
+        if args.graphiostat or args.all:
+            ensure_dir(basefilename+os.sep)
+            iostat(db,basefilename)
 
     except OSError as e:
         print('Could not process pButtons file because: {}'.format(str(e)))

@@ -33,6 +33,21 @@ def fix_index(df):
     df.index.name='datetime'
     return df
 
+def plot_subset_split(db,basename,subsetname,split_on):
+    if not check_data(db,subsetname):
+        return None
+    c=db.cursor()
+    c.execute("select distinct "+split_on+" from \""+subsetname+"\"")
+    rows=c.fetchall()
+    for column in rows:
+        c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
+        data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
+        data=fix_index(data)
+        data=data.drop([split_on],axis=1)
+        for key in data.columns.values:
+            file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
+            genericplot(data,key,file)
+
 def plot_subset(db,basename,subsetname):
     if not check_data(db,subsetname):
         return None
@@ -55,3 +70,6 @@ def mgstat(db,basename):
 
 def vmstat(db,basename):
     plot_subset(db,basename,"vmstat")
+
+def iostat(db,basename):
+    plot_subset_split(db,basename,"iostat","Device")
