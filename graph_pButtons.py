@@ -12,14 +12,9 @@ import math
 import numpy as np
 import pandas as pd
 
-import matplotlib
-matplotlib.use('Agg')
-
-
 from mpl_toolkits.axes_grid1 import host_subplot
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tick
-
 
 from datetime import datetime
 from matplotlib.dates import DateFormatter, HourLocator
@@ -35,8 +30,20 @@ def parse_datetimeVM(x):
         `[hour:minute:second]`
     """
     dt = datetime.strptime(x, '%H:%M:%S')
-
+        
     return dt
+    
+    
+def parse_datetimeWin(x):
+    """
+    Parses datetime from windows perfmon as:
+        `[day/month-hour:minute:second.ms]`
+        year will be messed up (1900)
+    """
+    dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S.%f')
+    
+    return dt
+
 
 def parse_datetimeEsx(x):
     """
@@ -45,14 +52,6 @@ def parse_datetimeEsx(x):
         year will be messed up (1900)
     """
     dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S')
-
-def parse_datetimeWin(x):
-    """
-    Parses datetime from windows perfmon as:
-        `[day/month-hour:minute:second.ms]`
-        year will be messed up (1900)
-    """
-    dt = datetime.strptime(x, '%m/%d/%Y%H:%M:%S.%f')
 
     return dt
 
@@ -64,52 +63,52 @@ def parse_timeWin(x):
         year will be messed up (1900)
     """
     dt = datetime.strptime(x, '%H:%M:%S.%f')
-
-    return dt
+    
+    return dt    
 
 
 def parse_windows_perfmon(CsvFullName):
 
     """
     Lets make our life easier and tidy up windows perfmon file
-    Windows is ugly. There seem to be several formats, examples shown, but you may have to
+    Windows is ugly. There seem to be several formats, examples shown, but you may have to 
     adjust for your site.
     """
-
+    
     with open(CsvFullName, mode='rt') as infile, \
             open('temp_perfmon.csv', mode='wt') as outfile:
-
+    
         HeaderLine = False
         for line in infile:
-
+        
             line = line.replace('"', '')  # strip quotes
             line = line.replace(' ', '')  # strip spaces
-
+            
             if not HeaderLine:
                 HeaderLine = True
-
+            
                 line = line.split(',')  # split to change column headings
-
+                
                 # Work out if date time one field or two and any other format diff
                 if line[1] != 'Time':
                     # Example:
                     # "(PDH-CSV 4.0) (Eastern Standard Time)(300)","\\SERVER_NAME\Memory\Available MBytes"
-
+                
                     line[0] = 'DateTime'
-
+                    
                     # strip Servername - Single back slash
                     ServerName = line[2]
                     elems = ServerName.split('\\')
                     ServerName = elems[2]
-
+                     
                     line = ','.join(line)  # Comma separate
-                    line = line.replace('\\\\' + ServerName + '\\', '')
+                    line = line.replace('\\\\' + ServerName + '\\', '') 
 
                 else:
                     # Example:
                     # "Date \\SERVER_NAME (PDH-CSV 4.0) (SE Asia Standard Time)(-420)","Time","\Memory\Available MBytes"
                     line[0] = 'Date'
-
+                
                     # Remove first leading slash
                     line = [cols.replace('\\', '', 1) for cols in line]  # iterable comprehension
                     # No Server name
@@ -118,6 +117,7 @@ def parse_windows_perfmon(CsvFullName):
                 # esxtop
                 # "(PDH-CSV 4.0) (UTC)(0)","\\SYDTAVM1\Memory\Memory Overcommit (1 Minute Avg)"
                 # "05/15/2017 06:49:37","0.00"
+
 
             line = ''.join(line)  # concatenate it all back together
             line = line.replace(',,', ',0,')  # #Blank (space) field blows up matplotlib
@@ -134,7 +134,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
     if DateTimeIndexed == 'DateTimeIndexed':
 
         data = pd.read_csv(
-            CsvFullName,
+            CsvFullName, 
             header=0,
             parse_dates=[[0, 1]]  # Combine columns 0 and 1 and parse as a single date column.
            )
@@ -143,8 +143,8 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         data.columns = data.columns.str.strip()
         data = data.rename(columns={'Date_Time': 'DateTime'})
         data.index = data.DateTime
-        #print(data.DateTime.max(),data.DateTime.min())
-        #Number_Days = (data.DateTime.max() - data.DateTime.min()).days
+        
+        Number_Days = (data.DateTime.max() - data.DateTime.min()).days
         #print('Days: ', Number_Days)
 
     elif CsvFileType == 'esxtop' and DateTimeIndexed == 'WinDateTimeIndexed':
@@ -161,37 +161,35 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         Number_Days = (data.DateTime.max() - data.DateTime.min()).days
         # print('Days; ', Number_Days)
 
-
-
     elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinDateTimeIndexed':
-
+    
         data = pd.read_csv(
-            CsvFullName,
+            CsvFullName, 
             header=0,
             converters={0: parse_datetimeWin}
            )
-
+        
         data.columns = data.columns.str.strip()
         data.index = data.DateTime
 
-        #Number_Days = (data.DateTime.max() - data.DateTime.min()).days
+        Number_Days = (data.DateTime.max() - data.DateTime.min()).days
         #print('Days; ', Number_Days)
 
     elif CsvFileType == 'win_perfmon' and DateTimeIndexed == 'WinTimeIndexed':
 
         data = pd.read_csv(
-            CsvFullName,
+            CsvFullName, 
             header=0,
             converters={1: parse_timeWin}
            )
-
+        
         data.columns = data.columns.str.strip()
         data.index = data.Time
-
+        
     elif DateTimeIndexed == 'TimeIndexed':
 
         data = pd.read_csv(
-            CsvFullName,
+            CsvFullName, 
             header=0,
             converters={IndexColumn: parse_datetimeVM}
            )
@@ -199,11 +197,11 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         # data.info()
         data.columns = data.columns.str.strip()
         data.index = data.Time
-
+        
     else:
-
+    
         data = pd.read_csv(
-            CsvFullName,
+            CsvFullName, 
             header=0
            )
         data.columns = data.columns.str.strip()
@@ -220,14 +218,13 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         if len(data.index) <= 100:
             rolling_index=math.ceil((len(data.index)/10) / 2.) * 2
         else:
-            rolling_index=100
+            rolling_index=100     
 
         data['Average Glorefs'] = data['Glorefs'].rolling(window=rolling_index, center=False).mean()
 
         # Get rid of outliers for indicative graphs and stats collection
         # data['Smoothed reads'] = data[np.abs(data['PhyRds'] - data['PhyRds'].mean()) <= (3 * data['PhyRds'].std())]
         # print(data[np.abs(data['PhyRds'] - data['PhyRds'].mean()) <= (3 * data['PhyRds'].std())])
-
 
     # Now plot each column
     for ColumnName in InterestingColumns:
@@ -268,7 +265,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
                     plt.plot(data[ColumnName], color='dimgrey')
 
             elif DateTimeIndexed == 'DateTimeIndexed' or DateTimeIndexed == 'WinDateTimeIndexed':
-
+                
                 if graph_style == 'dot':
                     plt.plot(data.DateTime, data[ColumnName], ".", markersize=2, color='dimgrey')
                 else:
@@ -291,12 +288,12 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             ax = plt.gca()
 
             if DateTimeIndexed != 'NoIndex':
-
+            
                 if Number_Days > 1:
                     ax.xaxis.set_major_formatter(DateFormatter("%a %H:%M"))
                 else:
                     ax.xaxis.set_major_formatter(DateFormatter("%H:%M"))
-
+                    
                 ax.xaxis.set_minor_locator(HourLocator())
 
             ax.set_ylim(ymin=0)  # Always zero start
@@ -311,6 +308,7 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
             else:
                 ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
 
+            #print(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')    
             plt.savefig(CsvFileType + '_' + ColumnName.replace('/', '_') + '_' + graph_style + '.png')
 
             plt.close('all')
@@ -530,43 +528,43 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         save(BokehChart)
 
 
-        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Writes and await' + CHART_TITLE, width=1024,
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Writes and w_await' + CHART_TITLE, width=1024,
                             height=768, x_axis_label='time ->', toolbar_location="above")
 
         myWrite_Legend = 'Writes per second max ' + str(max(data['w/s']))
         BokehChart.line(data.index, data['w/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
         BokehChart.yaxis.axis_label = "w/s"
 
-        myRead_Legend='await max ' + str(max(data['await']))
-        BokehChart.extra_y_ranges = {"Await": Range1d(start=0, end=max(data['await']))}
-        BokehChart.add_layout(LinearAxis(y_range_name="Await", axis_label="await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
-        BokehChart.line(data.index, data['await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="Await")
+        myRead_Legend='w_await max ' + str(max(data['w_await']))
+        BokehChart.extra_y_ranges = {"w_Await": Range1d(start=0, end=max(data['w_await']))}
+        BokehChart.add_layout(LinearAxis(y_range_name="w_Await", axis_label="w_await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
+        BokehChart.line(data.index, data['w_await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="w_Await")
 
         BokehChart.x_range = Range1d(0,max(data.index))
         BokehChart.y_range = Range1d(0,max(data['w/s']))
         BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
 
-        output_file(CsvFileType + '_Writes_and_await_interactive.html')
+        output_file(CsvFileType + '_Writes_and_w_await_interactive.html')
         save(BokehChart)
 
 
-        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and await' + CHART_TITLE, width=1024,
+        BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Reads and r_await' + CHART_TITLE, width=1024,
                             height=768, x_axis_label='time ->', toolbar_location="above")
 
         myWrite_Legend = 'Reads per second max ' + str(max(data['r/s']))
         BokehChart.line(data.index, data['r/s'], legend=myWrite_Legend, line_width=1, alpha=0.8,  line_color=colors[4])
         BokehChart.yaxis.axis_label = "r/s"
 
-        myRead_Legend='await max ' + str(max(data['await']))
-        BokehChart.extra_y_ranges = {"Await": Range1d(start=0, end=max(data['await']))}
-        BokehChart.add_layout(LinearAxis(y_range_name="Await", axis_label="await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
-        BokehChart.line(data.index, data['await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="Await")
+        myRead_Legend='r_await max ' + str(max(data['r_await']))
+        BokehChart.extra_y_ranges = {"r_Await": Range1d(start=0, end=max(data['r_await']))}
+        BokehChart.add_layout(LinearAxis(y_range_name="r_Await", axis_label="r_await", formatter=NumeralTickFormatter(format="0,0.000")), 'right')
+        BokehChart.line(data.index, data['r_await'], legend=myRead_Legend, line_width=1, line_color=colors[0], y_range_name="r_Await")
 
         BokehChart.x_range = Range1d(0,max(data.index))
         BokehChart.y_range = Range1d(0,max(data['r/s']))
         BokehChart.yaxis[0].formatter = NumeralTickFormatter(format="0,0")
 
-        output_file(CsvFileType + '_Reads_and_await_interactive.html')
+        output_file(CsvFileType + '_Reads_and_r_await_interactive.html')
         save(BokehChart)
 
         # BokehChart = figure(x_axis_type='auto', title=CsvFileType + ' Writes and Write kB/s' + CHART_TITLE, width=1024,
@@ -589,10 +587,8 @@ def graph_column(CsvFullName, CsvFileType, InterestingColumns, DateTimeIndexed, 
         # save(BokehChart)
 
 
-
-
 def GetColumnHeadings(CsvDirName, CsvFileType):
-    """
+    """ 
         Build the header column list and work out where the indexes are.
     """
 
@@ -600,26 +596,26 @@ def GetColumnHeadings(CsvDirName, CsvFileType):
     line = ''
     DateTimeIndexed = 'NoIndex'
     IndexColumn = 0
-
+    
     with open(CsvDirName, mode='rt') as infile:
-
+        
         for line in infile:
-            InterestingColumns = line.split(',')
+            InterestingColumns = line.split(',')     
             break
-
-    InterestingColumns[-1] = InterestingColumns[-1].strip()   # Remove new line
+            
+    InterestingColumns[-1] = InterestingColumns[-1].strip()   # Remove new line   
 
     if CsvFileType == 'win_perfmon' and InterestingColumns[0] == 'DateTime':
         DateTimeIndexed = 'WinDateTimeIndexed'
-        IndexColumn = 0
-        InterestingColumns.remove('DateTime')
+        IndexColumn = 0 
+        InterestingColumns.remove('DateTime') 
 
     elif CsvFileType == 'win_perfmon' and InterestingColumns[0] == 'Date':
         DateTimeIndexed = 'WinTimeIndexed'
-        IndexColumn = 0
+        IndexColumn = 0 
         InterestingColumns.remove('Date')
         InterestingColumns.remove('Time')
-
+        
     elif 'Date' in InterestingColumns[0] and 'Time' in InterestingColumns[1]:
         DateTimeIndexed = 'DateTimeIndexed'
         IndexColumn = 0
@@ -630,37 +626,37 @@ def GetColumnHeadings(CsvDirName, CsvFileType):
         DateTimeIndexed = 'TimeIndexed'
         IndexColumn = InterestingColumns.index('Time')
         InterestingColumns.remove('Time')
-
+        
     if 'Device:' in line:                  # eg. iostat
         InterestingColumns.remove('Device:')
-
+ 
     return InterestingColumns, DateTimeIndexed, IndexColumn
 
 
 def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
 
     """Chart input file.
-
-    Args:
+    
+    Args: 
         CsvDirName  = path for csv files.
         Csvkitchen_sink   = if True only print key metrics
         DoNotIostat = do not process iostat
-
-    Output:
+    
+    Output: 
         outputs graphs for csv columns
     """
-
+            
     files = os.listdir(CsvDirName)
-
+    
     for csvFilename in files:
-
+    
         if DoNotIostat and 'iostat' in os.path.basename(csvFilename):
             pass
-
+            
         else:
             if os.path.basename(csvFilename).split('.')[1] == 'csv':
                 print('Charting: ' + csvFilename + ' - ' + args.style + ' ' + CHART_TITLE)
-
+            
                 CsvFileType = os.path.basename(csvFilename).split('.')[0]
                 fullName = CsvDirName + '/' + csvFilename
 
@@ -669,10 +665,10 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                     parse_windows_perfmon(fullName)
                     fullName = 'temp_perfmon.csv'
 
-                # Get column headers and decide if indexed
+                # Get column headers and decide if indexed    
                 InterestingColumns,  DateTimeIndexed, IndexColumn = GetColumnHeadings(fullName, CsvFileType)
 
-                if not Csvkitchen_sink:
+                if not Csvkitchen_sink:                    
                     if CsvFileType == 'mgstat':
                         InterestingColumns = ['Glorefs', 'RemGrefs', 'PhyRds', 'Rdratio', 'Gloupds', 'RouLaS', 'PhyWrs',
                                               'WDQsz', 'WDphase', 'Jrnwrts', 'BytSnt', 'BytRcd', 'WIJwri', 'RouCMs',
@@ -710,34 +706,34 @@ def mainline(CsvDirName, Csvkitchen_sink, DoNotIostat):
                 mgstatMade = False
                 vmstatMade = False
                 perfmonMade = False
-
+            
                 files = os.listdir('.')
                 for pngFilename in files:
                     if (pngFilename.endswith('.png')) or (pngFilename.endswith('_interactive.html')):
-
+                
                         if pngFilename.startswith('iostat_'):
                             if not iostatMade:
                                 iostatMade = True
                                 os.makedirs(os.path.join(TGTDIR,'iostat'), exist_ok=True)
-                            shutil.move(pngFilename, os.path.join(TGTDIR,'iostat',pngFilename) )
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'iostat',pngFilename) )  
                         elif pngFilename.startswith('mgstat_'):
                             if not mgstatMade:
                                 mgstatMade = True
                                 os.makedirs(os.path.join(TGTDIR,'mgstat'), exist_ok=True)
-                            shutil.move(pngFilename, os.path.join(TGTDIR,'mgstat',pngFilename) )
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'mgstat',pngFilename) )                                
                         elif pngFilename.startswith('vmstat_'):
                             if not vmstatMade:
                                 vmstatMade = True
                                 os.makedirs(os.path.join(TGTDIR,'vmstat'), exist_ok=True)
-                            shutil.move(pngFilename, os.path.join(TGTDIR,'vmstat',pngFilename))
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'vmstat',pngFilename))        
                         elif pngFilename.startswith('win_perfmon_'):
                             if not perfmonMade:
                                 perfmonMade = True
                                 os.makedirs(os.path.join(TGTDIR,'win_perfmon'), exist_ok=True)
-                            shutil.move(pngFilename, os.path.join(TGTDIR,'win_perfmon',pngFilename))
-                        else:
+                            shutil.move(pngFilename, os.path.join(TGTDIR,'win_perfmon',pngFilename))      
+                        else:        
                             shutil.move(pngFilename, os.path.join(TGTDIR,pngFilename))
-
+                
                 if os.path.isfile('temp_perfmon.csv'):
                     os.remove('temp_perfmon.csv')
 
@@ -751,7 +747,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--prefix", help="add prefix string for output directory")
     parser.add_argument("-t", "--title", help="Title for all charts, eg pass file name")
     parser.add_argument("-o","--out",help="set output directory")
-
+    
     args = parser.parse_args()
 
     if args.prefix is not None:
