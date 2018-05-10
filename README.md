@@ -10,7 +10,7 @@ Please check you have the correct Python version. For writing and testing I am u
     python3 --version
     Python 3.6.3
 
-New to Python? See Fabian's article on InterSystems Community or google :)
+New to Python? See Fabian's article on InterSystems Community or look at google :)
 
 https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
 
