@@ -12,11 +12,12 @@ TimeStart="09:"
 TimeEnd="11:"
 
 
-Usage="Usage: $0 [-v] [-m] [-a] [-x] -d directory ... \n\tselect one or more of -d directory_to_work_on -[v]mstat -ai[x] -[m]gstat -[a]ll times"
+Usage="Usage: $0 [-v] [-m] [-a] [-x] -d directory ... \n\tselect one or more of -d directory_to_work_on -[v]mstat -ai[x] -[m]gstat -[a]ll times -p output_dir_path"
 
-while getopts d:vmax o
+while getopts d:p:vmax o
 do	case "$o" in
 	d)  InputFolder="$OPTARG" ;;
+	p)  output_dir_path="$OPTARG" ;;
 	v)	vmstat="Y";;
 	m)	mgstat="Y";;
 	a)  allTimes="Y";;
@@ -69,7 +70,7 @@ if [ ! -z $mgstat ];
 then
 
 	# Output
-	outfile="../../3_Sigma_PeakPeak_mgstat.csv"
+	outfile="${output_dir_path}/3_Sigma_PeakPeak_mgstat.csv"
 	if [ ! -f $outfile ]
 	then
 		printf "Directory,Range,File name,3 Sigma Peak  Glorefs,3 Sigma Peak RemGrefs,3 Sigma Peak PhyRds,3 Sigma Rdratio,3 Sigma Peak GloUpds,3 Sigma Rourefs,3 Sigma Peak WIJwri,3 Sigma Peak Jrnwrts,3 Sigma Peak PhyWrs,3 Sigma Peak IOPS (est)" > $outfile
@@ -201,7 +202,7 @@ if [ ! -z $vmstat ];
 then
 
 	# Output
-	outfile="../../3_Sigma_PeakPeak_vmstat.csv"
+	outfile="${output_dir_path}/3_Sigma_PeakPeak_vmstat.csv"
 	
 	if [ ! -f $outfile ]
 	then
@@ -312,7 +313,7 @@ if [ ! -z $aix ];
 then
 
 	# Output
-	outfile="../../3_Sigma_PeakPeak_vmstat_aix.csv"
+	outfile="${output_dir_path}/3_Sigma_PeakPeak_vmstat_aix.csv"
 	
 	if [ ! -f $outfile ]
 	then
