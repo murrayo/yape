@@ -51,7 +51,7 @@ def fileout_splitcols(db,filename,section,split_on):
 def yape2():
     parser = argparse.ArgumentParser(description='Yape 2.0')
     parser.add_argument("pButtons_file_name", help="path to pButtons file to use")
-    parser.add_argument("--filedb",help="use specific file as DB, useful to be able to used afterwards or as standalone datasource")
+    parser.add_argument("--filedb",help="use specific file as DB, useful to be able to used afterwards or as standalone datasource.")
     parser.add_argument("--skip-parse",dest="skipparse",help="disable parsing; requires filedb to be specified to supply data",action="store_true")
     parser.add_argument("-c",dest='csv',help="will output the parsed tables as csv files. useful for further processing. will currently create: mgstat, vmstat, sar-u. sar-d and iostat will be output per device",action="store_true")
     parser.add_argument("--mgstat",dest='graphmgstat',help="plot mgstat data",action="store_true")
@@ -71,6 +71,8 @@ def yape2():
             db=sqlite3.connect(args.filedb)
         else:
             db=sqlite3.connect(":memory:")
+            db.execute('pragma journal_mode=wal')
+            db.execute('pragma synchronous=0')
         if not args.skipparse:
             parsepbuttons(args.pButtons_file_name,db)
 
@@ -81,7 +83,6 @@ def yape2():
 
         if args.csv:
             ensure_dir(basefilename+os.sep)
-            #basefilename=args.pButtons_file_name.split(".")[0]
             fileout(db,basefilename,"mgstat")
             fileout(db,basefilename,"vmstat")
             fileout_splitcols(db,basefilename,"iostat","Device")

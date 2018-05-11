@@ -30,6 +30,7 @@ def parsepbuttons(file,db):
     osmode=""
     numcols=0
     cursor.execute("CREATE TABLE sections (section TEXT)")
+
     with open(file, encoding="latin-1") as f:
         insertquery=""
         skipline=0
@@ -407,7 +408,7 @@ def parsepbuttons(file,db):
                 else:
                     currentdate=cols[0]+" "+cols[1]
                     cols=[currentdate]+cols[2:]
-                db.execute(insertquery,cols)
+                cursor.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
                     db.commit()
@@ -452,7 +453,7 @@ def parsepbuttons(file,db):
                     continue
                 if not (osmode=="solsparc" or osmode=="sunos"):
                     cols=[(cols[0]+" "+cols[1])]+cols[2:]
-                db.execute(insertquery,cols)
+                cursor.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
                     db.commit()
@@ -477,7 +478,7 @@ def parsepbuttons(file,db):
                     continue
                 cols=list(map(lambda x: x[1:-1], line.split(",")))
                 cols=list(map(lambda x: 0.0 if x==" " else x,cols))
-                db.execute(insertquery,cols)
+                cursor.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
                     db.commit()
@@ -501,7 +502,7 @@ def parsepbuttons(file,db):
                     continue
                 cols=list(map(lambda x: x.strip(), line.split(",")))
                 cols=[(cols[0]+" "+cols[1])]+cols[2:]
-                db.execute(insertquery,cols)
+                cursor.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
                     db.commit()
@@ -547,7 +548,7 @@ def parsepbuttons(file,db):
                     cols=[(sardate+" "+cols[0])]+cols[1:]
                 else:
                     cols=[(sardate+" "+cols[0]+" "+cols[1])]+cols[2:]
-                db.execute(insertquery,cols)
+                cursor.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
                     db.commit()
@@ -560,6 +561,7 @@ def parsepbuttons(file,db):
             "cstatD6","cstatD7","cstatD8","windowsinfo","tasklist"]
             if mode in generic_items:
                 query="insert into \""+mode+"\" values(?)"
-                db.execute(query,[line])
+                cursor.execute(query,[line])
         db.commit()
+
     return
