@@ -63,7 +63,15 @@ def plot_subset(db,basename,subsetname):
     if not check_data(db,subsetname):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
-    data=fix_index(data)
+    if 'datetime' not in data.columns.values:
+        #one of those evil OS without datetime in vmstat
+        #evil hack: take index from mgstat (we should have that in every pbuttons) and map that
+        #is going to horribly fail when the number of rows doesn't add up ---> TODO for later
+        dcolumn=pd.read_sql_query("select datetime from mgstat",db)
+        data.index=pd.to_datetime(dcolumn['datetime'])
+        data.index.name='datetime'
+    else:
+        data=fix_index(data)
     for key in data.columns.values:
         file=os.path.join(basename,subsetname+"."+key+".png")
         genericplot(data,key,file)
