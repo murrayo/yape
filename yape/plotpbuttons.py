@@ -12,16 +12,27 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 def genericplot(df,column,outfile):
-    fig,ax=plt.subplots(figsize=(24,16))
-    plt.title(column)
+
+    fig,ax=plt.subplots(figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
+
     ax.xaxis.set_minor_locator(mdates.HourLocator())
     ax.xaxis.set_major_locator(mdates.DayLocator())
-    ax.xaxis.grid(True,which="minor",linestyle="-")
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M:%S'))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n\n %Y-%m-%d"))
-    ax.yaxis.grid()
+
+    ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+
     df[column].plot(ax=ax)
+
+    ax.set_ylim(ymin=0)  # Always zero start
+
+    plt.grid(which='both', axis='both')
+    plt.title(column, fontsize=10)
+    plt.xlabel("Time", fontsize=10)
+    plt.tick_params(labelsize=8)
+
     plt.savefig(outfile, bbox_inches='tight')
+
     print("created: "+outfile)
     plt.close()
 
