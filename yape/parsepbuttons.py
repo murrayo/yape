@@ -19,7 +19,9 @@ def parsepbuttons(file,db):
               "Device":"TEXT","rrqm/s":"REAL","wrqm/s":"REAL","r/s":"REAL","w/s":"REAL",
               "rkB/s":"REAL","wkB/s":"REAL","await":"REAL",
               "r_await":"REAL","w_await":"REAL","%usr":"INTEGER","%sys":"INTEGER","%win":"INTEGER","%idle":"INTEGER",
-              "%busy":"INTEGER","avque":"REAL","r+w/s":"INTEGER","blks/s":"INTEGER","avwait":"REAL","avserv":"REAL"}
+              "%busy":"INTEGER","avque":"REAL","r+w/s":"INTEGER","blks/s":"INTEGER","avwait":"REAL","avserv":"REAL",
+              "w":"INTEGER","swap":"INTEGER","re":"INTEGER",  "mf":"INTEGER", "pi":"INTEGER", "po":"INTEGER",
+               "fr":"INTEGER", "de":"INTEGER", "sr":"INTEGER", "s3":"INTEGER", "s4":"INTEGER", "sd":"INTEGER", "sd":"INTEGER"}
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
@@ -53,6 +55,11 @@ def parsepbuttons(file,db):
                 count=0
                 insertquery=""
                 mode=""
+            #add better osmode detection
+            if "Product Version String" in line:
+                if "Solaris for SPARC-64" in line:
+                    osmode="solsparc"
+                continue
                 #no continues in here, because sometimes the topofpage is in the same line as the start of a
                 #new section
             if "id=license" in line:
@@ -280,7 +287,7 @@ def parsepbuttons(file,db):
                 db.commit()
                 continue
             if "id=vmstat" in line:
-                if osmode=="sunos":
+                if osmode=="sunos" or osmode=="solsparc":
                     colnames=line.split("<pre>")[1].split()
                     colnames=list(map(lambda x: x.strip(), colnames))
                     numcols=len(colnames)
@@ -300,7 +307,6 @@ def parsepbuttons(file,db):
                     insertquery=insertquery[:-1]
                     query+=")"
                     insertquery+=")"
-                    print("sunos "+insertquery)
                 else:
                     # ugh :/
                     colnames=line.split("<pre>")[1].split()[2:]
@@ -444,7 +450,8 @@ def parsepbuttons(file,db):
                 cols=line.split()
                 if len(cols)!=numcols:
                     continue
-                cols=[(cols[0]+" "+cols[1])]+cols[2:]
+                if not (osmode=="solsparc" or osmode=="sunos"):
+                    cols=[(cols[0]+" "+cols[1])]+cols[2:]
                 db.execute(insertquery,cols)
                 count+=1
                 if (count%10000==0):
