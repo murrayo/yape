@@ -3,9 +3,6 @@ import pandas as pd
 import numpy as np
 import sqlite3
 
-import holoviews as hv
-hv.extension('bokeh')
-
 from bokeh.plotting import Figure
 from bokeh.models import (CategoricalColorMapper, HoverTool,
                           ColumnDataSource, Panel,
