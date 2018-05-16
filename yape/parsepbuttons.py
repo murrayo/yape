@@ -21,13 +21,17 @@ def parsepbuttons(file,db):
               "r_await":"REAL","w_await":"REAL","%usr":"INTEGER","%sys":"INTEGER","%win":"INTEGER","%idle":"INTEGER",
               "%busy":"INTEGER","avque":"REAL","r+w/s":"INTEGER","blks/s":"INTEGER","avwait":"REAL","avserv":"REAL",
               "w":"INTEGER","swap":"INTEGER","re":"INTEGER",  "mf":"INTEGER", "pi":"INTEGER", "po":"INTEGER",
-               "fr":"INTEGER", "de":"INTEGER", "sr":"INTEGER", "s3":"INTEGER", "s4":"INTEGER", "sd":"INTEGER", "sd":"INTEGER"}
+               "fr":"INTEGER", "de":"INTEGER", "sr":"INTEGER", "s3":"INTEGER", "s4":"INTEGER", "sd":"INTEGER",
+               "sd":"INTEGER","GblSz":"INTEGER","pGblNsz":"INTEGER","pGblAsz":"INTEGER","ObjSz":"INTEGER",
+               "pObjNsz":"INTEGER","pObjAsz":"INTEGER","BDBSz":"INTEGER","pBDBNsz":"INTEGER","pBDBAsz":"INTEGER"}
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
     sardate=""
     sartime=""
     osmode=""
+    colcache=[]
+    colcachenum=0
     numcols=0
     cursor.execute("CREATE TABLE sections (section TEXT)")
 
@@ -41,6 +45,10 @@ def parsepbuttons(file,db):
             #determine parsing states
             if "Topofpage" in line and mode!="":
                 print("end of "+mode)
+                if colcachenum>0:
+                    cursor.executemany(insertquery,colcache)
+                    colcache=[]
+                    colcachenum=0
                 query=""
                 insertquery=""
                 mode=""
@@ -408,7 +416,12 @@ def parsepbuttons(file,db):
                 else:
                     currentdate=cols[0]+" "+cols[1]
                     cols=[currentdate]+cols[2:]
-                cursor.execute(insertquery,cols)
+                colcache.append(cols)
+                colcachenum+=1
+                if colcachenum==10000:
+                    cursor.executemany(insertquery,colcache)
+                    colcache=[]
+                    colcachenum=0
                 count+=1
                 if (count%10000==0):
                     db.commit()

@@ -97,6 +97,7 @@ def yape2():
         if args.graphvmstat or args.all:
             ensure_dir(basefilename+os.sep)
             vmstat(db,basefilename)
+
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
             iostat(db,basefilename)
