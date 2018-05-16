@@ -489,7 +489,7 @@ def parsepbuttons(file,db):
                     cursor.execute(query)
                     db.commit()
                     continue
-                cols=list(map(lambda x: x[1:-1], line.split(",")))
+                cols=list(map(lambda x: x[1:-1].replace("\"",""), line.split(",")))
                 cols=list(map(lambda x: 0.0 if x==" " else x,cols))
                 cursor.execute(insertquery,cols)
                 count+=1

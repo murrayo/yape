@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 def genericplot(df,column,outfile):
-
+    print("creating"+outfile)
     fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
     ax.xaxis.set_minor_locator(mdates.HourLocator())
@@ -33,7 +33,6 @@ def genericplot(df,column,outfile):
 
     plt.savefig(outfile, bbox_inches='tight')
 
-    print("created: "+outfile)
     plt.close()
 
 #need this as utility, since pandas timestamps are not compaitble with sqlite3 timestamps
