@@ -9,7 +9,7 @@ import csv
 import sqlite3
 
 from yape.parsepbuttons import parsepbuttons
-from yape.plotpbuttons import mgstat,vmstat,iostat
+from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon
 
 def fileout(db,filename,section):
     c = db.cursor()
@@ -57,6 +57,7 @@ def yape2():
     parser.add_argument("--mgstat",dest='graphmgstat',help="plot mgstat data",action="store_true")
     parser.add_argument("--vmstat",dest='graphvmstat',help="plot vmstat data",action="store_true")
     parser.add_argument("--iostat",dest='graphiostat',help="plot iostat data",action="store_true")
+    parser.add_argument("--permon",dest='graphperfmon',help="plot perfmon data",action="store_true")
 
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
@@ -101,6 +102,10 @@ def yape2():
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
             iostat(db,basefilename)
+        if args.graphperfmon or args.all:
+            ensure_dir(basefilename+os.sep)
+            perfmon(db,basefilename)
+
 
     except OSError as e:
         print('Could not process pButtons file because: {}'.format(str(e)))

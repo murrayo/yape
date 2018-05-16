@@ -13,14 +13,14 @@ from datetime import datetime
 
 def genericplot(df,column,outfile):
 
-    fig,ax=plt.subplots(figsize=(10,6), dpi=80, facecolor='w', edgecolor='dimgrey')
+    fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
     ax.xaxis.set_minor_locator(mdates.HourLocator())
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M:%S'))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n\n %Y-%m-%d"))
 
-    ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(int(x))))
+    ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x))))
 
     df[column].plot(ax=ax)
 
@@ -73,7 +73,7 @@ def plot_subset(db,basename,subsetname):
     else:
         data=fix_index(data)
     for key in data.columns.values:
-        file=os.path.join(basename,subsetname+"."+key+".png")
+        file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
         genericplot(data,key,file)
 
 def check_data(db,name):
@@ -86,6 +86,8 @@ def check_data(db,name):
 
 def mgstat(db,basename):
     plot_subset(db,basename,"mgstat")
+def perfmon(db,basename):
+    plot_subset(db,basename,"perfmon")
 
 def vmstat(db,basename):
     plot_subset(db,basename,"vmstat")
