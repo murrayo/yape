@@ -58,6 +58,7 @@ def yape2():
     parser.add_argument("--vmstat",dest='graphvmstat',help="plot vmstat data",action="store_true")
     parser.add_argument("--iostat",dest='graphiostat',help="plot iostat data",action="store_true")
     parser.add_argument("--permon",dest='graphperfmon',help="plot perfmon data",action="store_true")
+    parser.add_argument("--timeframe",dest='timeframe',help="specify a timeframe for the plots, i.e. --timeframe \"2018-05-16 00:01:16\,2018-05-16 17:04:15\"")
 
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
@@ -82,6 +83,12 @@ def yape2():
         else:
             basefilename=args.pButtons_file_name.split(".")[0]
 
+        if args.timeframe is not None:
+            TIMEFRAMEMODE=True
+            print("timeframe on "+args.timeframe)
+        else:
+            TIMEFRAMEMODE=False
+
         if args.csv:
             ensure_dir(basefilename+os.sep)
             fileout(db,basefilename,"mgstat")
@@ -93,18 +100,18 @@ def yape2():
 
         if args.graphmgstat or args.all:
             ensure_dir(basefilename+os.sep)
-            mgstat(db,basefilename)
+            mgstat(db,basefilename,args.timeframe)
 
         if args.graphvmstat or args.all:
             ensure_dir(basefilename+os.sep)
-            vmstat(db,basefilename)
+            vmstat(db,basefilename,args.timeframe)
 
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
-            iostat(db,basefilename)
+            iostat(db,basefilename,args.timeframe)
         if args.graphperfmon or args.all:
             ensure_dir(basefilename+os.sep)
-            perfmon(db,basefilename)
+            perfmon(db,basefilename,args.timeframe)
 
 
     except OSError as e:

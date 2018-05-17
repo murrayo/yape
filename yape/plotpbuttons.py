@@ -4,6 +4,7 @@ import sqlite3
 import matplotlib.colors as colors
 import matplotlib.dates as mdates
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange, IndexDateFormatter
+from matplotlib.ticker import AutoMinorLocator
 import pytz
 import re
 import os
@@ -11,18 +12,23 @@ import mpl_toolkits.mplot3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 
-def genericplot(df,column,outfile):
+def genericplot(df,column,outfile,timeframe):
     print("creating"+outfile)
     fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
-    ax.xaxis.set_minor_locator(mdates.HourLocator())
+    if timeframe!="":
+        ax.xaxis.set_minor_locator(AutoMinorLocator(n=10))
+    else:
+        ax.xaxis.set_minor_locator(mdates.HourLocator())
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M:%S'))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n\n %Y-%m-%d"))
 
     ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x))))
-
-    df[column].plot(ax=ax)
+    if timeframe!="":
+        df[column][timeframe.split(",")[0]:timeframe.split(",")[1]].plot(ax=ax)
+    else:
+        df[column].plot(ax=ax)
 
     ax.set_ylim(ymin=0)  # Always zero start
 
@@ -43,7 +49,7 @@ def fix_index(df):
     df.index.name='datetime'
     return df
 
-def plot_subset_split(db,basename,subsetname,split_on):
+def plot_subset_split(db,basename,subsetname,split_on,timeframe):
     if not check_data(db,subsetname):
         return None
     c=db.cursor()
@@ -55,10 +61,13 @@ def plot_subset_split(db,basename,subsetname,split_on):
         data=fix_index(data)
         data=data.drop([split_on],axis=1)
         for key in data.columns.values:
-            file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
-            genericplot(data,key,file)
+            if timeframe!="":
+                file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
+            else:
+                file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
+            genericplot(data,key,file,timeframe)
 
-def plot_subset(db,basename,subsetname):
+def plot_subset(db,basename,subsetname,timeframe):
     if not check_data(db,subsetname):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
@@ -72,8 +81,11 @@ def plot_subset(db,basename,subsetname):
     else:
         data=fix_index(data)
     for key in data.columns.values:
-        file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
-        genericplot(data,key,file)
+        if timeframe!="":
+            file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
+        else:
+            file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
+        genericplot(data,key,file,timeframe)
 
 def check_data(db,name):
     cur = db.cursor()
@@ -83,13 +95,13 @@ def check_data(db,name):
         return False
     return True
 
-def mgstat(db,basename):
-    plot_subset(db,basename,"mgstat")
-def perfmon(db,basename):
-    plot_subset(db,basename,"perfmon")
+def mgstat(db,basename,timeframe=""):
+    plot_subset(db,basename,"mgstat",timeframe)
+def perfmon(db,basename,timeframe=""):
+    plot_subset(db,basename,"perfmon",timeframe)
 
-def vmstat(db,basename):
-    plot_subset(db,basename,"vmstat")
+def vmstat(db,basename,timeframe=""):
+    plot_subset(db,basename,"vmstat",timeframe)
 
-def iostat(db,basename):
-    plot_subset_split(db,basename,"iostat","Device")
+def iostat(db,basename,timeframe=""):
+    plot_subset_split(db,basename,"iostat","Device",timeframe)
