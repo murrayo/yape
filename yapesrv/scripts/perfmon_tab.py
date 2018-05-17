@@ -40,7 +40,7 @@ def perfmon_tab(db):
             cline=p.line(perfmon.index.values,perfmon[key],line_width=1,alpha=0.8,color=mypal[col])
             legenditems+=[(key,[cline])]
         p.legend.click_policy="hide"
-        legend = Legend(items=legenditems, location=(0, -30))
+        legend = Legend(items=legenditems, location=(0, 0))
         p.add_layout(legend, 'below')
         return p
 
@@ -62,14 +62,14 @@ def perfmon_tab(db):
     perfmon.index.name='datetime'
 
     perfmon_selection = CheckboxGroup(labels=list(perfmon.columns),
-                                      active = [0,5],width=300,height=1000)
+                                      active = [0,5],width=300,height=800,sizing_mode="fixed")
 
     perfmon_list=[perfmon_selection.labels[i] for i in perfmon_selection.active]
     src=make_dataset(perfmon_list)
 
     plot = make_plot(src)
     perfmon_selection.on_change('active', update)
-    controls=WidgetBox(perfmon_selection,width=300,height=1000)
+    controls=WidgetBox(perfmon_selection,width=300,height=800,sizing_mode="fixed")
 
     layout = row(controls,plot)
     tab = Panel(child=layout, title = 'perfmon')
