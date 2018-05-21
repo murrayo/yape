@@ -25,7 +25,7 @@ def genericplot(df,column,outfile,timeframe):
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n\n %Y-%m-%d"))
 
     ax.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x))))
-    if timeframe!="":
+    if timeframe is not None:
         df[column][timeframe.split(",")[0]:timeframe.split(",")[1]].plot(ax=ax)
     else:
         df[column].plot(ax=ax)
@@ -81,7 +81,8 @@ def plot_subset(db,basename,subsetname,timeframe):
     else:
         data=fix_index(data)
     for key in data.columns.values:
-        if timeframe!="":
+
+        if timeframe is not None:
             file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
         else:
             file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
