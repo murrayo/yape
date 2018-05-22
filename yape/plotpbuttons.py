@@ -62,7 +62,7 @@ def plot_subset_split(db,basename,subsetname,split_on,timeframe):
         data=fix_index(data)
         data=data.drop([split_on],axis=1)
         for key in data.columns.values:
-            if timeframe!="":
+            if timeframe is not None:
                 file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
             else:
                 file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
