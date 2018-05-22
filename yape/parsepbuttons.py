@@ -429,7 +429,7 @@ def parsepbuttons(file,db):
             if mode=="iostat":
                 if "Linux" in line:
                     continue
-                if len(line.split())==3:
+                if len(line.split())==3 or len(line.split())==2 :
                     currentdate=line.strip()
                     continue
                 if "avg-cpu" in line:
