@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 def genericplot(df,column,outfile,timeframe):
-    print("creating"+outfile)
+    outfile=outfile.replace(":",".")
+    print("creating "+outfile)
     fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
     if timeframe!="":
