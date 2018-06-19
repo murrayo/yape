@@ -47,7 +47,21 @@ optional arguments:
   -o OUT, --out OUT   specify base output directory, defaulting to
                       <pbuttons_name>/
 ```
+## Weekly overview graphs
 
+To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
+```
+yape --filedb data.db pbuttons1.html
+yape --filedb data.db pbuttons2.html
+yape --filedb data.db pbuttons3.html
+yape --filedb data.db pbuttons4.html
+yape --filedb data.db pbuttons5.html
+yape --filedb data.db pbuttons6.html
+yape --filedb data.db pbuttons7.html
+....
+yape --filedb data.db --timeframe "2018-06-11 00:00:00,2018-06-17 22:00:00" -a --skip-parse -o testdata/ pbuttons7.html
+```
+Note: the last positional argument is still required, but is going to get ignored completely. (todo: fix the argument parsing for that)
 ## Experimental usage
 
 Change to the base of your checked out yape directory and run:
