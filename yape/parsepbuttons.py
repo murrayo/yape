@@ -33,7 +33,7 @@ def parsepbuttons(file,db):
     colcache=[]
     colcachenum=0
     numcols=0
-    cursor.execute("CREATE TABLE sections (section TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS sections (section TEXT)")
 
     with open(file, encoding="latin-1") as f:
         insertquery=""
@@ -74,224 +74,224 @@ def parsepbuttons(file,db):
             if "id=license" in line:
                 mode="license"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=cpffile" in line:
                 mode="cpffile"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=Windowsinfo" in line:
                 mode="windowsinfo"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=tasklist" in line:
                     mode="tasklist"
                     print("starting "+mode)
-                    query="CREATE TABLE "+mode+" (line TEXT)"
+                    query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                     cursor.execute(query)
                     db.commit()
                     continue
             if "id=\"ss_1\"" in line:
                 mode="ss1"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (\"line\" TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (\"line\" TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_2\"" in line:
                 mode="ss2"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_3\"" in line:
                 mode="ss3"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_4\"" in line:
                 mode="ss4"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=ifconfig" in line:
                 mode="ifconfig"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=sysctl-a" in line:
                 mode="sysctl-a"
                 print("starting "+mode)
-                query="CREATE TABLE \""+mode+"\" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=linuxinfo" in line:
                 mode="linuxinfo"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=df-m" in line:
                 mode="df-m"
                 print("starting "+mode)
-                query="CREATE TABLE \""+mode+"\" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=cpu" in line:
                 mode="cpu"
                 print("starting "+mode)
-                query="CREATE TABLE \""+mode+"\" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=mount" in line:
                 mode="mount"
                 print("starting "+mode)
-                query="CREATE TABLE \""+mode+"\" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=fdisk-l" in line:
                 mode="fdisk-l"
                 print("starting "+mode)
-                query="CREATE TABLE \""+mode+"\" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_1\"" in line:
                 mode="cstatc11"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_2\"" in line:
                 mode="cstatc12"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_3\"" in line:
                 mode="cstatc13"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_4\"" in line:
                 mode="cstatc14"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_1\"" in line:
                 mode="cstatD1"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_2\"" in line:
                 mode="cstatD2"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_3\"" in line:
                 mode="cstatD3"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_4\"" in line:
                 mode="cstatD4"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_5\"" in line:
                 mode="cstatD5"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_6\"" in line:
                 mode="cstatD6"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_7\"" in line:
                 mode="cstatD7"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_8\"" in line:
                 mode="cstatD8"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_1\"" in line:
                 mode="pselfy1"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_2\"" in line:
                 mode="pselfy2"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_3\"" in line:
                 mode="pselfy3"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_4\"" in line:
                 mode="pselfy4"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=ipcs" in line:
                 mode="ipcs"
                 print("starting "+mode)
-                query="CREATE TABLE "+mode+" (line TEXT)"
+                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
@@ -301,7 +301,7 @@ def parsepbuttons(file,db):
                     colnames=list(map(lambda x: x.strip(), colnames))
                     numcols=len(colnames)
                     added=[]
-                    query="CREATE TABLE vmstat("
+                    query="CREATE TABLE IF NOT EXISTS vmstat("
                     insertquery="INSERT INTO vmstat VALUES ("
                     for c in colnames:
                         t=c
@@ -321,7 +321,7 @@ def parsepbuttons(file,db):
                     colnames=line.split("<pre>")[1].split()[2:]
                     numcols=len(colnames)+2
                     added=[]
-                    query="CREATE TABLE vmstat(\"datetime\" TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS vmstat(\"datetime\" TEXT,"
                     insertquery="INSERT INTO vmstat VALUES (?,"
                     for c in colnames:
                         t=c
@@ -391,7 +391,7 @@ def parsepbuttons(file,db):
                 if ("tps" in line or "device" in line) and query=="":
                     cols=list(map(lambda x: x.strip(), line.split()))
                     numcols=len(cols)
-                    query="CREATE TABLE sard(datetime TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery="INSERT INTO sard VALUES (?,"
                     skiprows=2
                     if osmode=="sunos":
@@ -437,7 +437,7 @@ def parsepbuttons(file,db):
                     continue
                 if "Device" in line and query=="":
                     cols=list(map(lambda x: x.strip(), line.split()))
-                    query="CREATE TABLE iostat(\"datetime\" TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS iostat(\"datetime\" TEXT,"
                     insertquery="INSERT INTO iostat VALUES (?,"
                     for c in cols:
                         query+="\""+c.replace(":","")+"\" "+(pbdtypes.get(c.replace(":","")) or "TEXT")+","
@@ -477,7 +477,7 @@ def parsepbuttons(file,db):
                 if query=="":
                     cols=line.split(",")
                     cols=list(map(lambda x: x[1:-1].replace("\"",""), cols))
-                    query="CREATE TABLE perfmon(datetime TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS perfmon(datetime TEXT,"
                     insertquery="INSERT INTO perfmon VALUES (?,"
                     for c in cols[1:]:
                         query+="\""+c+"\" REAL,"
@@ -501,7 +501,7 @@ def parsepbuttons(file,db):
                     continue
                 if "Date" in line:
                     cols=list(map(lambda x: x.strip(), line.split(",")))
-                    query="CREATE TABLE mgstat(\"datetime\" TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS mgstat(\"datetime\" TEXT,"
                     insertquery="INSERT INTO mgstat VALUES (?,"
                     for c in cols[2:]:
                         query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
@@ -530,7 +530,7 @@ def parsepbuttons(file,db):
                     print("creating ins")
                     cols=list(map(lambda x: x.strip(), line.split()[1:]))
                     numcols=len(cols)+1
-                    query="CREATE TABLE \"sar-u\"(\"datetime\" TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS \"sar-u\"(\"datetime\" TEXT,"
                     insertquery="INSERT INTO \"sar-u\" VALUES (?,"
                     for c in cols:
                         query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
@@ -544,7 +544,7 @@ def parsepbuttons(file,db):
                     continue
                 if "CPU" in line:
                     cols=list(map(lambda x: x.strip(), line.split()[2:]))
-                    query="CREATE TABLE \"sar-u\"(\"datetime\" TEXT,"
+                    query="CREATE TABLE IF NOT EXISTS \"sar-u\"(\"datetime\" TEXT,"
                     insertquery="INSERT INTO \"sar-u\" VALUES (?,"
                     for c in cols:
                         query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
