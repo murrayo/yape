@@ -88,7 +88,7 @@ def yape2():
             fileprefix=args.prefix
         else:
             fileprefix=""
-            
+                   
         if args.timeframe is not None:
             TIMEFRAMEMODE=True
             print("timeframe on "+args.timeframe)
@@ -106,18 +106,19 @@ def yape2():
 
         if args.graphmgstat or args.all:
             ensure_dir(basefilename+os.sep)
-            mgstat(db,basefilename,args.timeframe)
+            mgstat(db,basefilename,fileprefix,args.timeframe)
 
         if args.graphvmstat or args.all:
             ensure_dir(basefilename+os.sep)
-            vmstat(db,basefilename,args.timeframe)
+            vmstat(db,basefilename,fileprefix,args.timeframe)
 
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
-            iostat(db,basefilename,args.timeframe)
+            iostat(db,basefilename,fileprefix,args.timeframe)
+            
         if args.graphperfmon or args.all:
             ensure_dir(basefilename+os.sep)
-            perfmon(db,basefilename,args.timeframe)
+            perfmon(db,basefilename,fileprefix,args.timeframe)
 
 
     except OSError as e:
