@@ -1,88 +1,75 @@
-# yape
+# yape 2
 yet another pButtons extractor
 
-For quickly processing and charting InterSystems Caché pButtons support files.
+Second revision. Complete rewrite based on the ideas and lessons learned of the first one. And yes, this is currently heavily in the alpha stage. Use at your own risk.
 
-## Python version
-
-Please check you have the correct Python version. For writing and testing I am using Python 3. Specifically:
-
-    python3 --version
-    Python 3.6.0
-
-New to Python? See Fabian's article on InterSystems Community or google :)
-
-https://community.intersystems.com/post/visualizing-data-jungle-part-i-lets-make-graph
-
-Look right through to the comments: E.g. Be sure to install extra Python modules. `sudo pip3 install matplotlib` and `sudo pip3 install pandas`. Also since February 18th version: `sudo pip3 install bokeh` for interactive charts.
-
-For example if you are running default on OSX you will have Python 2.7.
-
-You can run Python 2.7 and Python 3.x side by side.
-
-## Overview
-At the moment this process has _two_ steps.
-
-### Step 1. `extract_pButtons.py`
-
-Extract interesting sections from pButtons and write to .csv files for opening with excel or processing with charting with `graph_pButtons.py`.
-
-For more info:
-
-`extract_pButtons.py --help`
-
-Example:
-`./extract_pButtons.py my_pbuttons_file_name.html`
-
-Will create a folder `./metrics` with .csv files. Which .csv depends on the OS pButtons was run on.
-
-Functionality notes:
-
-- mgstat extracted for all operatings systems.
-- vmstat for RH and AIX
-- iostat for RH (AIX output to .txt file)
-- windows perfmon for Windows.
-
-### Step 2. `graph_pButtons.py`
-
-Chart files created at step 1. Currently `.png` charts as lines (default) or dot or interactive `.html`
-
-For more info:
-
-`graph_pButtons.py  --help`
-
-Example:
-`./graph_pButtons.py ./metrics`
-
-Will scan `./metrics` for files created by extract_pButtons and output selected chart type. Line chart to `./charts` by default.
-
-## Examples
-
-Example walk a directory of one or more pbuttons.html, create different chart types and add filename to title.
-
-#### Extract to .csv
-
-    for i in `ls *.html`; do /path_to/extract_pButtons.py $i -p ${i}_; done
-
-#### Chart all types
-
-    for j in line dot interactive; do for i in `ls *.html`; do /path_to/graph_pButtons.py ./${i}_metrics -p ${j}_${i}_ -s ${j} -t ${i} -I; done; done
-
-#### Process multiple pButtons .html files in the same directory into a single graph (eg a weeks files)
-
-Be sure to change the variable YAPE_PATH
-
-    ./yape_week.sh -d ../path/to/pbuttons/files -I -v
+The goals for the rewrite are:
+   * make it a one-step-process
+   * add more interactivity with less waiting time
+   * be able to handle bigger datasets
 
 
-## Docker image
-To make usage of yape a little bit easier, we added a Dockerfile. Check out the repository and then run:
+To avoid any fighting with python versions, this revision is strictly distributed as
+docker image.
 
-    docker build -t kazamatzuri/yape:1.0 .
 
-Afterwards you can run yape on your pButtons file like this:
+# Basic usage
+## Installation
 
-    docker run -v `pwd`/:/data  --rm --name yape-test kazamatzuri/yape:1.0 pButtons.html
+```
+git clone https://github.com/murrayo/yape.git
+git checkout 2.0
+pip3 install . --upgrade
+```
+## parameters
+```
+usage: yape [-h] [--filedb FILEDB] [-c] [--mgstat] [--vmstat] [--iostat] [-a]
+            [-o OUT]
+            pButtons_file_name
+
+Yape 2.0
+
+positional arguments:
+  pButtons_file_name  path to pButtons file to use
+
+optional arguments:
+  -h, --help          show this help message and exit
+  --filedb FILEDB     use specific file as DB, useful to be able to used
+                      afterwards or as standalone datasource
+  -c                  will output the parsed tables as csv files. useful for
+                      further processing. will currently create: mgstat,
+                      vmstat, sar-u. sar-d and iostat will be output per
+                      device
+  --mgstat            plot mgstat data
+  --vmstat            plot vmstat data
+  --iostat            plot iostat data
+  -a, --all           graph everything
+  -o OUT, --out OUT   specify base output directory, defaulting to
+                      <pbuttons_name>/
+```
+## Weekly overview graphs
+
+To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
+```
+yape --filedb data.db pbuttons1.html
+yape --filedb data.db pbuttons2.html
+yape --filedb data.db pbuttons3.html
+yape --filedb data.db pbuttons4.html
+yape --filedb data.db pbuttons5.html
+yape --filedb data.db pbuttons6.html
+yape --filedb data.db pbuttons7.html
+....
+yape --filedb data.db --timeframe "2018-06-11 00:00:00,2018-06-17 22:00:00" -a --skip-parse -o testdata/ pbuttons7.html
+```
+Note: the last positional argument is still required, but is going to get ignored completely. (todo: fix the argument parsing for that)
+## Experimental usage
+
+Change to the base of your checked out yape directory and run:
+```
+bokeh serve --show yapesrv --args /Users/kazamatzuri/work/cases/898291/0503/squh-tc_TRAKCARE_20180503_000100_24hours_2_P1.html
+```
+
+This will give you (maybe) an interactive display of the pbuttons passed in. If you run into any errors, feel free to create an issue here: https://github.com/murrayo/yape/issues
 
 ## Related Discussion
 
