@@ -50,7 +50,7 @@ def fix_index(df):
     df.index.name='datetime'
     return df
 
-def plot_subset_split(db,basename,subsetname,split_on,timeframe):
+def plot_subset_split(db,basename,fileprefix,subsetname,split_on,timeframe):
     if not check_data(db,subsetname):
         return None
     c=db.cursor()
@@ -63,12 +63,12 @@ def plot_subset_split(db,basename,subsetname,split_on,timeframe):
         data=data.drop([split_on],axis=1)
         for key in data.columns.values:
             if timeframe is not None:
-                file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
+                file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
             else:
-                file=os.path.join(basename,subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
+                file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
             genericplot(data,key,file,timeframe)
 
-def plot_subset(db,basename,subsetname,timeframe):
+def plot_subset(db,basename,fileprefix,subsetname,timeframe):
     if not check_data(db,subsetname):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
@@ -82,11 +82,11 @@ def plot_subset(db,basename,subsetname,timeframe):
     else:
         data=fix_index(data)
     for key in data.columns.values:
-
+       
         if timeframe is not None:
-            file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
+            file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
         else:
-            file=os.path.join(basename,subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
+            file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
         genericplot(data,key,file,timeframe)
 
 def check_data(db,name):
@@ -97,13 +97,14 @@ def check_data(db,name):
         return False
     return True
 
-def mgstat(db,basename,timeframe=""):
-    plot_subset(db,basename,"mgstat",timeframe)
-def perfmon(db,basename,timeframe=""):
-    plot_subset(db,basename,"perfmon",timeframe)
+def mgstat(db,basename,fileprefix,timeframe=""):
+    plot_subset(db,basename,fileprefix,"mgstat",timeframe)
+    
+def perfmon(db,basename,fileprefix,timeframe=""):
+    plot_subset(db,basename,fileprefix,"perfmon",timeframe)
 
-def vmstat(db,basename,timeframe=""):
-    plot_subset(db,basename,"vmstat",timeframe)
+def vmstat(db,basename,fileprefix,timeframe=""):
+    plot_subset(db,basename,fileprefix,"vmstat",timeframe)
 
-def iostat(db,basename,timeframe=""):
-    plot_subset_split(db,basename,"iostat","Device",timeframe)
+def iostat(db,basename,fileprefix,timeframe=""):
+    plot_subset_split(db,basename,fileprefix,"iostat","Device",timeframe)
