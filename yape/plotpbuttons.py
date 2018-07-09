@@ -50,23 +50,28 @@ def fix_index(df):
     df.index.name='datetime'
     return df
 
-def plot_subset_split(db,basename,fileprefix,subsetname,split_on,timeframe):
+def plot_subset_split(db,basename,fileprefix,plotDisks,subsetname,split_on,timeframe):
     if not check_data(db,subsetname):
         return None
     c=db.cursor()
     c.execute("select distinct "+split_on+" from \""+subsetname+"\"")
     rows=c.fetchall()
     for column in rows:
-        c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
-        data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
-        data=fix_index(data)
-        data=data.drop([split_on],axis=1)
-        for key in data.columns.values:
-            if timeframe is not None:
-                file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
-            else:
-                file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
-            genericplot(data,key,file,timeframe)
+        # If specified only plot selected disks for iostat - saves time and space
+        if len(plotDisks) > 0 and subsetname == "iostat" and column[0] not in plotDisks:
+            print("Skipping plot disk: "+column[0])
+        else:
+            print("Including plot disk: "+column[0])        
+            c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
+            data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
+            data=fix_index(data)
+            data=data.drop([split_on],axis=1)
+            for key in data.columns.values:
+                if timeframe is not None:
+                    file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
+                else:
+                    file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
+                genericplot(data,key,file,timeframe)
 
 def plot_subset(db,basename,fileprefix,subsetname,timeframe):
     if not check_data(db,subsetname):
@@ -106,5 +111,5 @@ def perfmon(db,basename,fileprefix,timeframe=""):
 def vmstat(db,basename,fileprefix,timeframe=""):
     plot_subset(db,basename,fileprefix,"vmstat",timeframe)
 
-def iostat(db,basename,fileprefix,timeframe=""):
-    plot_subset_split(db,basename,fileprefix,"iostat","Device",timeframe)
+def iostat(db,basename,fileprefix,plotDisks,timeframe=""):
+    plot_subset_split(db,basename,fileprefix,plotDisks,"iostat","Device",timeframe)
