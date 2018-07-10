@@ -105,7 +105,7 @@ def yape2():
             ensure_dir(basefilename+os.sep)
             fileout(db,basefilename,fileprefix,"mgstat")
             fileout(db,basefilename,fileprefix,"vmstat")
-            fileout_splitcols(db,basefilename,fileprefix,plotDisks,"iostat","Device")
+            fileout_splitcols(db,basefilename,fileprefix,"iostat","Device")
             fileout_splitcols(db,basefilename,fileprefix,"sar-d","DEV")
             fileout(db,basefilename,fileprefix,"perfmon")
             fileout(db,basefilename,fileprefix,"sar-u")
