@@ -60,7 +60,7 @@ def yape2():
     parser.add_argument("--permon",dest='graphperfmon',help="plot perfmon data",action="store_true")
     parser.add_argument("--timeframe",dest='timeframe',help="specify a timeframe for the plots, i.e. --timeframe \"2018-05-16 00:01:16,2018-05-16 17:04:15\"")
     parser.add_argument("--prefix",dest='prefix',help="specify output file prfeix")
-    parser.add_argument("--plotDisks",dest='plotDisks',help="restrict list of disks to plot")    
+    parser.add_argument("--plotDisks",dest='plotDisks',help="restrict list of disks to plot")
 
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
@@ -84,17 +84,17 @@ def yape2():
             basefilename=args.out
         else:
             basefilename=args.pButtons_file_name.split(".")[0]
-            
+
         if args.prefix is not None:
             fileprefix=args.prefix
         else:
             fileprefix=""
-     
+
         if args.plotDisks is not None:
             plotDisks=args.plotDisks
         else:
             plotDisks=""
-                        
+
         if args.timeframe is not None:
             TIMEFRAMEMODE=True
             print("timeframe on "+args.timeframe)
@@ -121,7 +121,7 @@ def yape2():
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
             iostat(db,basefilename,fileprefix,plotDisks,args.timeframe)
-            
+
         if args.graphperfmon or args.all:
             ensure_dir(basefilename+os.sep)
             perfmon(db,basefilename,fileprefix,args.timeframe)

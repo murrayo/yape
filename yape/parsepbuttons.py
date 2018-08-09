@@ -415,7 +415,6 @@ def parsepbuttons(file,db):
                     continue
                 if ("tps" in line or "device" in line) and query=="":
                     cols=list(map(lambda x: x.strip(), line.split()))
-
                     numcols=len(cols)
                     query="CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery="INSERT INTO sard VALUES (?,"
@@ -437,10 +436,11 @@ def parsepbuttons(file,db):
                 cols=line.split()
                 if osmode=="sunos" or osmode=="hpux":
                     if len(cols)==numcols:
-                        cols=[(sardate+" "+cols[0])]+cols[1:]
                         sartime=cols[0]
+                        cols=[(sardate+" "+cols[0])]+cols[1:]
                     else:
                         cols=[(sardate+" "+sartime)]+cols
+
                 else:
                     currentdate=cols[0]+" "+cols[1]
                     cols=[currentdate]+cols[2:]
