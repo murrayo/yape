@@ -34,7 +34,7 @@ def parsepbuttons(file,db):
               "w":"INTEGER","swap":"INTEGER","re":"INTEGER",  "mf":"INTEGER", "pi":"INTEGER", "po":"INTEGER",
                "fr":"INTEGER", "de":"INTEGER", "sr":"INTEGER", "s3":"INTEGER", "s4":"INTEGER", "sd":"INTEGER",
                "sd":"INTEGER","GblSz":"INTEGER","pGblNsz":"INTEGER","pGblAsz":"INTEGER","ObjSz":"INTEGER",
-               "pObjNsz":"INTEGER","pObjAsz":"INTEGER","BDBSz":"INTEGER","pBDBNsz":"INTEGER","pBDBAsz":"INTEGER"}
+               "pObjNsz":"INTEGER","pObjAsz":"INTEGER","BDBSz":"INTEGER","pBDBNsz":"INTEGER","pBDBAsz":"INTEGER","avm":"INTEGER","at":"INTEGER"}
     mode="" #hold current parsing mode
     cursor = db.cursor()
     count=0
@@ -315,7 +315,7 @@ def parsepbuttons(file,db):
                 db.commit()
                 continue
             if "id=vmstat>" in line:
-                if osmode=="sunos" or osmode=="solsparc":
+                if osmode=="sunos" or osmode=="solsparc" or osmode=="hpux":
                     colnames=line.split("<pre>")[1].split()
                     colnames=list(map(lambda x: x.strip(), colnames))
                     numcols=len(colnames)
@@ -494,7 +494,7 @@ def parsepbuttons(file,db):
                 cols=line.split()
                 if len(cols)!=numcols:
                     continue
-                if not (osmode=="solsparc" or osmode=="sunos"):
+                if not (osmode=="solsparc" or osmode=="sunos" or osmode=="hpux"):
                     cols=[(cols[0]+" "+cols[1])]+cols[2:]
                 cursor.execute(insertquery,cols)
                 count+=1

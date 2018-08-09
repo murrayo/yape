@@ -61,7 +61,7 @@ def plot_subset_split(db,basename,fileprefix,plotDisks,subsetname,split_on,timef
         if len(plotDisks) > 0 and subsetname == "iostat" and column[0] not in plotDisks:
             print("Skipping plot disk: "+column[0])
         else:
-            print("Including plot disk: "+column[0])        
+            print("Including plot disk: "+column[0])
             c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
             data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
             data=fix_index(data)
@@ -78,16 +78,17 @@ def plot_subset(db,basename,fileprefix,subsetname,timeframe):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
     if 'datetime' not in data.columns.values:
+        size=data.shape[0]
         #one of those evil OS without datetime in vmstat
         #evil hack: take index from mgstat (we should have that in every pbuttons) and map that
         #is going to horribly fail when the number of rows doesn't add up ---> TODO for later
         dcolumn=pd.read_sql_query("select datetime from mgstat",db)
-        data.index=pd.to_datetime(dcolumn['datetime'])
+        data.index=pd.to_datetime(dcolumn['datetime'][:size])
         data.index.name='datetime'
     else:
         data=fix_index(data)
     for key in data.columns.values:
-       
+
         if timeframe is not None:
             file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
         else:
@@ -104,7 +105,7 @@ def check_data(db,name):
 
 def mgstat(db,basename,fileprefix,timeframe=""):
     plot_subset(db,basename,fileprefix,"mgstat",timeframe)
-    
+
 def perfmon(db,basename,fileprefix,timeframe=""):
     plot_subset(db,basename,fileprefix,"perfmon",timeframe)
 
