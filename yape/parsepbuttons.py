@@ -3,6 +3,17 @@ import pandas as pd
 
 import sqlite3
 
+# splits an array into sub arrays with length size
+def split(arr, size):
+     arrs = []
+     while len(arr) > size:
+         piece = arr[:size]
+         arrs.append(piece)
+         arr   = arr[size:]
+     arrs.append(arr)
+     return arrs
+
+
 def parsepbuttons(file,db):
     pbdtypes={"tps":"REAL","rd_sec/s":"REAL","wr_sec/s":"REAL","avgrq-sz":"REAL","avgqu-sz":"REAL","await":"REAL",
               "svctm":"REAL","%util":"REAL","Glorefs":"INTEGER", "RemGrefs":"INTEGER", "GRratio":"INTEGER",  "PhyRds":"INTEGER",
@@ -12,7 +23,7 @@ def parsepbuttons(file,db):
               "WIJwri":"INTEGER",  "RouCMs":"INTEGER", "Jrnwrts":"INTEGER",  "ActECP":"INTEGER",  "Addblk":"INTEGER",
               "PrgBufL":"INTEGER", "PrgSrvR":"INTEGER",  "BytSnt":"INTEGER",
               "BytRcd":"INTEGER",  "WDpass":"INTEGER",  "IJUcnt":"INTEGER", "IJULock":"INTEGER", "PPGrefs":"INTEGER",
-              "PPGupds":"INTEGER","CPU":"TEXT","%user":"REAL","%nice":"REAL","%system":"REAL","%iowait":"REAL",
+              "PPGupds":"INTEGER","CPU":"TEXT","cpu":"TEXT","%user":"REAL","%nice":"REAL","%system":"REAL","%iowait":"REAL",
               "%steal":"REAL","%idle":"REAL","r":"INTEGER","b":"INTEGER","swpd":"INTEGER","free":"INTEGER","buff":"INTEGER",
               "cache":"INTEGER","si":"INTEGER","so":"INTEGER","bi":"INTEGER","bo":"INTEGER","in":"INTEGER","cs":"INTEGER",
               "us":"INTEGER","sy":"INTEGER","id":"INTEGER","wa":"INTEGER","st":"INTEGER",
@@ -65,6 +76,14 @@ def parsepbuttons(file,db):
                 insertquery=""
                 mode=""
             #add better osmode detection
+
+            if "Product Version String" in line:
+                if "HP HP-UX for Itanium" in line:
+                    osmode="hpux"
+                continue
+                #no continues in here, because sometimes the topofpage is in the same line as the start of a
+                #new section
+
             if "Product Version String" in line:
                 if "Solaris for SPARC-64" in line:
                     osmode="solsparc"
@@ -295,7 +314,7 @@ def parsepbuttons(file,db):
                 cursor.execute(query)
                 db.commit()
                 continue
-            if "id=vmstat" in line:
+            if "id=vmstat>" in line:
                 if osmode=="sunos" or osmode=="solsparc":
                     colnames=line.split("<pre>")[1].split()
                     colnames=list(map(lambda x: x.strip(), colnames))
@@ -348,6 +367,8 @@ def parsepbuttons(file,db):
                 if "SunOS" in line:
                     osmode="sunos"
                     sardate=line.split()[-1]
+                if "HP-UX" in line:
+                    sardate=line.split()[-1]
                 insertquery=""
                 mode="sar-u"
                 print("starting "+mode)
@@ -382,6 +403,10 @@ def parsepbuttons(file,db):
             if mode=="sar-d":
                 if "Linux" in line:
                     continue
+                if "HP-UX" in line:
+                    osmode="hpux"
+                    sardate=line.split()[-1]
+                    continue
                 if "Average" in line:
                     continue
                 if "SunOS" in line:
@@ -390,11 +415,14 @@ def parsepbuttons(file,db):
                     continue
                 if ("tps" in line or "device" in line) and query=="":
                     cols=list(map(lambda x: x.strip(), line.split()))
+
                     numcols=len(cols)
                     query="CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery="INSERT INTO sard VALUES (?,"
                     skiprows=2
                     if osmode=="sunos":
+                        skiprows=1
+                    if osmode=="hpux":
                         skiprows=1
                     for c in cols[skiprows:]:
                         query+="\""+c+"\" "+(pbdtypes.get(c) or "TEXT")+","
@@ -407,7 +435,7 @@ def parsepbuttons(file,db):
                     db.commit()
                     continue
                 cols=line.split()
-                if osmode=="sunos":
+                if osmode=="sunos" or osmode=="hpux":
                     if len(cols)==numcols:
                         cols=[(sardate+" "+cols[0])]+cols[1:]
                         sartime=cols[0]
@@ -427,6 +455,8 @@ def parsepbuttons(file,db):
                     db.commit()
                     print(str(count)+".",end='',flush=True)
             if mode=="iostat":
+                if osmode=="hpux":
+                    continue
                 if "Linux" in line:
                     continue
                 if len(line.split())==3 or len(line.split())==2 :
@@ -526,8 +556,8 @@ def parsepbuttons(file,db):
                     continue
                 if "Average" in line:
                     continue
-                if "%usr" in line and osmode=="sunos":
-                    print("creating ins")
+                if "%usr" in line and (osmode=="sunos" or osmode=="hpux"):
+                    print("creating insert")
                     cols=list(map(lambda x: x.strip(), line.split()[1:]))
                     numcols=len(cols)+1
                     query="CREATE TABLE IF NOT EXISTS \"sar-u\"(\"datetime\" TEXT,"
@@ -557,12 +587,20 @@ def parsepbuttons(file,db):
                     db.commit()
                     continue
                 cols=list(map(lambda x: x.strip(), line.split()))
-                if osmode=="sunos":
-                    cols=[(sardate+" "+cols[0])]+cols[1:]
+                if osmode=="hpux":
+                    #hpux sar-u creates one line with all data, split it up chunks of 5
+                    #first column of the line is the time
+                    for splitcols in split(cols[1:],5):
+                        cols=[(sardate+" "+cols[0])]+splitcols
+                        cursor.execute(insertquery,cols)
+                        count+=1
                 else:
-                    cols=[(sardate+" "+cols[0]+" "+cols[1])]+cols[2:]
-                cursor.execute(insertquery,cols)
-                count+=1
+                    if osmode=="sunos":
+                        cols=[(sardate+" "+cols[0])]+cols[1:]
+                    else:
+                        cols=[(sardate+" "+cols[0]+" "+cols[1])]+cols[2:]
+                        cursor.execute(insertquery,cols)
+                        count+=1
                 if (count%10000==0):
                     db.commit()
                     print(str(count)+".",end='',flush=True)
