@@ -58,7 +58,7 @@ def yape2():
     parser.add_argument("--vmstat",dest='graphvmstat',help="plot vmstat data",action="store_true")
     parser.add_argument("--iostat",dest='graphiostat',help="plot iostat data",action="store_true")
     parser.add_argument("--sard",dest='graphsard',help="plot sar-d data",action="store_true")
-    parser.add_argument("--permon",dest='graphperfmon',help="plot perfmon data",action="store_true")
+    parser.add_argument("--perfmon",dest='graphperfmon',help="plot perfmon data",action="store_true")
     parser.add_argument("--timeframe",dest='timeframe',help="specify a timeframe for the plots, i.e. --timeframe \"2018-05-16 00:01:16,2018-05-16 17:04:15\"")
     parser.add_argument("--prefix",dest='prefix',help="specify output file prfeix")
     parser.add_argument("--plotDisks",dest='plotDisks',help="restrict list of disks to plot")
