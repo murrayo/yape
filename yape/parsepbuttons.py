@@ -36,6 +36,7 @@ def parsepbuttons(file,db):
                "sd":"INTEGER","GblSz":"INTEGER","pGblNsz":"INTEGER","pGblAsz":"INTEGER","ObjSz":"INTEGER",
                "pObjNsz":"INTEGER","pObjAsz":"INTEGER","BDBSz":"INTEGER","pBDBNsz":"INTEGER","pBDBAsz":"INTEGER","avm":"INTEGER","at":"INTEGER"}
     mode="" #hold current parsing mode
+    submode="" #further status var for ugly vms monitor data parsing
     cursor = db.cursor()
     count=0
     sardate=""
@@ -44,6 +45,12 @@ def parsepbuttons(file,db):
     colcache=[]
     colcachenum=0
     numcols=0
+    #moving generic items definition out of the loop
+    generic_items=["license","ifconfig","sysctl-a","df-m","mount","cpffile","fdisk-l","ss1",
+    "ss2","ss3","ss4","linuxinfo","ipcs","cpu","cstatc11","cstatc12","cstatc13","cstatc14",
+    "pselfy1","pselfy2","pselfy3","pselfy4","cstatD1","cstatD2","cstatD3","cstatD4","cstatD5",
+    "cstatD6","cstatD7","cstatD8","windowsinfo","tasklist"]
+
     cursor.execute("CREATE TABLE IF NOT EXISTS sections (section TEXT)")
 
     with open(file, encoding="latin-1") as f:
@@ -81,15 +88,13 @@ def parsepbuttons(file,db):
                 if "HP HP-UX for Itanium" in line:
                     osmode="hpux"
                 continue
-                #no continues in here, because sometimes the topofpage is in the same line as the start of a
-                #new section
-
-            if "Product Version String" in line:
                 if "Solaris for SPARC-64" in line:
                     osmode="solsparc"
                 continue
-                #no continues in here, because sometimes the topofpage is in the same line as the start of a
-                #new section
+                if "OpenVMS/IA64" in line:
+                    osmode="openvms"
+                continue
+
             if "id=license" in line:
                 mode="license"
                 print("starting "+mode)
@@ -399,6 +404,13 @@ def parsepbuttons(file,db):
                 mode="perfmon"
                 print("starting "+mode)
                 continue
+
+            if "id=monitor" in line:
+                query=""
+                insertquery=""
+                mode="monitor"
+                print("starting "+mode)
+                continue
             #actual parsing things
             if mode=="sar-d":
                 if "Linux" in line:
@@ -604,12 +616,32 @@ def parsepbuttons(file,db):
                 if (count%10000==0):
                     db.commit()
                     print(str(count)+".",end='',flush=True)
+            if mode=="monitor":
+                if query=="":
+                    query="CREATE TABLE IF NOT EXISTS \"monitor\"(\"datetime\" TEXT,\"device\" TEXT,\"CUR\" REAL,\"AVE\" REAL,\"MIN\" REAL,\"MAX\" REAL)"
+                    insertquery="INSERT INTO \"monitor\" VALUES (?,?,?,?,?,?)"
+                    cursor.execute(query)
+                    db.commit()
+                if "DISK I/O STATISTICS" in line:
+                    submode="disk"
+                    continue
+                if "DISTRIBUTED LOCK MANAGEMENT STATISTICS" in line:
+                    submode=""
+                    continue
+                if submode=="disk":
+                    cols=list(map(lambda x: x.strip(), line.split()))
+                    if len(cols)==2:
+                        diskdate=cols[0]+" "+cols[1]
+                        continue
+                    if ("$" in line) and (len(cols)==7):
+                        cols=[(diskdate)]+[cols[0].replace(":","")]+cols[3:]
+                        cursor.execute(insertquery,cols)
+                        count+=1
+                        if (count%10000==0):
+                            db.commit()
+                            print(str(count)+".",end='',flush=True)
+                        continue
 
-
-            generic_items=["license","ifconfig","sysctl-a","df-m","mount","cpffile","fdisk-l","ss1",
-            "ss2","ss3","ss4","linuxinfo","ipcs","cpu","cstatc11","cstatc12","cstatc13","cstatc14",
-            "pselfy1","pselfy2","pselfy3","pselfy4","cstatD1","cstatD2","cstatD3","cstatD4","cstatD5",
-            "cstatD6","cstatD7","cstatD8","windowsinfo","tasklist"]
             if mode in generic_items:
                 query="insert into \""+mode+"\" values(?)"
                 cursor.execute(query,[line])

@@ -118,5 +118,8 @@ def vmstat(db,basename,fileprefix,timeframe=""):
 def iostat(db,basename,fileprefix,plotDisks,timeframe=""):
     plot_subset_split(db,basename,fileprefix,plotDisks,"iostat","Device",timeframe)
 
+def monitor_disk(db,basename,fileprefix,plotDisks,timeframe=""):
+    plot_subset_split(db,basename,fileprefix,plotDisks,"monitor","device",timeframe)
+
 def sard(db,basename,fileprefix,plotDisks,timeframe=""):
     plot_subset_split(db,basename,fileprefix,plotDisks,"sard","device",timeframe)
