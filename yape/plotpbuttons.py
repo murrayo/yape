@@ -18,7 +18,7 @@ def genericplot(df,column,outfile,timeframe):
     fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
     if timeframe!="":
-        ax.xaxis.set_minor_locator(AutoMinorLocator(n=10))
+        ax.xaxis.set_minor_locator(AutoMinorLocator(n=20))
     else:
         ax.xaxis.set_minor_locator(mdates.HourLocator())
     ax.xaxis.set_major_locator(mdates.DayLocator())
@@ -32,11 +32,14 @@ def genericplot(df,column,outfile,timeframe):
         df[column].plot(ax=ax)
 
     ax.set_ylim(ymin=0)  # Always zero start
+    #ax.set_ylim(ymax=0.005)
 
     plt.grid(which='both', axis='both')
     plt.title(column, fontsize=10)
     plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=8)
+    if timeframe!="":
+        plt.setp(ax.xaxis.get_minorticklabels(), rotation=70)
 
     plt.savefig(outfile, bbox_inches='tight')
 
