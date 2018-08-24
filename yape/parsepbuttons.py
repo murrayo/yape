@@ -633,8 +633,16 @@ def parsepbuttons(file,db):
                     if len(cols)==2:
                         diskdate=cols[0]+" "+cols[1]
                         continue
-                    if ("$" in line) and (len(cols)==7):
+                    if (":" in line) and (len(cols)==7):
                         cols=[(diskdate)]+[cols[0].replace(":","")]+cols[3:]
+                        cursor.execute(insertquery,cols)
+                        count+=1
+                        if (count%10000==0):
+                            db.commit()
+                            print(str(count)+".",end='',flush=True)
+                        continue
+                    if (":" in line) and (len(cols)==6):
+                        cols=[(diskdate)]+[cols[0].replace(":","")]+cols[2:]
                         cursor.execute(insertquery,cols)
                         count+=1
                         if (count%10000==0):
