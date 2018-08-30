@@ -541,6 +541,9 @@ def parsepbuttons(file,db):
             if mode=="mgstat":
                 if "MGSTAT" in line:
                     continue
+                if "No output file was created." in line:
+                    print("mgstat error in pbuttons: No output file was created.")
+                    continue
                 if "Date" in line:
                     cols=list(map(lambda x: x.strip(), line.split(",")))
                     query="CREATE TABLE IF NOT EXISTS mgstat(\"datetime\" TEXT,"
