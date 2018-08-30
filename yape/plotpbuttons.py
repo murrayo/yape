@@ -12,6 +12,9 @@ import mpl_toolkits.mplot3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 
+def dispatch_plot(df,column,outfile,timeframe):
+    genericplot(df,column,outfile,timeframe)
+    
 def genericplot(df,column,outfile,timeframe):
     outfile=outfile.replace(":",".")
     print("creating "+outfile)
@@ -74,7 +77,7 @@ def plot_subset_split(db,basename,fileprefix,plotDisks,subsetname,split_on,timef
                     file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
                 else:
                     file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
-                genericplot(data,key,file,timeframe)
+                dispatch_plot(data,key,file,timeframe)
 
 def plot_subset(db,basename,fileprefix,subsetname,timeframe):
     if not check_data(db,subsetname):
@@ -96,7 +99,7 @@ def plot_subset(db,basename,fileprefix,subsetname,timeframe):
             file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
         else:
             file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
-        genericplot(data,key,file,timeframe)
+        dispatch_plot(data,key,file,timeframe)
 
 def check_data(db,name):
     cur = db.cursor()
