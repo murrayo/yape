@@ -656,6 +656,24 @@ def parsepbuttons(file,db):
                 if "FILE SYSTEM CACHING STATISTICS" in line:
                     submode="caching_stats"
                     continue
+                if "SCS STATISTICS" in line:
+                    submode="scs_stats"
+                    continue
+                if "MSCP SERVER STATISTICS" in line:
+                    submode="mscp_stats"
+                    continue
+                if "DISTRIBUTED TRANSACTION STATISTICS" in line:
+                    submode="dist_transaction_stats"
+                    continue
+                if "TIMER STATISTICS" in line:
+                    submode="timer_stats"
+                    continue
+                if "DYNAMIC LOCK REMASTERING STATISTICS" in line:
+                    submode="dynamic_lock_stats"
+                    continue
+                if "ALIGNMENT FAULT STATISTICS" in line:
+                    submode="align_fault"
+                    continue
 
                 if submode=="disk":
                     cols=list(map(lambda x: x.strip(), line.split()))
