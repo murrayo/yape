@@ -14,7 +14,7 @@ from datetime import datetime
 
 def dispatch_plot(df,column,outfile,timeframe):
     genericplot(df,column,outfile,timeframe)
-    
+
 def genericplot(df,column,outfile,timeframe):
     outfile=outfile.replace(":",".")
     print("creating "+outfile)
@@ -122,7 +122,7 @@ def iostat(db,basename,fileprefix,plotDisks,timeframe=""):
     plot_subset_split(db,basename,fileprefix,plotDisks,"iostat","Device",timeframe)
 
 def monitor_disk(db,basename,fileprefix,plotDisks,timeframe=""):
-    plot_subset_split(db,basename,fileprefix,plotDisks,"monitor","device",timeframe)
+    plot_subset_split(db,basename,fileprefix,plotDisks,"monitor_disk","device",timeframe)
 
 def sard(db,basename,fileprefix,plotDisks,timeframe=""):
     plot_subset_split(db,basename,fileprefix,plotDisks,"sard","device",timeframe)

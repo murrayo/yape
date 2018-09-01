@@ -620,17 +620,43 @@ def parsepbuttons(file,db):
                     db.commit()
                     print(str(count)+".",end='',flush=True)
             if mode=="monitor":
-                if query=="":
-                    query="CREATE TABLE IF NOT EXISTS \"monitor\"(\"datetime\" TEXT,\"device\" TEXT,\"CUR\" REAL,\"AVE\" REAL,\"MIN\" REAL,\"MAX\" REAL)"
-                    insertquery="INSERT INTO \"monitor\" VALUES (?,?,?,?,?,?)"
-                    cursor.execute(query)
-                    db.commit()
                 if "DISK I/O STATISTICS" in line:
                     submode="disk"
+                    query="CREATE TABLE IF NOT EXISTS \"monitor_disk\"(\"datetime\" TEXT,\"device\" TEXT,\"CUR\" REAL,\"AVE\" REAL,\"MIN\" REAL,\"MAX\" REAL)"
+                    insertquery="INSERT INTO \"monitor_disk\" VALUES (?,?,?,?,?,?)"
+                    cursor.execute(query)
+                    db.commit()
                     continue
                 if "DISTRIBUTED LOCK MANAGEMENT STATISTICS" in line:
-                    submode=""
+                    submode="dist_lock_stats"
                     continue
+
+                if "PROCESSES" in line:
+                    submode="processes"
+                    query="CREATE TABLE IF NOT EXISTS \"monitor_processes\"(\"datetime\" TEXT,\"PID\" TEXT,\"STATE\" TEXT,\"PRI\" INTEGER,\"NAME\" TEXT,\"PAGES\" TEXT,\"DIOCNT\" INTEGER,\"FAULTS\" INTEGER,\"CPUTIME\" TEXT)"
+                    insertquery="INSERT INTO \"monitor_processes\" VALUES (?,?,?,?,?,?,?,?,?)"
+                    cursor.execute(query)
+                    db.commit()
+                    continue
+                if "PAGE MANAGEMENT STATISTICS" in line:
+                    submode="page_stats"
+                    continue
+                if "I/O SYSTEM STATISTICS" in line:
+                    submode="system_io"
+                    continue
+                if "FILE PRIMITIVE STATISTICS" in line:
+                    submode="file_prim_stats"
+                    continue
+                if "LOCK MANAGEMENT STATISTICS" in line:
+                    submode="lock_stats"
+                    continue
+                if "DECNET STATISTICS" in line:
+                    submode="decnet"
+                    continue
+                if "FILE SYSTEM CACHING STATISTICS" in line:
+                    submode="caching_stats"
+                    continue
+
                 if submode=="disk":
                     cols=list(map(lambda x: x.strip(), line.split()))
                     if len(cols)==2:
