@@ -121,7 +121,7 @@ def yape2():
         # command line parameters to subfunctions...
         config={}
         config["fileprefix"]=fileprefix
-        config["plotdisks"]=plotDisks
+        config["plotDisks"]=plotDisks
         config["timeframe"]=args.timeframe
         config["basefilename"]=basefilename
         config["quiet"]=args.quiet

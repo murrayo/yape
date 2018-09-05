@@ -68,6 +68,8 @@ def plot_subset_split(db,config,subsetname,split_on):
     fileprefix=config["fileprefix"]
     timeframe=config["timeframe"]
     basename=config["basefilename"]
+    plotDisks=config["plotDisks"]
+
     if not check_data(db,subsetname):
         return None
     c=db.cursor()
