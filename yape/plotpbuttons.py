@@ -56,7 +56,10 @@ def fix_index(df):
     df.index.name='datetime'
     return df
 
-def plot_subset_split(db,basename,fileprefix,plotDisks,subsetname,split_on,timeframe):
+def plot_subset_split(db,config,subsetname,split_on):
+    fileprefix=config["fileprefix"]
+    timeframe=config["timeframe"]
+    basename=config["basefilename"]
     if not check_data(db,subsetname):
         return None
     c=db.cursor()
@@ -79,7 +82,10 @@ def plot_subset_split(db,basename,fileprefix,plotDisks,subsetname,split_on,timef
                     file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
                 dispatch_plot(data,key,file,timeframe)
 
-def plot_subset(db,basename,fileprefix,subsetname,timeframe):
+def plot_subset(db,config,subsetname):
+    fileprefix=config["fileprefix"]
+    timeframe=config["timeframe"]
+    basename=config["basefilename"]
     if not check_data(db,subsetname):
         return None
     data=pd.read_sql_query("select * from \""+subsetname+"\"",db)
@@ -109,20 +115,20 @@ def check_data(db,name):
         return False
     return True
 
-def mgstat(db,basename,fileprefix,timeframe=""):
-    plot_subset(db,basename,fileprefix,"mgstat",timeframe)
+def mgstat(db,config):
+    plot_subset(db,config,"mgstat")
 
-def perfmon(db,basename,fileprefix,timeframe=""):
-    plot_subset(db,basename,fileprefix,"perfmon",timeframe)
+def perfmon(db,config):
+    plot_subset(db,config,"perfmon")
 
-def vmstat(db,basename,fileprefix,timeframe=""):
-    plot_subset(db,basename,fileprefix,"vmstat",timeframe)
+def vmstat(db,config):
+    plot_subset(db,config,"vmstat")
 
-def iostat(db,basename,fileprefix,plotDisks,timeframe=""):
-    plot_subset_split(db,basename,fileprefix,plotDisks,"iostat","Device",timeframe)
+def iostat(db,config):
+    plot_subset_split(db,config,"iostat","Device")
 
-def monitor_disk(db,basename,fileprefix,plotDisks,timeframe=""):
-    plot_subset_split(db,basename,fileprefix,plotDisks,"monitor_disk","device",timeframe)
+def monitor_disk(db,config):
+    plot_subset_split(db,config,"monitor_disk","device")
 
-def sard(db,basename,fileprefix,plotDisks,timeframe=""):
-    plot_subset_split(db,basename,fileprefix,plotDisks,"sard","device",timeframe)
+def sard(db,config):
+    plot_subset_split(db,config,"sard","device",)

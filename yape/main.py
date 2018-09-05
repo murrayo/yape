@@ -11,7 +11,8 @@ import sqlite3
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
 
-def fileout(db,filename,fileprefix,section):
+def fileout(db,basefilename,config,section):
+    fileprefix=config["fileprefix"]
     c = db.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
@@ -31,7 +32,8 @@ def ensure_dir(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def fileout_splitcols(db,filename,fileprefix,section,split_on):
+def fileout_splitcols(db,filename,config,section,split_on):
+    fileprefix=config["fileprefix"]
     c = db.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
@@ -103,38 +105,50 @@ def yape2():
         else:
             TIMEFRAMEMODE=False
 
+
+        # a place to hold global configurations/settings
+        # makes it easier to extend functionality to carry
+        # command line parameters to subfunctions...
+        config={}
+        config["fileprefix"]=fileprefix
+        config["plotdisks"]=plotDisks
+        config["timeframe"]=args.timeframe
+        config["basefilename"]=basefilename
+
         if args.csv:
             ensure_dir(basefilename+os.sep)
-            fileout(db,basefilename,fileprefix,"mgstat")
-            fileout(db,basefilename,fileprefix,"vmstat")
-            fileout_splitcols(db,basefilename,fileprefix,"iostat","Device")
-            fileout_splitcols(db,basefilename,fileprefix,"sar-d","DEV")
-            fileout(db,basefilename,fileprefix,"perfmon")
-            fileout(db,basefilename,fileprefix,"sar-u")
+            fileout(db,basefilename,config,"mgstat")
+            fileout(db,basefilename,config,"vmstat")
+            fileout_splitcols(db,basefilename,config,"iostat","Device")
+            fileout_splitcols(db,basefilename,config,"sar-d","DEV")
+            fileout(db,basefilename,config,"perfmon")
+            fileout(db,basefilename,config,"sar-u")
 
+
+        #plotting
         if args.graphsard or args.all:
             ensure_dir(basefilename+os.sep)
-            sard(db,basefilename,fileprefix,plotDisks,args.timeframe)
+            sard(db,config)
 
         if args.graphmgstat or args.all:
             ensure_dir(basefilename+os.sep)
-            mgstat(db,basefilename,fileprefix,args.timeframe)
+            mgstat(db,config)
 
         if args.graphvmstat or args.all:
             ensure_dir(basefilename+os.sep)
-            vmstat(db,basefilename,fileprefix,args.timeframe)
+            vmstat(db,config)
 
         if args.monitor_disk or args.all:
             ensure_dir(basefilename+os.sep)
-            monitor_disk(db,basefilename,fileprefix,plotDisks,args.timeframe)
+            monitor_disk(db,config)
 
         if args.graphiostat or args.all:
             ensure_dir(basefilename+os.sep)
-            iostat(db,basefilename,fileprefix,plotDisks,args.timeframe)
+            iostat(db,config)
 
         if args.graphperfmon or args.all:
             ensure_dir(basefilename+os.sep)
-            perfmon(db,basefilename,fileprefix,args.timeframe)
+            perfmon(db,config)
 
 
     except OSError as e:
