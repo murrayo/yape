@@ -1,15 +1,10 @@
-FROM continuumio/anaconda3
+FROM python:3
 
-RUN conda update -y -n base conda
-RUN conda install -c ioam datashader xarray holoviews bokeh
+COPY yape /yape/yape
+COPY setup.py /yape/setup.py
+WORKDIR /yape/
+RUN pip install --upgrade pip
+RUN cd /yape && pip install .
 
-RUN apt install -y libgl1-mesa-glx
-
-COPY LICENSE ./LICENSE
-COPY README.md ./README.md
-COPY yapesrv/main.py /yape2/main.py
-COPY yapesrv/scripts/* /yape2/scripts/
-
-EXPOSE 5006
-
-ENTRYPOINT ["bokeh", "serve","/yape2", "--args"]
+ENTRYPOINT ["yape"]
+CMD [ "-h" ]

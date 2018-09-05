@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy
 import sqlite3
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.colors as colors
 import matplotlib.dates as mdates
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange, IndexDateFormatter
@@ -14,6 +16,8 @@ import mpl_toolkits.mplot3d
 import matplotlib.pyplot as plt
 from datetime import datetime
 import logging
+
+
 
 def dispatch_plot(df,column,outfile,timeframe):
     genericplot(df,column,outfile,timeframe)

@@ -92,6 +92,11 @@ For example:
 ```
 docker build -t yape2 .
 ```
+then you can run it like this:
+```
+docker container run --rm -v `pwd`:/data yape:2.0 -a /data/BHTRKLIVE1H16_AUSWLIVE02_20180115_000100_24hour2sec_P1.html
+```
+which will create the graphs in same manner as regularly calling it.
 
 ## Related Discussion
 
