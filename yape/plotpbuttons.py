@@ -4,6 +4,7 @@ import sqlite3
 import matplotlib.colors as colors
 import matplotlib.dates as mdates
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange, IndexDateFormatter
+from matplotlib.ticker import FormatStrFormatter
 from matplotlib.ticker import AutoMinorLocator
 import pytz
 import re
@@ -37,7 +38,7 @@ def genericplot(df,column,outfile,timeframe):
 
     ax.set_ylim(ymin=0)  # Always zero start
     #ax.set_ylim(ymax=0.005)
-
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.4g'))
     plt.grid(which='both', axis='both')
     plt.title(column, fontsize=10)
     plt.xlabel("Time", fontsize=10)
