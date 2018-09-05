@@ -54,6 +54,40 @@ def parsepbuttons(file,db):
     "cstatD6","cstatD7","cstatD8","windowsinfo","tasklist"]
 
     cursor.execute("CREATE TABLE IF NOT EXISTS sections (section TEXT)")
+    conditions=[
+    	{"match":"id=license","mode":"license"},
+        {"match":"id=cpffile","mode":"cpffile"},
+        {"match":"id=Windowsinfo","mode":"windowsinfo"},
+        {"match":"id=tasklist","mode":"tasklist"},
+        {"match":"id=\"ss_1\"","mode":"ss1"},
+        {"match":"id=\"ss_2\"","mode":"ss2"},
+        {"match":"id=\"ss_3\"","mode":"ss3"},
+        {"match":"id=\"ss_4\"","mode":"ss4"},
+        {"match":"id=ifconfig","mode":"ifconfig"},
+        {"match":"id=sysctl-a","mode":"sysctl-a"},
+        {"match":"id=linuxinfo","mode":"linuxinfo"},
+        {"match":"id=df-m","mode":"df-m"},
+        {"match":"id=cpu","mode":"cpu"},
+        {"match":"id=mount","mode":"mount"},
+        {"match":"id=fdisk-l","mode":"fdisk-l"},
+        {"match":"id=\"cstat -c1_1\"","mode":"cstatc11"},
+        {"match":"id=\"cstat -c1_2\"","mode":"cstatc12"},
+        {"match":"id=\"cstat -c1_3\"","mode":"cstatc13"},
+        {"match":"id=\"cstat -c1_4\"","mode":"cstatc14"},
+        {"match":"id=\"cstat -D_1\"","mode":"cstatD1"},
+        {"match":"id=\"cstat -D_2\"","mode":"cstatD2"},
+        {"match":"id=\"cstat -D_3\"","mode":"cstatD3"},
+        {"match":"id=\"cstat -D_4\"","mode":"cstatD4"},
+        {"match":"id=\"cstat -D_5\"","mode":"cstatD5"},
+        {"match":"id=\"cstat -D_6\"","mode":"cstatD6"},
+        {"match":"id=\"cstat -D_7\"","mode":"cstatD7"},
+        {"match":"id=\"cstat -D_8\"","mode":"cstatD8"},
+        {"match":"id=\"ps -elfy_1\"","mode":"pselfy1"},
+        {"match":"id=\"ps -elfy_2\"","mode":"pselfy2"},
+        {"match":"id=\"ps -elfy_3\"","mode":"pselfy3"},
+        {"match":"id=\"ps -elfy_4\"","mode":"pselfy4"},
+        {"match":"id=ipcs","mode":"ipcs"}
+        ]
 
     with open(file, encoding="latin-1") as f:
         insertquery=""
@@ -97,230 +131,14 @@ def parsepbuttons(file,db):
                     osmode="openvms"
                 continue
 
-            if "id=license" in line:
-                mode="license"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=cpffile" in line:
-                mode="cpffile"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=Windowsinfo" in line:
-                mode="windowsinfo"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=tasklist" in line:
-                    mode="tasklist"
+            for c in conditions:
+                if c["match"] in line:
+                    mode=c["mode"]
                     logging.debug("starting "+mode)
-                    query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
+                    query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                     cursor.execute(query)
                     db.commit()
                     continue
-            if "id=\"ss_1\"" in line:
-                mode="ss1"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (\"line\" TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ss_2\"" in line:
-                mode="ss2"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ss_3\"" in line:
-                mode="ss3"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ss_4\"" in line:
-                mode="ss4"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=ifconfig" in line:
-                mode="ifconfig"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=sysctl-a" in line:
-                mode="sysctl-a"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=linuxinfo" in line:
-                mode="linuxinfo"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=df-m" in line:
-                mode="df-m"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=cpu" in line:
-                mode="cpu"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=mount" in line:
-                mode="mount"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=fdisk-l" in line:
-                mode="fdisk-l"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -c1_1\"" in line:
-                mode="cstatc11"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -c1_2\"" in line:
-                mode="cstatc12"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -c1_3\"" in line:
-                mode="cstatc13"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -c1_4\"" in line:
-                mode="cstatc14"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_1\"" in line:
-                mode="cstatD1"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_2\"" in line:
-                mode="cstatD2"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_3\"" in line:
-                mode="cstatD3"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_4\"" in line:
-                mode="cstatD4"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_5\"" in line:
-                mode="cstatD5"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_6\"" in line:
-                mode="cstatD6"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_7\"" in line:
-                mode="cstatD7"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"cstat -D_8\"" in line:
-                mode="cstatD8"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ps -elfy_1\"" in line:
-                mode="pselfy1"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ps -elfy_2\"" in line:
-                mode="pselfy2"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ps -elfy_3\"" in line:
-                mode="pselfy3"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=\"ps -elfy_4\"" in line:
-                mode="pselfy4"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
-            if "id=ipcs" in line:
-                mode="ipcs"
-                logging.debug("starting "+mode)
-                query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
-                cursor.execute(query)
-                db.commit()
-                continue
             if "id=vmstat>" in line:
                 if osmode=="sunos" or osmode=="solsparc" or osmode=="hpux":
                     colnames=line.split("<pre>")[1].split()
