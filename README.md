@@ -14,8 +14,7 @@ The goals for the rewrite are:
 
 ```
 git clone https://github.com/murrayo/yape.git
-git checkout
-pip3 install . --upgrade
+sudo pip3 install . --upgrade
 ```
 ## parameters
 ```
