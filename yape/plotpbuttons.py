@@ -11,13 +11,14 @@ import os
 import mpl_toolkits.mplot3d
 import matplotlib.pyplot as plt
 from datetime import datetime
+import logging
 
 def dispatch_plot(df,column,outfile,timeframe):
     genericplot(df,column,outfile,timeframe)
 
 def genericplot(df,column,outfile,timeframe):
     outfile=outfile.replace(":",".")
-    print("creating "+outfile)
+    logging.info("creating "+outfile)
     fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
 
     if timeframe!="":
@@ -68,9 +69,9 @@ def plot_subset_split(db,config,subsetname,split_on):
     for column in rows:
         # If specified only plot selected disks for iostat - saves time and space
         if len(plotDisks) > 0 and subsetname == "iostat" and column[0] not in plotDisks:
-            print("Skipping plot disk: "+column[0])
+            logging.info("Skipping plot disk: "+column[0])
         else:
-            print("Including plot disk: "+column[0])
+            logging.info("Including plot disk: "+column[0])
             c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
             data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
             data=fix_index(data)
@@ -111,7 +112,7 @@ def check_data(db,name):
     cur = db.cursor()
     cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [name])
     if len(cur.fetchall()) == 0:
-        print("no data for:"+name)
+        logging.warning("no data for:"+name)
         return False
     return True
 

@@ -8,6 +8,8 @@ import csv
 
 import sqlite3
 
+import logging
+
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
 
@@ -66,14 +68,27 @@ def yape2():
     parser.add_argument("--prefix",dest='prefix',help="specify output file prefix (this is for the filename itself, to specify a directory, use -o)")
     parser.add_argument("--plotDisks",dest='plotDisks',help="restrict list of disks to plot")
 
+    parser.add_argument("--log",dest="loglevel",help="set log level:DEBUG,INFO,WARNING,ERROR,CRITICAL. The default is INFO")
+
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
+    parser.add_argument("-q","--quiet",dest='quiet',help="no stdout output",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
     args = parser.parse_args()
 
     try:
+        if args.loglevel is not None:
+            loglevel=getattr(logging,args.loglevel.upper(),None)
+            if not isinstance(loglevel, int):
+                raise ValueError('Invalid log level: %s' % args.loglevel)
+            logging.basicConfig(level=loglevel)
+        else:
+            logging.basicConfig(level=getattr(logging,"INFO",None))
+        if args.quiet:
+            logger=logging.getLogger()
+            logger.disabled=True
         if args.skipparse:
             if args.filedb is None:
-                print("filedb required with skip-parse set")
+                logging.error("filedb required with skip-parse set")
                 return -1
         if args.filedb is not None:
             db=sqlite3.connect(args.filedb)
@@ -99,11 +114,6 @@ def yape2():
         else:
             plotDisks=""
 
-        if args.timeframe is not None:
-            TIMEFRAMEMODE=True
-            print("timeframe on "+args.timeframe)
-        else:
-            TIMEFRAMEMODE=False
 
 
         # a place to hold global configurations/settings
@@ -114,6 +124,7 @@ def yape2():
         config["plotdisks"]=plotDisks
         config["timeframe"]=args.timeframe
         config["basefilename"]=basefilename
+        config["quiet"]=args.quiet
 
         if args.csv:
             ensure_dir(basefilename+os.sep)

@@ -19,10 +19,10 @@ pip3 install . --upgrade
 ```
 ## parameters
 ```
-$ yape -h
 usage: yape [-h] [--filedb FILEDB] [--skip-parse] [-c] [--mgstat] [--vmstat]
-            [--iostat] [--permon] [--timeframe TIMEFRAME] [--prefix PREFIX]
-            [--plotDisks PLOTDISKS] [-a] [-o OUT]
+            [--iostat] [--sard] [--monitor_disk] [--perfmon]
+            [--timeframe TIMEFRAME] [--prefix PREFIX] [--plotDisks PLOTDISKS]
+            [--log LOGLEVEL] [-a] [-q] [-o OUT]
             pButtons_file_name
 
 Yape 2.0
@@ -43,14 +43,20 @@ optional arguments:
   --mgstat              plot mgstat data
   --vmstat              plot vmstat data
   --iostat              plot iostat data
-  --permon              plot perfmon data
+  --sard                plot sar-d data
+  --monitor_disk        plot disk data from monitor (vms)
+  --perfmon             plot perfmon data
   --timeframe TIMEFRAME
                         specify a timeframe for the plots, i.e. --timeframe
                         "2018-05-16 00:01:16,2018-05-16 17:04:15"
-  --prefix PREFIX       specify output file prfeix
+  --prefix PREFIX       specify output file prefix (this is for the filename
+                        itself, to specify a directory, use -o)
   --plotDisks PLOTDISKS
                         restrict list of disks to plot
+  --log LOGLEVEL        set log level:DEBUG,INFO,WARNING,ERROR,CRITICAL. The
+                        default is INFO
   -a, --all             graph everything
+  -q, --quiet           no stdout output
   -o OUT, --out OUT     specify base output directory, defaulting to
                         <pbuttons_name>/
 ```

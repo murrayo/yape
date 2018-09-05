@@ -2,6 +2,8 @@
 import pandas as pd
 
 import sqlite3
+import logging
+
 
 # splits an array into sub arrays with length size
 def split(arr, size):
@@ -62,7 +64,7 @@ def parsepbuttons(file,db):
                 continue
             #determine parsing states
             if "Topofpage" in line and mode!="":
-                print("end of "+mode)
+                logging.debug("end of "+mode)
                 if colcachenum>0:
                     cursor.executemany(insertquery,colcache)
                     colcache=[]
@@ -71,13 +73,13 @@ def parsepbuttons(file,db):
                 insertquery=""
                 mode=""
             if "end_mgstat" in line:
-                print("end of "+mode)
+                logging.debug("end of "+mode)
                 query=""
                 count=0
                 insertquery=""
                 mode=""
             if "end_sar_u" in line:
-                print("end of "+mode)
+                logging.debug("end of "+mode)
                 query=""
                 count=0
                 insertquery=""
@@ -97,224 +99,224 @@ def parsepbuttons(file,db):
 
             if "id=license" in line:
                 mode="license"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=cpffile" in line:
                 mode="cpffile"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=Windowsinfo" in line:
                 mode="windowsinfo"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=tasklist" in line:
                     mode="tasklist"
-                    print("starting "+mode)
+                    logging.debug("starting "+mode)
                     query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                     cursor.execute(query)
                     db.commit()
                     continue
             if "id=\"ss_1\"" in line:
                 mode="ss1"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (\"line\" TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_2\"" in line:
                 mode="ss2"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_3\"" in line:
                 mode="ss3"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ss_4\"" in line:
                 mode="ss4"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=ifconfig" in line:
                 mode="ifconfig"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=sysctl-a" in line:
                 mode="sysctl-a"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=linuxinfo" in line:
                 mode="linuxinfo"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=df-m" in line:
                 mode="df-m"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=cpu" in line:
                 mode="cpu"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=mount" in line:
                 mode="mount"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=fdisk-l" in line:
                 mode="fdisk-l"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS \""+mode+"\" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_1\"" in line:
                 mode="cstatc11"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_2\"" in line:
                 mode="cstatc12"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_3\"" in line:
                 mode="cstatc13"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -c1_4\"" in line:
                 mode="cstatc14"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_1\"" in line:
                 mode="cstatD1"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_2\"" in line:
                 mode="cstatD2"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_3\"" in line:
                 mode="cstatD3"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_4\"" in line:
                 mode="cstatD4"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_5\"" in line:
                 mode="cstatD5"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_6\"" in line:
                 mode="cstatD6"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_7\"" in line:
                 mode="cstatD7"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"cstat -D_8\"" in line:
                 mode="cstatD8"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_1\"" in line:
                 mode="pselfy1"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_2\"" in line:
                 mode="pselfy2"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_3\"" in line:
                 mode="pselfy3"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=\"ps -elfy_4\"" in line:
                 mode="pselfy4"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
                 continue
             if "id=ipcs" in line:
                 mode="ipcs"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 query="CREATE TABLE IF NOT EXISTS "+mode+" (line TEXT)"
                 cursor.execute(query)
                 db.commit()
@@ -364,7 +366,7 @@ def parsepbuttons(file,db):
                 db.commit()
                 count=0
                 mode="vmstat"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             if "id=sar-u" in line:
                 query=""
@@ -376,40 +378,40 @@ def parsepbuttons(file,db):
                     sardate=line.split()[-1]
                 insertquery=""
                 mode="sar-u"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             if "id=iostat" in line:
                 query=""
                 count=0
                 insertquery=""
                 mode="iostat"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             if "id=sar-d" in line:
                 query=""
                 count=0
                 insertquery=""
                 mode="sar-d"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             if "beg_mgstat" in line:
                 query=""
                 insertquery=""
                 mode="mgstat"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             if "id=perfmon" in line:
                 query=""
                 insertquery=""
                 mode="perfmon"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
 
             if "id=monitor" in line:
                 query=""
                 insertquery=""
                 mode="monitor"
-                print("starting "+mode)
+                logging.debug("starting "+mode)
                 continue
             #actual parsing things
             if mode=="sar-d":
@@ -465,7 +467,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="iostat":
                 if osmode=="hpux":
                     continue
@@ -499,7 +501,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="vmstat":
                 if "end_vmstat" in line:
                     continue
@@ -512,7 +514,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="perfmon":
                 if "end_win_perfmon" in line:
                     continue
@@ -537,12 +539,12 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="mgstat":
                 if "MGSTAT" in line:
                     continue
                 if "No output file was created." in line:
-                    print("mgstat error in pbuttons: No output file was created.")
+                    logging.warning("mgstat error in pbuttons: No output file was created.")
                     continue
                 if "Date" in line:
                     cols=list(map(lambda x: x.strip(), line.split(",")))
@@ -564,7 +566,7 @@ def parsepbuttons(file,db):
                 count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="sar-u":
                 if "Linux" in line:
                     sardate=line.split()[3]
@@ -572,7 +574,6 @@ def parsepbuttons(file,db):
                 if "Average" in line:
                     continue
                 if "%usr" in line and (osmode=="sunos" or osmode=="hpux"):
-                    print("creating insert")
                     cols=list(map(lambda x: x.strip(), line.split()[1:]))
                     numcols=len(cols)+1
                     query="CREATE TABLE IF NOT EXISTS \"sar-u\"(\"datetime\" TEXT,"
@@ -618,7 +619,7 @@ def parsepbuttons(file,db):
                         count+=1
                 if (count%10000==0):
                     db.commit()
-                    print(str(count)+".",end='',flush=True)
+                    logging.debug(str(count)+".",end='',flush=True)
             if mode=="monitor":
                 if "DISK I/O STATISTICS" in line:
                     submode="disk"
@@ -686,7 +687,7 @@ def parsepbuttons(file,db):
                         count+=1
                         if (count%10000==0):
                             db.commit()
-                            print(str(count)+".",end='',flush=True)
+                            logging.debug(str(count)+".",end='',flush=True)
                         continue
                     if (":" in line) and (len(cols)==6):
                         cols=[(diskdate)]+[cols[0].replace(":","")]+cols[2:]
@@ -694,7 +695,7 @@ def parsepbuttons(file,db):
                         count+=1
                         if (count%10000==0):
                             db.commit()
-                            print(str(count)+".",end='',flush=True)
+                            logging.debug(str(count)+".",end='',flush=True)
                         continue
 
             if mode in generic_items:
