@@ -17,6 +17,7 @@ To avoid any fighting with python versions there is a Dockerfile for building a 
 ```
 cd <some place you want the files>
 git clone https://github.com/murrayo/yape.git
+cd yape
 docker build -t yape2 .
 ```
 
@@ -42,7 +43,7 @@ Requires git, pip and Python installed aready as per Python Version as below. In
 
 ### About Python Version
 
-Python can be a beast about versions, for the simplest experience a container is a good way to go, see the instructions for Docker below.
+Python can be a beast about versions, for the simplest experience a container is a good way to go.
 
 yape has been tested on the following Python version;
 ```
