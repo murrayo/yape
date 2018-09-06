@@ -27,6 +27,7 @@ docker container run --rm -v `pwd`:/data yape2 --help
 
 For example to extract mgstat and vmstat quietly and also output csv files:
 ```
+cd <directory with your pButtons file.html>
 docker container run --rm -v `pwd`:/data yape2 --mgstat --vmstat -qc /data/<name of your pButtons file.html>
 ```
 
