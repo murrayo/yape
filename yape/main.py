@@ -46,7 +46,7 @@ def fileout_splitcols(db,config,section,split_on):
     rows=c.fetchall()
     for column in rows:
         c.execute("select * from \""+section+"\" where "+split_on+"=?",[column[0]])
-        file=os.path.join(filename,fileprefix+section+"."+column[0]+".csv")
+        file=os.path.join(basefilename,fileprefix+section+"."+column[0]+".csv")
         print("exporting "+section+"-"+column[0]+" to "+file)
         columns = [i[0] for i in c.description]
         with open(file, "w") as f:
