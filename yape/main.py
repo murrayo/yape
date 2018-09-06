@@ -12,8 +12,10 @@ import logging
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
 
-def fileout(db,basefilename,config,section):
+def fileout(db,config,section):
     fileprefix=config["fileprefix"]
+    basefilename=config["basefilename"]
+
     c = db.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
@@ -33,8 +35,9 @@ def ensure_dir(file_path):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def fileout_splitcols(db,filename,config,section,split_on):
+def fileout_splitcols(db,config,section,split_on):
     fileprefix=config["fileprefix"]
+    basefilename=config["basefilename"]
     c = db.cursor()
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
@@ -127,12 +130,12 @@ def yape2():
 
         if args.csv:
             ensure_dir(basefilename+os.sep)
-            fileout(db,basefilename,config,"mgstat")
-            fileout(db,basefilename,config,"vmstat")
-            fileout_splitcols(db,basefilename,config,"iostat","Device")
-            fileout_splitcols(db,basefilename,config,"sar-d","DEV")
-            fileout(db,basefilename,config,"perfmon")
-            fileout(db,basefilename,config,"sar-u")
+            fileout(db,config,"mgstat")
+            fileout(db,config,"vmstat")
+            fileout_splitcols(db,config,"iostat","Device")
+            fileout_splitcols(db,config,"sar-d","DEV")
+            fileout(db,config,"perfmon")
+            fileout(db,config,"sar-u")
 
         #plotting
         if args.graphsard or args.all:
