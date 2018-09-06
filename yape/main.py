@@ -3,7 +3,6 @@ import os
 import argparse
 
 import sys
-import bokeh
 import csv
 
 import sqlite3

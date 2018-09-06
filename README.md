@@ -1,65 +1,71 @@
 # yape 2
-yet another pButtons extractor 2
+
+Yet Another pButtons Extractor 2
 
 Second revision. Complete rewrite based on the ideas and lessons learned of the first one. And yes, this is currently heavily in the alpha stage. Use at your own risk.
 
 The goals for the rewrite are:
-   * make it a one-step-process
-   * add more interactivity with less waiting time
-   * be able to handle bigger datasets
 
-# Basic usage
+- make it a one-step-process
+- add more interactivity with less waiting time
+- be able to handle bigger datasets
 
-## Installation local copy
+## Installation: Docker Container (recommended)
+
+To avoid any fighting with python versions there is a Dockerfile for building a container for the interactive version
 
 ```
+cd <some place you want the files>
 git clone https://github.com/murrayo/yape.git
-sudo pip3 install . --upgrade
+docker build -t yape2 .
 ```
-## parameters
+
+You can run the container like this example to get parameters:
 ```
-usage: yape [-h] [--filedb FILEDB] [--skip-parse] [-c] [--mgstat] [--vmstat]
-            [--iostat] [--sard] [--monitor_disk] [--perfmon]
-            [--timeframe TIMEFRAME] [--prefix PREFIX] [--plotDisks PLOTDISKS]
-            [--log LOGLEVEL] [-a] [-q] [-o OUT]
-            pButtons_file_name
-
-Yape 2.0
-
-positional arguments:
-  pButtons_file_name    path to pButtons file to use
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --filedb FILEDB       use specific file as DB, useful to be able to used
-                        afterwards or as standalone datasource.
-  --skip-parse          disable parsing; requires filedb to be specified to
-                        supply data
-  -c                    will output the parsed tables as csv files. useful for
-                        further processing. will currently create: mgstat,
-                        vmstat, sar-u. sar-d and iostat will be output per
-                        device
-  --mgstat              plot mgstat data
-  --vmstat              plot vmstat data
-  --iostat              plot iostat data
-  --sard                plot sar-d data
-  --monitor_disk        plot disk data from monitor (vms)
-  --perfmon             plot perfmon data
-  --timeframe TIMEFRAME
-                        specify a timeframe for the plots, i.e. --timeframe
-                        "2018-05-16 00:01:16,2018-05-16 17:04:15"
-  --prefix PREFIX       specify output file prefix (this is for the filename
-                        itself, to specify a directory, use -o)
-  --plotDisks PLOTDISKS
-                        restrict list of disks to plot
-  --log LOGLEVEL        set log level:DEBUG,INFO,WARNING,ERROR,CRITICAL. The
-                        default is INFO
-  -a, --all             graph everything
-  -q, --quiet           no stdout output
-  -o OUT, --out OUT     specify base output directory, defaulting to
-                        <pbuttons_name>/
+cd <location of your pButtons file>
+docker container run --rm -v `pwd`:/data yape2 --help
 ```
-## Weekly overview graphs
+
+For example to extract mgstat and vmstat:
+```
+docker container run --rm -v `pwd`:/data yape2 --mgstat --vmstat -q /data/<name of your pButtons file.html
+```
+
+>Note:
+>This installs the command line version only, for the interactive version you will need to install locally in your OS (see below).
+
+
+
+## Installation: Local
+
+Requires git, pip and Python installed aready as per Python Version as below. Includes Alpha of the interactive version.
+
+### About Python Version
+
+Python can be a beast about versions, for the simplest experience a container is a good way to go, see the instructions for Docker below.
+
+yape has been tested on the following Python version;
+```
+$ python --version
+Python 3.6.4 :: Anaconda custom (64-bit)
+
+$ pip --version
+pip 18.0 from /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip (python 3.6)
+```
+
+### Install for running locally
+
+```
+cd <some place you want the files>
+git clone https://github.com/murrayo/yape.git
+sudo pip install . --upgrade
+
+yape --help
+```
+
+## Other things you can try
+ 
+### Weekly overview graphs
 
 To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
 ```
@@ -84,19 +90,6 @@ bokeh serve --show yapesrv --args /Users/kazamatzuri/work/cases/898291/0503/squh
 
 This will give you (maybe) an interactive display of the pbuttons passed in. If you run into any errors, feel free to create an issue here: https://github.com/murrayo/yape/issues
 
-## Docker
-
-To avoid any fighting with python versions there is also a Dockerfile for building a container for the interactive version
-
-For example:
-```
-docker build -t yape2 .
-```
-then you can run it like this:
-```
-docker container run --rm -v `pwd`:/data yape:2.0 -a /data/BHTRKLIVE1H16_AUSWLIVE02_20180115_000100_24hour2sec_P1.html
-```
-which will create the graphs in same manner as regularly calling it.
 
 ## Related Discussion
 

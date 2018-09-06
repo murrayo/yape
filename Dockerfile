@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.6
 
 COPY yape /yape/yape
 COPY setup.py /yape/setup.py
