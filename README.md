@@ -22,13 +22,12 @@ docker build -t yape2 .
 
 You can run the container like this example to get parameters:
 ```
-cd <location of your pButtons file>
 docker container run --rm -v `pwd`:/data yape2 --help
 ```
 
 For example to extract mgstat and vmstat quietly and also output csv files:
 ```
-docker container run --rm -v `pwd`:/data yape2 --mgstat --vmstat -qc /data/<name of your pButtons file.html
+docker container run --rm -v `pwd`:/data yape2 --mgstat --vmstat -qc /data/<name of your pButtons file.html>
 ```
 
 >Note:
