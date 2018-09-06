@@ -123,13 +123,15 @@ def parsepbuttons(file, db):
             if "Product Version String" in line:
                 if "HP HP-UX for Itanium" in line:
                     osmode = "hpux"
-                continue
+                    continue
                 if "Solaris for SPARC-64" in line:
                     osmode = "solsparc"
-                continue
+                    continue
                 if "OpenVMS/IA64" in line:
                     osmode = "openvms"
-                continue
+                if "Linux" in line:
+                    osmode = "linux"
+                    continue
 
             for c in conditions:
                 if c["match"] in line:
@@ -237,6 +239,7 @@ def parsepbuttons(file, db):
             # actual parsing things
             if mode == "sar-d":
                 if "Linux" in line:
+                    sardate = line.split()[3]
                     continue
                 if "HP-UX" in line:
                     osmode = "hpux"
@@ -249,25 +252,31 @@ def parsepbuttons(file, db):
                     sardate = line.split()[-1]
                     continue
                 if ("tps" in line or "device" in line) and query == "":
+                    logging.debug("osmode:"+osmode)
                     cols = list(map(lambda x: x.strip(), line.split()))
                     numcols = len(cols)
                     query = "CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery = "INSERT INTO sard VALUES (?,"
-                    skiprows = 2
+                    skipcols = 2
+                    if osmode == "linux":
+                        skipcols = 1
                     if osmode == "sunos":
-                        skiprows = 1
+                        skipcols = 1
                     if osmode == "hpux":
-                        skiprows = 1
-                    for c in cols[skiprows:]:
-                        query += "\"" + c + "\" " + \
+                        skipcols = 1
+                    for c in cols[skipcols:]:
+                        query += "\"" + c.replace("DEV","device") + "\" " + \
                             (pbdtypes.get(c) or "TEXT") + ","
                         insertquery += "?,"
                     query = query[:-1]
                     insertquery = insertquery[:-1]
                     query += ")"
                     insertquery += ")"
+                    logging.debug("create query:"+query)
                     cursor.execute(query)
                     db.commit()
+                    continue
+                elif ("tps" in line or "device" in line):
                     continue
                 cols = line.split()
                 if osmode == "sunos" or osmode == "hpux":
@@ -276,7 +285,9 @@ def parsepbuttons(file, db):
                         cols = [(sardate + " " + cols[0])] + cols[1:]
                     else:
                         cols = [(sardate + " " + sartime)] + cols
-
+                elif osmode == "linux":
+                    currentdate = sardate + " " + cols[0]
+                    cols = [currentdate] + cols[1:]
                 else:
                     currentdate = cols[0] + " " + cols[1]
                     cols = [currentdate] + cols[2:]
@@ -289,7 +300,7 @@ def parsepbuttons(file, db):
                 count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "iostat":
                 if osmode == "hpux":
                     continue
@@ -325,7 +336,7 @@ def parsepbuttons(file, db):
                 count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "vmstat":
                 if "end_vmstat" in line:
                     continue
@@ -338,7 +349,7 @@ def parsepbuttons(file, db):
                 count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "perfmon":
                 if "end_win_perfmon" in line:
                     continue
@@ -364,7 +375,7 @@ def parsepbuttons(file, db):
                 count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "mgstat":
                 if "MGSTAT" in line:
                     continue
@@ -393,7 +404,7 @@ def parsepbuttons(file, db):
                 count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "sar-u":
                 if "Linux" in line:
                     sardate = line.split()[3]
@@ -449,7 +460,7 @@ def parsepbuttons(file, db):
                         count += 1
                 if (count % 10000 == 0):
                     db.commit()
-                    logging.debug(str(count) + ".", end='', flush=True)
+                    logging.debug(str(count) + ".")
             if mode == "monitor":
                 if "DISK I/O STATISTICS" in line:
                     submode = "disk"
@@ -518,7 +529,7 @@ def parsepbuttons(file, db):
                         count += 1
                         if (count % 10000 == 0):
                             db.commit()
-                            logging.debug(str(count) + ".", end='', flush=True)
+                            logging.debug(str(count) + ".")
                         continue
                     if (":" in line) and (len(cols) == 6):
                         cols = [(diskdate)] + \
@@ -527,7 +538,7 @@ def parsepbuttons(file, db):
                         count += 1
                         if (count % 10000 == 0):
                             db.commit()
-                            logging.debug(str(count) + ".", end='', flush=True)
+                            logging.debug(str(count) + ".")
                         continue
 
             if mode in generic_items:
