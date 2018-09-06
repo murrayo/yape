@@ -18,7 +18,7 @@ def fileout(db,basefilename,config,section):
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", [section])
     if len(c.fetchall()) == 0:
         return None
-    file=os.path.join(filename,fileprefix+section+".csv")
+    file=os.path.join(basefilename,fileprefix+section+".csv")
     print("exporting "+section+" to "+file)
     c.execute("select * from \""+section+"\"")
     columns = [i[0] for i in c.description]
@@ -133,7 +133,6 @@ def yape2():
             fileout_splitcols(db,basefilename,config,"sar-d","DEV")
             fileout(db,basefilename,config,"perfmon")
             fileout(db,basefilename,config,"sar-u")
-
 
         #plotting
         if args.graphsard or args.all:
