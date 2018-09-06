@@ -132,9 +132,10 @@ def parsepbuttons(file, db):
                 if "Linux" in line:
                     osmode = "linux"
                     continue
-
+            matched = False
             for c in conditions:
                 if c["match"] in line:
+                    matched = True
                     mode = c["mode"]
                     logging.debug("starting " + mode)
                     query = "CREATE TABLE IF NOT EXISTS \"" + \
@@ -142,6 +143,8 @@ def parsepbuttons(file, db):
                     cursor.execute(query)
                     db.commit()
                     continue
+            if matched:
+                continue
             if "id=vmstat>" in line:
                 if osmode == "sunos" or osmode == "solsparc" or osmode == "hpux":
                     colnames = line.split("<pre>")[1].split()
@@ -252,7 +255,7 @@ def parsepbuttons(file, db):
                     sardate = line.split()[-1]
                     continue
                 if ("tps" in line or "device" in line) and query == "":
-                    logging.debug("osmode:"+osmode)
+                    logging.debug("osmode:" + osmode)
                     cols = list(map(lambda x: x.strip(), line.split()))
                     numcols = len(cols)
                     query = "CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
@@ -265,14 +268,14 @@ def parsepbuttons(file, db):
                     if osmode == "hpux":
                         skipcols = 1
                     for c in cols[skipcols:]:
-                        query += "\"" + c.replace("DEV","device") + "\" " + \
+                        query += "\"" + c.replace("DEV", "device") + "\" " + \
                             (pbdtypes.get(c) or "TEXT") + ","
                         insertquery += "?,"
                     query = query[:-1]
                     insertquery = insertquery[:-1]
                     query += ")"
                     insertquery += ")"
-                    logging.debug("create query:"+query)
+                    logging.debug("create query:" + query)
                     cursor.execute(query)
                     db.commit()
                     continue
