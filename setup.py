@@ -11,6 +11,8 @@ setup(name='yape',
       entry_points = {
         'console_scripts': ['yape=yape.command_line:main','yape-profile=yape.command_line:main_profile'],
       },
+      test_suite='nose.collector',
+      tests_require=['nose'],
       install_requires=[
       'pytz==2018.5',
       'matplotlib==2.2.3',

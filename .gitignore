@@ -1,3 +1,6 @@
 *.pyc
 temp/*
 .idea
+yape.egg-info/*
+testresults/*
+.eggs*
