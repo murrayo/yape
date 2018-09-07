@@ -118,6 +118,10 @@ def parsepbuttons(file, db):
                 count = 0
                 insertquery = ""
                 mode = ""
+
+            if "An empty file was created." in line:
+                logging.debug("empty "+mode+" section")
+                continue
             # add better osmode detection
 
             if "Product Version String" in line:
