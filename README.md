@@ -65,7 +65,7 @@ yape --help
 ```
 
 ## Other things you can try
- 
+
 ### Weekly overview graphs
 
 To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
@@ -91,6 +91,15 @@ bokeh serve --show yapesrv --args /Users/kazamatzuri/work/cases/898291/0503/squh
 
 This will give you (maybe) an interactive display of the pbuttons passed in. If you run into any errors, feel free to create an issue here: https://github.com/murrayo/yape/issues
 
+## Testing
+
+To run the unittests, use
+```
+python setup.py nosetests
+```
+(you might need to use python3 as command if you have multiple versions of python installed)
+
+It will run tests with all pbutton files found in the test-data directory.
 
 ## Related Discussion
 

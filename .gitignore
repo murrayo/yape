@@ -4,3 +4,4 @@ temp/*
 yape.egg-info/*
 testresults/*
 .eggs*
+test-data/*
