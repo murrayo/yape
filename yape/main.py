@@ -8,6 +8,8 @@ import csv
 import sqlite3
 
 import logging
+import tempfile
+import zipfile
 
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
@@ -102,7 +104,37 @@ def yape2(args = None):
             db=sqlite3.connect(":memory:")
             db.execute('pragma journal_mode=wal')
             db.execute('pragma synchronous=0')
+
+        if args.prefix is not None:
+            fileprefix=args.prefix
+        else:
+            fileprefix=""
+
         if not args.skipparse:
+            #it's unrealistic to assume we wil have enough memory to hold the extracted pbuttons file
+            #so we extract it to a temp directory and extract it there
+            if args.pButtons_file_name.split(".")[-1]=="zip":
+
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    dest=tmpdir+os.sep
+                    ensure_dir(tmpdir+os.sep)
+                    with open(args.pButtons_file_name, 'rb') as f:
+                        zf = zipfile.ZipFile(f)
+                        zf.extractall(dest)
+                        logging.debug("using temp directory:"+dest)
+                        temppbfile=None
+                        for root, dirs, files in os.walk(dest):
+                            for file_ in files:
+                                #this will only grab the first html file in the zipfile
+                                #we assume for now people are not evil in what they pass in ....
+                                if "html" in file_:
+                                    temppbfile = os.path.join(root, file_)
+                                    continue
+                        if temppbfile is not None:
+                            parsepbuttons(temppbfile,db)
+                        else:
+                            logging.error("passed in zipfile with no included pbuttons html file")
+                            exit(1)
             parsepbuttons(args.pButtons_file_name,db)
 
         if args.out is not None:
@@ -110,10 +142,7 @@ def yape2(args = None):
         else:
             basefilename=args.pButtons_file_name.split(".")[0]
 
-        if args.prefix is not None:
-            fileprefix=args.prefix
-        else:
-            fileprefix=""
+
 
         if args.plotDisks is not None:
             plotDisks=args.plotDisks
