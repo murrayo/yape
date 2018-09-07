@@ -53,6 +53,7 @@ def fileout_splitcols(db,config,section,split_on):
             csvWriter = csv.writer(f)
             csvWriter.writerow(columns)
             csvWriter.writerows(c)
+
 def parse_args(args):
     parser = argparse.ArgumentParser(description='Yape 2.0')
     parser.add_argument("pButtons_file_name", help="path to pButtons file to use")
@@ -74,10 +75,11 @@ def parse_args(args):
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-q","--quiet",dest='quiet',help="no stdout output",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
-    return parser.parse_args()
+    return parser.parse_args(args)
 
-def yape2():
-    args = parse_args(sys.argv[1:])
+def yape2(args = None):
+    if args==None:
+        args = parse_args(sys.argv[1:])
 
     try:
         if args.loglevel is not None:
