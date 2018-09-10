@@ -1,0 +1,3 @@
+#!/bin/bash
+
+rsync -av --progress lx6:/scratch1/fhaupt/yape-testdata/* .

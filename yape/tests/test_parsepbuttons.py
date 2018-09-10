@@ -5,7 +5,7 @@ import os
 import traceback
 import logging
 
-TEST_DIR="yape-testdata"
+TEST_DIR="testdata"
 TEST_RESULTS="testresults"
 #just to understand how tests work
 class TestParser():
