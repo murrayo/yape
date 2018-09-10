@@ -10,9 +10,22 @@ import sqlite3
 import logging
 import tempfile
 import zipfile
+import yaml
 
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
+
+def read_config(cfgfile,config):
+    if cfgfile is not None and os.path.isfile(cfgfile):
+        cfg = yaml.load(cfgfile)
+        return {**config,**cfg}
+    elif os.path.isfile("~/.yape.yml"):
+        cfg = yaml.load("~/.yape.yml")
+        return {**config,**cfg}
+    return config
+
+
+
 
 def fileout(db,config,section):
     fileprefix=config["fileprefix"]
@@ -72,11 +85,13 @@ def parse_args(args):
     parser.add_argument("--prefix",dest='prefix',help="specify output file prefix (this is for the filename itself, to specify a directory, use -o)")
     parser.add_argument("--plotDisks",dest='plotDisks',help="restrict list of disks to plot")
 
+
     parser.add_argument("--log",dest="loglevel",help="set log level:DEBUG,INFO,WARNING,ERROR,CRITICAL. The default is INFO")
 
     parser.add_argument("-a","--all",dest='all',help="graph everything",action="store_true")
     parser.add_argument("-q","--quiet",dest='quiet',help="no stdout output",action="store_true")
     parser.add_argument("-o","--out",dest='out',help="specify base output directory, defaulting to <pbuttons_name>/")
+    parser.add_argument("--config",dest='configfile',help="specify the location of a config file. ~/.yape.yml is used by default.")
     return parser.parse_args(args)
 
 def yape2(args = None):
@@ -155,11 +170,15 @@ def yape2(args = None):
         # makes it easier to extend functionality to carry
         # command line parameters to subfunctions...
         config={}
+        config["quiet"]=args.quiet
+
+        #doing config file read here, because we want the quiet flag to be overwritable in the config
+        #but not the below config settings
+        config=read_config(args.configfile,config)
         config["fileprefix"]=fileprefix
         config["plotDisks"]=plotDisks
         config["timeframe"]=args.timeframe
         config["basefilename"]=basefilename
-        config["quiet"]=args.quiet
 
         if args.csv:
             ensure_dir(basefilename+os.sep)

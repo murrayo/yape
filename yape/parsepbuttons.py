@@ -261,12 +261,15 @@ def parsepbuttons(file, db):
                 if ("tps" in line or "device" in line) and query == "":
                     logging.debug("osmode:" + osmode)
                     cols = list(map(lambda x: x.strip(), line.split()))
+                    logging.debug(cols)
                     numcols = len(cols)
                     query = "CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery = "INSERT INTO sard VALUES (?,"
                     skipcols = 2
                     if osmode == "linux":
                         skipcols = 1
+                        if 'PM' in cols or 'AM' in cols:
+                            skipcols = 2
                     if osmode == "sunos":
                         skipcols = 1
                     if osmode == "hpux":
@@ -280,6 +283,7 @@ def parsepbuttons(file, db):
                     query += ")"
                     insertquery += ")"
                     logging.debug("create query:" + query)
+                    logging.debug("insert query:" + insertquery)
                     cursor.execute(query)
                     db.commit()
                     continue
@@ -293,8 +297,12 @@ def parsepbuttons(file, db):
                     else:
                         cols = [(sardate + " " + sartime)] + cols
                 elif osmode == "linux":
-                    currentdate = sardate + " " + cols[0]
-                    cols = [currentdate] + cols[1:]
+                    if 'PM' in cols or 'AM' in cols:
+                        currentdate = sardate + " " + cols[0] + " " + cols[1]
+                        cols = [currentdate] + cols[2:]
+                    else:
+                        currentdate = sardate + " " + cols[0]
+                        cols = [currentdate] + cols[1:]
                 else:
                     currentdate = cols[0] + " " + cols[1]
                     cols = [currentdate] + cols[2:]
