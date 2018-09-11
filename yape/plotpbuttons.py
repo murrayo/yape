@@ -19,13 +19,29 @@ import logging
 
 
 
-def dispatch_plot(df,column,outfile,timeframe):
-    genericplot(df,column,outfile,timeframe)
+def dispatch_plot(df,column,outfile,config):
+    genericplot(df,column,outfile,config)
 
-def genericplot(df,column,outfile,timeframe):
+def parse_tuple(string):
+    try:
+        s = eval(string)
+        if type(s) == tuple:
+            return s
+        return
+    except:
+        return
+
+def genericplot(df,column,outfile,config):
+    timeframe=config["timeframe"]
     outfile=outfile.replace(":",".")
     logging.info("creating "+outfile)
-    fig,ax=plt.subplots(figsize=(16,6), dpi=80, facecolor='w', edgecolor='dimgrey')
+    dim=(16,6)
+    try:
+        dim=parse_tuple("("+config['plotting']['dim']+")")
+    except KeyError:
+        pass
+    fig,ax=plt.subplots(figsize=dim, dpi=80, facecolor='w', edgecolor='dimgrey')
+
 
     if timeframe!="":
         ax.xaxis.set_minor_locator(AutoMinorLocator(n=20))
@@ -90,7 +106,7 @@ def plot_subset_split(db,config,subsetname,split_on):
                     file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+"."+timeframe+".png")
                 else:
                     file=os.path.join(basename,fileprefix+subsetname+"."+column[0]+"."+key.replace("/","_")+".png")
-                dispatch_plot(data,key,file,timeframe)
+                dispatch_plot(data,key,file,config)
 
 def plot_subset(db,config,subsetname):
     fileprefix=config["fileprefix"]
@@ -115,7 +131,7 @@ def plot_subset(db,config,subsetname):
             file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+"."+timeframe+".png".replace("%","_"))
         else:
             file=os.path.join(basename,fileprefix+subsetname+"."+key.replace("\\","_").replace("/","_")+".png".replace("%","_"))
-        dispatch_plot(data,key,file,timeframe)
+        dispatch_plot(data,key,file,config)
 
 def check_data(db,name):
     cur = db.cursor()

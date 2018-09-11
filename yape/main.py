@@ -11,17 +11,19 @@ import logging
 import tempfile
 import zipfile
 import yaml
+from pathlib import Path
 
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
 
 def read_config(cfgfile,config):
-    if cfgfile is not None and os.path.isfile(cfgfile):
-        cfg = yaml.load(cfgfile)
-        return {**config,**cfg}
-    elif os.path.isfile("~/.yape.yml"):
-        cfg = yaml.load("~/.yape.yml")
-        return {**config,**cfg}
+    if cfgfile is None:
+        cfgfile=os.path.join(Path.home(),".yape.yml")
+    if os.path.isfile(cfgfile):
+        with open(cfgfile, 'r') as ymlfile:
+            cfg = yaml.load(ymlfile)
+            logging.debug(cfg)
+            return {**config,**cfg}
     return config
 
 
@@ -175,6 +177,7 @@ def yape2(args = None):
         #doing config file read here, because we want the quiet flag to be overwritable in the config
         #but not the below config settings
         config=read_config(args.configfile,config)
+        logging.debug(config)
         config["fileprefix"]=fileprefix
         config["plotDisks"]=plotDisks
         config["timeframe"]=args.timeframe

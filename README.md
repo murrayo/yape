@@ -66,6 +66,15 @@ yape --help
 
 ## Other things you can try
 
+### Personal default options
+
+You can specify a configuration file with the
+```
+yape --config config.example.yml ...
+```
+parameter. This allows to set things like the default output graph size. See `config.example.yml` for possible options and their default value.
+Yape will always check if there is a `~/.yape.yml` file and load that.
+
 ### Weekly overview graphs
 
 To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
