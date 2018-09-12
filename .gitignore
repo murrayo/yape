@@ -6,3 +6,4 @@ testresults/*
 .eggs*
 testdata/*.zip
 testdata/*.html
+testdata/**png

@@ -32,16 +32,18 @@ class TestParser():
         assert args.monitor_disk
         assert args.graphperfmon
 
+
+    #pretty much a full stack test of parsing and plotting for all pbuttons in the testdata dir
     def test_db_parse(self):
         onlyfiles = [os.path.join(TEST_DIR, f) for f in os.listdir(TEST_DIR) if os.path.isfile(os.path.join(TEST_DIR, f))]
-        test_param = { ''}
+        testingcfg = os.path.join(TEST_DIR,"config.test.yml")
         for file in onlyfiles:
             if "html" not in file:
                 continue
             logging.debug(file)
             basename=os.path.basename(file)
             db_file=os.path.join(TEST_RESULTS,basename+".db")
-            params=['--filedb',db_file,file]
+            params=['-o',os.path.join(TEST_RESULTS,basename),'-a','--config',testingcfg,'--filedb',db_file,file]
             logging.debug(params)
             args=parse_args(params)
             try:
