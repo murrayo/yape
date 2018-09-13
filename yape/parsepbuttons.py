@@ -398,6 +398,9 @@ def parsepbuttons(file, db):
                     logging.warning(
                         "mgstat error in pbuttons: No output file was created.")
                     continue
+                if not line.strip():
+                    #ignore empty line (some rh mgstat on ~2016.1.x)
+                    continue
                 if "Date" in line:
                     cols = list(map(lambda x: x.strip(), line.split(",")))
                     query = "CREATE TABLE IF NOT EXISTS mgstat(\"datetime\" TEXT,"
@@ -413,6 +416,7 @@ def parsepbuttons(file, db):
                     cursor.execute(query)
                     db.commit()
                     continue
+
                 cols = list(map(lambda x: x.strip(), line.split(",")))
                 cols = [(cols[0] + " " + cols[1])] + cols[2:]
                 cursor.execute(insertquery, cols)
