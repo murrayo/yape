@@ -36,7 +36,8 @@ def parsepbuttons(file, db):
                 "w": "INTEGER", "swap": "INTEGER", "re": "INTEGER",  "mf": "INTEGER", "pi": "INTEGER", "po": "INTEGER",
                 "fr": "INTEGER", "de": "INTEGER", "sr": "INTEGER", "s3": "INTEGER", "s4": "INTEGER", "sd": "INTEGER",
                 "sd": "INTEGER", "GblSz": "INTEGER", "pGblNsz": "INTEGER", "pGblAsz": "INTEGER", "ObjSz": "INTEGER",
-                "pObjNsz": "INTEGER", "pObjAsz": "INTEGER", "BDBSz": "INTEGER", "pBDBNsz": "INTEGER", "pBDBAsz": "INTEGER", "avm": "INTEGER", "at": "INTEGER"}
+                "pObjNsz": "INTEGER", "pObjAsz": "INTEGER", "BDBSz": "INTEGER", "pBDBNsz": "INTEGER", "pBDBAsz": "INTEGER", "avm": "INTEGER", "at": "INTEGER",
+                "RouSz":"INTEGER","pRouAsz":"INTEGER","Blk_read/s":"REAL","Blk_wrtn/s":"REAL","Blk_read":"INTEGER","Blk_wrtn":"INTEGER"}
     mode = ""  # hold current parsing mode
     submode = ""  # further status var for ugly vms monitor data parsing
     cursor = db.cursor()
@@ -96,6 +97,10 @@ def parsepbuttons(file, db):
             if skipline > 0:
                 skipline -= 1
                 continue
+            if not line.strip():
+                continue
+            if "<pre>\n"==line:
+                continue
             # determine parsing states
             if "Topofpage" in line and mode != "":
                 logging.debug("end of " + mode)
@@ -124,7 +129,7 @@ def parsepbuttons(file, db):
                 continue
             # add better osmode detection
 
-            if "Product Version String" in line:
+            if "Version String" in line:
                 if "HP HP-UX for Itanium" in line:
                     osmode = "hpux"
                     continue
@@ -149,7 +154,39 @@ def parsepbuttons(file, db):
                     continue
             if matched:
                 continue
+            if "<pre><!-- beg_vmstat -->" == line:
+                continue
+            if mode == "vmstat" and ("beg_vmstat" in line):
+                continue
+            if mode == "vmstat" and ("swpd" in line):
+                colnames = line.split()[2:]
+                numcols = len(colnames) + 2
+                added = []
+                query = "CREATE TABLE IF NOT EXISTS vmstat(\"datetime\" TEXT,"
+                insertquery = "INSERT INTO vmstat VALUES (?,"
+                for c in colnames:
+                    t = c
+                    if c in added:
+                        t = c + "_1"
+                        added.append(t)
+                    else:
+                        added.append(c)
+                    query += "\"" + t + "\" " + \
+                        (pbdtypes.get(c) or "TEXT") + ","
+                    insertquery += "?,"
+                query = query[:-1]
+                insertquery = insertquery[:-1]
+                query += ")"
+                insertquery += ")"
+                cursor.execute(query)
+                db.commit()
+                continue
             if "id=vmstat>" in line:
+                mode = "vmstat"
+                count = 0
+                logging.debug("starting " + mode)
+                if "beg_vmstat" not in line:
+                    continue
                 if osmode == "sunos" or osmode == "solsparc" or osmode == "hpux":
                     colnames = line.split("<pre>")[1].split()
                     colnames = list(map(lambda x: x.strip(), colnames))
@@ -173,6 +210,7 @@ def parsepbuttons(file, db):
                     insertquery += ")"
                 else:
                     # ugh :/
+                    logging.debug(line)
                     colnames = line.split("<pre>")[1].split()[2:]
                     numcols = len(colnames) + 2
                     added = []
@@ -195,8 +233,6 @@ def parsepbuttons(file, db):
                 cursor.execute(query)
                 db.commit()
                 count = 0
-                mode = "vmstat"
-                logging.debug("starting " + mode)
                 continue
             if "id=sar-u" in line:
                 query = ""
@@ -246,7 +282,8 @@ def parsepbuttons(file, db):
             # actual parsing things
             if mode == "sar-d":
                 if "Linux" in line:
-                    sardate = line.split()[3]
+                    cols=line.split()
+                    sardate = cols[3]
                     continue
                 if "HP-UX" in line:
                     osmode = "hpux"
@@ -261,7 +298,6 @@ def parsepbuttons(file, db):
                 if ("tps" in line or "device" in line) and query == "":
                     logging.debug("osmode:" + osmode)
                     cols = list(map(lambda x: x.strip(), line.split()))
-                    logging.debug(cols)
                     numcols = len(cols)
                     query = "CREATE TABLE IF NOT EXISTS sard(datetime TEXT,"
                     insertquery = "INSERT INTO sard VALUES (?,"
@@ -317,8 +353,13 @@ def parsepbuttons(file, db):
                     db.commit()
                     logging.debug(str(count) + ".")
             if mode == "iostat":
+                if "avg-cpu:" in line:
+                    skipline=1
+                    continue
                 if osmode == "hpux":
                     continue
+                if len(line.split())==7 and "Linux" in line:
+                    currentdate = line.split()[3]
                 if "Linux" in line:
                     continue
                 if len(line.split()) == 3 or len(line.split()) == 2:
@@ -427,6 +468,10 @@ def parsepbuttons(file, db):
             if mode == "sar-u":
                 if "Linux" in line:
                     sardate = line.split()[3]
+                    continue
+                if not line.strip():
+                    continue
+                if "beg_sar_u" in line:
                     continue
                 if "Average" in line:
                     continue
