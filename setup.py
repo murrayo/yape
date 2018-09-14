@@ -17,5 +17,6 @@ setup(name='yape',
       'pytz==2018.5',
       'matplotlib==2.2.3',
       'numpy==1.15.1',
-      'pandas==0.23.4'],
+      'pandas==0.23.4',
+      'PyYAML==3.13'],
       zip_safe=False)
