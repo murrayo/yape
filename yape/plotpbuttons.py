@@ -99,7 +99,24 @@ def plot_subset_split(db,config,subsetname,split_on):
             logging.info("Including plot disk: "+column[0])
             c.execute("select * from \""+subsetname+"\" where "+split_on+"=?",[column[0]])
             data=pd.read_sql_query("select * from \""+subsetname+"\" where "+split_on+"=\""+column[0]+"\"",db)
-            data=fix_index(data)
+            if len(data['datetime'][0].split())==1:
+                #another evil hack for iostat on some redhats (no complete timestamps)
+                #the datetime field only has '09/13/18' instead of '09/13/18 14:39:49'
+                # -> take timestamps from mgstat
+                data=data.drop('datetime',axis=1)
+                size=data.shape[0]
+                #one of those evil OS without datetime in vmstat
+                #evil hack: take index from mgstat (we should have that in every pbuttons) and map that
+                #is going to horribly fail when the number of rows doesn't add up ---> TODO for later
+                dcolumn=pd.read_sql_query("select datetime from mgstat",db)
+                ##since mgstat has only one entry per timestamp, but iostat has one entry per timestamp per device
+                ##we need to duplicate the rows appropriately which is data.shape[0]/dcolumn.shape[0]) times
+                #dcolumn=dcolumn.loc[dcolumn.index.repeat(size/dcolumn.shape[0])].reset_index(drop=True)
+
+                data.index=pd.to_datetime(dcolumn['datetime'][:size])
+                data.index.name='datetime'
+            else:
+                data=fix_index(data)
             data=data.drop([split_on],axis=1)
             for key in data.columns.values:
                 if timeframe is not None:
