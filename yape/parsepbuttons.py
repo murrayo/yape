@@ -37,7 +37,8 @@ def parsepbuttons(file, db):
                 "fr": "INTEGER", "de": "INTEGER", "sr": "INTEGER", "s3": "INTEGER", "s4": "INTEGER", "sd": "INTEGER",
                 "sd": "INTEGER", "GblSz": "INTEGER", "pGblNsz": "INTEGER", "pGblAsz": "INTEGER", "ObjSz": "INTEGER",
                 "pObjNsz": "INTEGER", "pObjAsz": "INTEGER", "BDBSz": "INTEGER", "pBDBNsz": "INTEGER", "pBDBAsz": "INTEGER", "avm": "INTEGER", "at": "INTEGER",
-                "RouSz":"INTEGER","pRouAsz":"INTEGER","Blk_read/s":"REAL","Blk_wrtn/s":"REAL","Blk_read":"INTEGER","Blk_wrtn":"INTEGER"}
+                "RouSz":"INTEGER","pRouAsz":"INTEGER","Blk_read/s":"REAL","Blk_wrtn/s":"REAL","Blk_read":"INTEGER","Blk_wrtn":"INTEGER",
+                "rsec/s":"REAL","wsec/s":"REAL"}
     mode = ""  # hold current parsing mode
     submode = ""  # further status var for ugly vms monitor data parsing
     cursor = db.cursor()
