@@ -141,6 +141,9 @@ def parsepbuttons(file, db):
                 if "Linux" in line:
                     osmode = "linux"
                     continue
+                if "Ubuntu Server LTS" in line:
+                    osmode = "ubuntu"
+                    continue
             matched = False
             for c in conditions:
                 if c["match"] in line:
@@ -178,6 +181,7 @@ def parsepbuttons(file, db):
                 insertquery = insertquery[:-1]
                 query += ")"
                 insertquery += ")"
+                logging.debug(insertquery)
                 cursor.execute(query)
                 db.commit()
                 continue
@@ -187,7 +191,7 @@ def parsepbuttons(file, db):
                 logging.debug("starting " + mode)
                 if "beg_vmstat" not in line:
                     continue
-                if osmode == "sunos" or osmode == "solsparc" or osmode == "hpux":
+                if osmode == "sunos" or osmode == "solsparc" or osmode == "hpux" or osmode=="ubuntu":
                     colnames = line.split("<pre>")[1].split()
                     colnames = list(map(lambda x: x.strip(), colnames))
                     numcols = len(colnames)
@@ -399,7 +403,7 @@ def parsepbuttons(file, db):
                 cols = line.split()
                 if len(cols) != numcols:
                     continue
-                if not (osmode == "solsparc" or osmode == "sunos" or osmode == "hpux"):
+                if not (osmode == "solsparc" or osmode == "sunos" or osmode == "hpux" or osmode =="ubuntu"):
                     cols = [(cols[0] + " " + cols[1])] + cols[2:]
                 cursor.execute(insertquery, cols)
                 count += 1
