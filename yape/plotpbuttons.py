@@ -55,7 +55,7 @@ def genericplot(df,column,outfile,config):
     if timeframe is not None:
         df[column][timeframe.split(",")[0]:timeframe.split(",")[1]].plot(ax=ax)
     else:
-        df[column].plot(ax=ax)
+        df[column].plot(ax=ax)  
 
     ax.set_ylim(ymin=0)  # Always zero start
     #ax.set_ylim(ymax=0.005)
@@ -65,6 +65,12 @@ def genericplot(df,column,outfile,config):
     plt.title(column, fontsize=10)
     plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=8)
+
+    # MO - Hack here for dot chart, parameters later
+    from matplotlib.lines import Line2D
+    for o in fig.findobj(Line2D):
+        o.set_linestyle(':')
+    
     if timeframe!="":
         plt.setp(ax.xaxis.get_minorticklabels(), rotation=70)
 
