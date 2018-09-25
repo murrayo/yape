@@ -43,7 +43,7 @@ def genericplot(df,column,outfile,config):
     fig,ax=plt.subplots(figsize=dim, dpi=80, facecolor='w', edgecolor='dimgrey')
 
 
-    if timeframe!="":
+    if timeframe is not None and timeframe!="":
         ax.xaxis.set_minor_locator(AutoMinorLocator(n=20))
     else:
         ax.xaxis.set_minor_locator(mdates.HourLocator())
