@@ -7,3 +7,4 @@ testresults/*
 testdata/*.zip
 testdata/*.html
 testdata/**png
+.DS_Store
