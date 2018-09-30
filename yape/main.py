@@ -174,6 +174,7 @@ def yape2(args = None):
         config={}
         config["quiet"]=args.quiet
 
+
         #doing config file read here, because we want the quiet flag to be overwritable in the config
         #but not the below config settings
         config=read_config(args.configfile,config)

@@ -36,8 +36,18 @@ def genericplot(df,column,outfile,config):
     outfile=outfile.replace(":",".")
     logging.info("creating "+outfile)
     dim=(16,6)
+    markersize=1
+    style='-'
     try:
         dim=parse_tuple("("+config['plotting']['dim']+")")
+    except KeyError:
+        pass
+    try:
+        markersize=float(config['plotting']['markersize'])
+    except KeyError:
+        pass
+    try:
+        style=config['plotting']['style']
     except KeyError:
         pass
     fig,ax=plt.subplots(figsize=dim, dpi=80, facecolor='w', edgecolor='dimgrey')
@@ -55,7 +65,7 @@ def genericplot(df,column,outfile,config):
     if timeframe is not None:
         df[column][timeframe.split(",")[0]:timeframe.split(",")[1]].plot(ax=ax)
     else:
-        df[column].plot(ax=ax)
+        df[column].plot(ax=ax,style=style,markersize=markersize)
 
     ax.set_ylim(ymin=0)  # Always zero start
     #ax.set_ylim(ymax=0.005)

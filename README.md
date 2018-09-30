@@ -75,6 +75,22 @@ yape --config config.example.yml ...
 parameter. This allows to set things like the default output graph size. See `config.example.yml` for possible options and their default value.
 Yape will always check if there is a `~/.yape.yml` file and load that.
 
+### Dotgraphs plotting
+To switch to dotgraphs instead of linegraphs, define the following in your config:
+```
+plotting:
+  dim: 16,6
+  style: .
+  markersize: 0.5
+```
+The defaults are:
+```
+plotting:
+  dim: 16,6
+  style: "-"
+  markersize: 1
+```
+
 ### Weekly overview graphs
 
 To create a week overview graph you can currently parse a number of pbuttons into a file and then plot that:
