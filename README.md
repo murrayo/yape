@@ -2,7 +2,7 @@
 
 Yet Another pButtons Extractor 2
 
-Second revision. Complete rewrite based on the ideas and lessons learned of the first one. And yes, this is currently heavily in the alpha stage. Use at your own risk.
+Second revision of the original yape. Complete rewrite based on the ideas and lessons learned of the first one. Still in development, but mostly in a usable from now. Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
 The goals for the rewrite are:
 
