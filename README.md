@@ -13,6 +13,24 @@ The goals for the rewrite are:
 
 ## Installation: Docker Container (recommended)
 
+### Use image from docker hub
+
+https://hub.docker.com/r/kazamatzuri/yape/
+
+The same usage information applies, for example:
+
+```
+docker container run --rm -v "$(pwd)":/data yape2 --help
+```
+
+For example to extract mgstat and vmstat quietly and also output csv files:
+```
+cd <directory with your pButtons file.html>
+docker container run --rm -v "$(pwd)":/data yape2 --mgstat --vmstat -qc /data/<name of your pButtons file.html>
+```
+
+
+### Create image yourself
 
 To avoid any fighting with python versions there is a Dockerfile for building a container
 
