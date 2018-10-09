@@ -1,0 +1,10 @@
+*.pyc
+temp/*
+.idea
+yape.egg-info/*
+testresults/*
+.eggs*
+testdata/*.zip
+testdata/*.html
+testdata/**png
+.DS_Store
