@@ -1,7 +1,6 @@
 from setuptools import setup
 
 setup(name='yape',
-      version='2.0',
       description='Yet another pbuttons tool',
       url='https://github.com/murrayo/yape',
       author='Fabian',
@@ -18,5 +17,9 @@ setup(name='yape',
       'matplotlib==2.2.3',
       'numpy==1.15.1',
       'pandas==0.23.4',
-      'PyYAML==3.13'],
+      'PyYAML==3.13',
+      'setuptools_scm==3.1.0'],
+      use_scm_version=True,
+      version='',
+      setup_requires=['setuptools_scm'],
       zip_safe=False)

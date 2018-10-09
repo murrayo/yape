@@ -2,7 +2,7 @@
 
 Yet Another pButtons Extractor 2
 
-Second revision of the original yape. Complete rewrite based on the ideas and lessons learned of the first one. Still in development, but mostly in a usable from now. Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
+Second revision of the original yape. Complete rewrite based on the ideas and lessons learned of the first one. Still in development, but mostly in a usable form now. Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
 The goals for the rewrite are:
 
@@ -10,9 +10,11 @@ The goals for the rewrite are:
 - add more interactivity with less waiting time
 - be able to handle bigger datasets
 
+
 ## Installation: Docker Container (recommended)
 
-To avoid any fighting with python versions there is a Dockerfile for building a container for the interactive version
+
+To avoid any fighting with python versions there is a Dockerfile for building a container
 
 ```
 cd <some place you want the files>

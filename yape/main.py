@@ -15,6 +15,16 @@ from pathlib import Path
 
 from yape.parsepbuttons import parsepbuttons
 from yape.plotpbuttons import mgstat,vmstat,iostat,perfmon,sard,monitor_disk
+from pkg_resources import get_distribution, DistributionNotFound
+
+def getVersion():
+    v=""
+    try:
+        v = get_distribution('yape').version
+    except DistributionNotFound:
+        v=""
+    pass
+    return v
 
 def read_config(cfgfile,config):
     if cfgfile is None:
@@ -72,7 +82,8 @@ def fileout_splitcols(db,config,section,split_on):
             csvWriter.writerows(c)
 
 def parse_args(args):
-    parser = argparse.ArgumentParser(description='Yape 2.0')
+    parser = argparse.ArgumentParser(description='Yape')
+    parser.add_argument("-v","--version",dest='version',help='display version information',action="version", version='%(prog)s '+getVersion())
     parser.add_argument("pButtons_file_name", help="path to pButtons file to use")
     parser.add_argument("--filedb",help="use specific file as DB, useful to be able to used afterwards or as standalone datasource.")
     parser.add_argument("--skip-parse",dest="skipparse",help="disable parsing; requires filedb to be specified to supply data",action="store_true")
@@ -99,8 +110,10 @@ def parse_args(args):
 def yape2(args = None):
     if args==None:
         args = parse_args(sys.argv[1:])
-
     try:
+        if args.version:
+            print('Yape version :' + version)
+            os._exit(1)
         if args.loglevel is not None:
             loglevel=getattr(logging,args.loglevel.upper(),None)
             if not isinstance(loglevel, int):
