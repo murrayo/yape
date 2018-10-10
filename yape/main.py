@@ -111,9 +111,6 @@ def yape2(args = None):
     if args==None:
         args = parse_args(sys.argv[1:])
     try:
-        if args.version:
-            print('Yape version :' + version)
-            os._exit(1)
         if args.loglevel is not None:
             loglevel=getattr(logging,args.loglevel.upper(),None)
             if not isinstance(loglevel, int):
