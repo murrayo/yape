@@ -231,3 +231,9 @@ def yape2(args = None):
 
     except OSError as e:
         print('Could not process pButtons file because: {}'.format(str(e)))
+
+
+
+if __name__ == '__main__':
+    # execute only if run as the entry point into the program
+    yape2()
