@@ -3,6 +3,7 @@ import pandas as pd
 
 import sqlite3
 import logging
+import sys
 
 
 # splits an array into sub arrays with length size
@@ -465,8 +466,19 @@ def parsepbuttons(file, db):
 
                 cols = list(map(lambda x: x.strip(), line.split(",")))
                 cols = [(cols[0] + " " + cols[1])] + cols[2:]
-                cursor.execute(insertquery, cols)
+                try:
+                    cursor.execute(insertquery, cols)
+                except sqlite3.Error as e:
+                    logging.error("Data insert error")
+                    logging.error("tried to add:")
+                    logging.error(line)
+                    logging.error("last good:")
+                    logging.error(lastgood)
+                    logging.error("into query:")
+                    logging.error(insertquery)
+                    sys.exit(1)
                 count += 1
+                lastgood=line
                 if (count % 10000 == 0):
                     db.commit()
                     logging.debug(str(count) + ".")
