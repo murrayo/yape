@@ -2,9 +2,6 @@
 stages:
   - build
 
-services:
-  - docker:dind
-
 build:
   stage: build
   script:
