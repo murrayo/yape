@@ -2,6 +2,9 @@ pipeline {
     agent {
         label 'docker'
     }
+    environment {
+        GIT_TAG = sh(returnStdout: true, script: 'git describe --always').trim()
+    }
  stages {
     stage('Clone repository') {
         steps {
@@ -38,7 +41,7 @@ pipeline {
                 //same agent. still annoying. see https://groups.google.com/forum/#!topic/jenkinsci-users/y_IOIxXb4T8
                 def yapeimage = docker.build("yape/yape")
                 docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-yape') {
-                    yapeimage.push("${env.BUILD_NUMBER}")
+                    yapeimage.push("${env.GIT_TAG}")
                     yapeimage.push("latest")
                 }
             }
