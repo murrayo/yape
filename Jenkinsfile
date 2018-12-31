@@ -4,19 +4,23 @@ pipeline {
     }
  stages {
     stage('Clone repository') {
-
-        checkout scm
+        steps {
+            checkout scm
+        }
     }
 
     stage('Build image') {
-
-        app = docker.build("yape/yape")
+        steps {
+            app = docker.build("yape/yape")
+        }
     }
 
     stage('Test image') {
         //at some point run the actual tests...
+        steps {
         app.inside {
             sh 'echo "Tests passed"'
+        }
         }
     }
 
