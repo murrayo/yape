@@ -16,18 +16,18 @@ The goals for the rewrite are:
 ### Use image from docker hub
 
 
-[https://hub.docker.com/r/kazamatzuri/yape/]
+[https://hub.docker.com/r/yape/yape/]
 
 The same usage information applies, for example:
 
 ```
-docker container run --rm -v "$(pwd)":/data kazamatzuri/yape --help
+docker container run --rm -v "$(pwd)":/data yape/yape --help
 ```
 
 For example to extract mgstat and vmstat quietly and also output csv files:
 ```
 cd <directory with your pButtons file.html>
-docker container run --rm -v "$(pwd)":/data kazamatzuri/yape --mgstat --vmstat -qc /data/<name of your pButtons file.html>
+docker container run --rm -v "$(pwd)":/data yape/yape --mgstat --vmstat -qc /data/<name of your pButtons file.html>
 ```
 
 

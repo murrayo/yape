@@ -18,7 +18,7 @@ def split(arr, size):
 
 
 def parsepbuttons(file, db):
-    pbdtypes = {"tps": "REAL", "rd_sec/s": "REAL", "wr_sec/s": "REAL", "avgrq-sz": "REAL", "avgqu-sz": "REAL", "await": "REAL",
+    pbdtypes = {"tps": "REAL", "rd_sec/s": "REAL", "wr_sec/s": "REAL", "avgrq-sz": "REAL", "avgqu-sz": "REAL",
                 "svctm": "REAL", "%util": "REAL", "Glorefs": "INTEGER", "RemGrefs": "INTEGER", "GRratio": "INTEGER",  "PhyRds": "INTEGER",
                 "Rdratio": "INTEGER", "Gloupds": "INTEGER", "RemGupds": "INTEGER",
                 "Rourefs": "INTEGER", "RemRrefs": "INTEGER",  "RouLaS": "INTEGER", "RemRLaS": "INTEGER",  "PhyWrs": "INTEGER",
@@ -32,10 +32,10 @@ def parsepbuttons(file, db):
                 "us": "INTEGER", "sy": "INTEGER", "id": "INTEGER", "wa": "INTEGER", "st": "INTEGER",
                 "Device": "TEXT", "rrqm/s": "REAL", "wrqm/s": "REAL", "r/s": "REAL", "w/s": "REAL",
                 "rkB/s": "REAL", "wkB/s": "REAL", "await": "REAL",
-                "r_await": "REAL", "w_await": "REAL", "%usr": "INTEGER", "%sys": "INTEGER", "%win": "INTEGER", "%idle": "INTEGER",
+                "r_await": "REAL", "w_await": "REAL", "%usr": "INTEGER", "%sys": "INTEGER", "%win": "INTEGER", 
                 "%busy": "INTEGER", "avque": "REAL", "r+w/s": "INTEGER", "blks/s": "INTEGER", "avwait": "REAL", "avserv": "REAL",
                 "w": "INTEGER", "swap": "INTEGER", "re": "INTEGER",  "mf": "INTEGER", "pi": "INTEGER", "po": "INTEGER",
-                "fr": "INTEGER", "de": "INTEGER", "sr": "INTEGER", "s3": "INTEGER", "s4": "INTEGER", "sd": "INTEGER",
+                "fr": "INTEGER", "de": "INTEGER", "sr": "INTEGER", "s3": "INTEGER", "s4": "INTEGER", 
                 "sd": "INTEGER", "GblSz": "INTEGER", "pGblNsz": "INTEGER", "pGblAsz": "INTEGER", "ObjSz": "INTEGER",
                 "pObjNsz": "INTEGER", "pObjAsz": "INTEGER", "BDBSz": "INTEGER", "pBDBNsz": "INTEGER", "pBDBAsz": "INTEGER", "avm": "INTEGER", "at": "INTEGER",
                 "RouSz":"INTEGER","pRouAsz":"INTEGER","Blk_read/s":"REAL","Blk_wrtn/s":"REAL","Blk_read":"INTEGER","Blk_wrtn":"INTEGER",

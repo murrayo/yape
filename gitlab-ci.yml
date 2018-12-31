@@ -4,6 +4,8 @@ stages:
 
 build:
   stage: build
-  script:
+  before_script:
     - docker info
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+  script:
     - docker build -t yape . 
