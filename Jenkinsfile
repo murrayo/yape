@@ -20,16 +20,22 @@ pipeline {
     stage('Test image') {
         //at some point run the actual tests...
         steps {
-            yapeimage.inside {
-                sh 'echo "Tests passed"'
+            script {
+                yapeimage.inside {
+                    sh 'echo "Tests passed"'
+                }
             }
         }
     }
 
     stage('Push image') {
-         docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-yape') {
-            yapeimage.push("${env.BUILD_NUMBER}")
-            yapeimage.push("latest")
+        steps {
+            script {
+                docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-yape') {
+                    yapeimage.push("${env.BUILD_NUMBER}")
+                    yapeimage.push("latest")
+                }
+            }
         }
     }
  }
