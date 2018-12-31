@@ -11,14 +11,14 @@ pipeline {
 
     stage('Build image') {
         steps {
-            app = docker.build("yape/yape")
+            def yapeimage = docker.build("yape/yape")
         }
     }
 
     stage('Test image') {
         //at some point run the actual tests...
         steps {
-        app.inside {
+        yapeimage.inside {
             sh 'echo "Tests passed"'
         }
         }
@@ -26,8 +26,8 @@ pipeline {
 
     stage('Push image') {
          docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials-yape') {
-            app.push("${env.BUILD_NUMBER}")
-            app.push("latest")
+            yapeimage.push("${env.BUILD_NUMBER}")
+            yapeimage.push("latest")
         }
     }
  }
