@@ -11,16 +11,18 @@ pipeline {
 
     stage('Build image') {
         steps {
-            def yapeimage = docker.build("yape/yape")
+            script {
+                def yapeimage = docker.build("yape/yape")
+            }
         }
     }
 
     stage('Test image') {
         //at some point run the actual tests...
         steps {
-        yapeimage.inside {
-            sh 'echo "Tests passed"'
-        }
+            yapeimage.inside {
+                sh 'echo "Tests passed"'
+            }
         }
     }
 
