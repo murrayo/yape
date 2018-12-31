@@ -476,6 +476,7 @@ def parsepbuttons(file, db):
                     logging.error(lastgood)
                     logging.error("into query:")
                     logging.error(insertquery)
+                    logging.error(e)
                     sys.exit(1)
                 count += 1
                 lastgood=line
