@@ -71,6 +71,7 @@ def genericplot(df,column,outfile,config):
     #ax.set_ylim(ymax=0.005)
     #ax.yaxis.set_major_formatter(FormatStrFormatter('%.4g'))
     ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
+    ax.get_yaxis().get_major_formatter().set_scientific(False)
     plt.grid(which='both', axis='both')
     plt.title(column, fontsize=10)
     plt.xlabel("Time", fontsize=10)
