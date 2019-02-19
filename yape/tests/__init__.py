@@ -1,7 +1,8 @@
 import os
 import shutil
 
-TEST_RESULTS="testresults"
+TEST_RESULTS = "testresults"
+
 
 def setup(self):
     if os.path.exists(TEST_RESULTS):
