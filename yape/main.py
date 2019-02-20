@@ -14,7 +14,7 @@ import yaml
 from pathlib import Path
 
 from yape.parsepbuttons import parsepbuttons
-from yape.plotpbuttons import mgstat, vmstat, iostat, perfmon, sard, monitor_disk
+from yape.plotpbuttons import mgstat, vmstat, iostat, perfmon, sard, monitor_disk, saru
 from pkg_resources import get_distribution, DistributionNotFound
 
 
@@ -126,6 +126,9 @@ def parse_args(args):
     )
     parser.add_argument(
         "--sard", dest="graphsard", help="plot sar-d data", action="store_true"
+    )
+    parser.add_argument(
+        "--saru", dest="graphsaru", help="plot sar-u data", action="store_true"
     )
     parser.add_argument(
         "--monitor_disk",
@@ -273,6 +276,10 @@ def yape2(args=None):
         if args.graphsard or args.all:
             ensure_dir(basefilename + os.sep)
             sard(db, config)
+
+        if args.graphsaru or args.all:
+            ensure_dir(basefilename + os.sep)
+            saru(db, config)
 
         if args.graphmgstat or args.all:
             ensure_dir(basefilename + os.sep)

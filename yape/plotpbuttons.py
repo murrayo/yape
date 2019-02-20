@@ -116,9 +116,9 @@ def plot_subset_split(db, config, subsetname, split_on):
     for column in rows:
         # If specified only plot selected disks for iostat - saves time and space
         if len(plotDisks) > 0 and subsetname == "iostat" and column[0] not in plotDisks:
-            logging.info("Skipping plot disk: " + column[0])
+            logging.info("Skipping plot subsection: " + column[0])
         else:
-            logging.info("Including plot disk: " + column[0])
+            logging.info("Including plot subsection: " + column[0])
             c.execute(
                 'select * from "' + subsetname + '" where ' + split_on + "=?",
                 [column[0]],
@@ -254,3 +254,5 @@ def monitor_disk(db, config):
 def sard(db, config):
     plot_subset_split(db, config, "sard", "device")
 
+def saru(db,config):
+    plot_subset_split(db,config,"sar-u","cpu")
