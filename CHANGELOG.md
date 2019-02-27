@@ -1,9 +1,21 @@
 # Changelog
 
 
-## (unreleased)
+## 2.2.0 (2019-02-27)
+
+### Changes
+
+* Hooked up black with pre-commit semantic versioning contributing document. [Fabian]
+
+### Fix
+
+* Version numbering config. [Fabian]
 
 ### Other
+
+* Bump version: 2.1.0 → 2.2.0. [Fabian]
+
+* Bump version: 2.0.8 → 2.1.0. [Fabian]
 
 * Going black. [Fabian]
 

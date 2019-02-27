@@ -47,7 +47,9 @@ Yape uses `semantic versions <https://semver.org/>`_. Once you know the appropri
 
    git checkout master
    gitchangelog > CHANGELOG.md
-   bumpversion minor
+   bumpversion patch
+
+(it doesn't automatically commit the version bump changes to make it easier to verify)
 
 Then push the new commit and tags to master:
 
