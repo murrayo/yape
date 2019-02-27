@@ -43,18 +43,17 @@ Jenkins handles releasing docker images to https://hub.docker.com/r/yape/yape/ta
 
 Yape uses `semantic versions <https://semver.org/>`_. Once you know the appropriate version part to bump, use the ``bumpversion`` tool to bump the package version, add a commit, and tag the commit appropriately:
 
-.. code-block:: bash
 
+```
    git checkout master
    gitchangelog > CHANGELOG.md
    bumpversion patch
-
+```
 (it doesn't automatically commit the version bump changes to make it easier to verify)
 
 Then push the new commit and tags to master:
 
-.. code-block:: bash
-
+```
    git push origin master --tags
-
+```
 Voila. 
