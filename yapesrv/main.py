@@ -28,33 +28,46 @@ from scripts.iostat_tab import iostat_tab
 from yape import parsepbuttons
 
 
-parser = argparse.ArgumentParser(description='Provide an interactive visualization to pButtons')
+parser = argparse.ArgumentParser(
+    description="Provide an interactive visualization to pButtons"
+)
 parser.add_argument("pButtons_file_name", help="Path and pButtons to use")
 args = parser.parse_args()
 
 try:
-    db=sqlite3.connect(":memory:")
-    parsepbuttons(args.pButtons_file_name,db)
+    db = sqlite3.connect(":memory:")
+    parsepbuttons(args.pButtons_file_name, db)
 
     # Create each of the tabs
     mgstat_tab = mgstat_tab(db)
     perfmon_tab = perfmon_tab(db)
-    license_tab = generic_tab(db,"license")
-    cpffile_tab = generic_tab(db,"cpffile")
+    license_tab = generic_tab(db, "license")
+    cpffile_tab = generic_tab(db, "cpffile")
     cstat_tab = cstat_tab(db)
     ss_tab = ss_tab(db)
     pselfy_tab = pselfy_tab(db)
     vmstat_tab = vmstat_tab(db)
-    #iostat_tab = iostat_tab(db)
-    windowsinfo_tab = generic_tab(db,"windowsinfo")
-    tasklist_tab = generic_tab(db,"tasklist")
+    # iostat_tab = iostat_tab(db)
+    windowsinfo_tab = generic_tab(db, "windowsinfo")
+    tasklist_tab = generic_tab(db, "tasklist")
     # Put all the tabs into one application
-    #ts=[mgstat_tab,vmstat_tab,perfmon_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
-    ts=[mgstat_tab,vmstat_tab,perfmon_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
-    tabs = Tabs(tabs = list(filter(None.__ne__, ts)))
-    #tabs = Tabs(tabs=[vmstat_tab])
+    # ts=[mgstat_tab,vmstat_tab,perfmon_tab,windowsinfo_tab,license_tab,cpffile_tab,cstat_tab,ss_tab,pselfy_tab,tasklist_tab]
+    ts = [
+        mgstat_tab,
+        vmstat_tab,
+        perfmon_tab,
+        windowsinfo_tab,
+        license_tab,
+        cpffile_tab,
+        cstat_tab,
+        ss_tab,
+        pselfy_tab,
+        tasklist_tab,
+    ]
+    tabs = Tabs(tabs=list(filter(None.__ne__, ts)))
+    # tabs = Tabs(tabs=[vmstat_tab])
 
     # Put the tabs in the current document for display
     curdoc().add_root(tabs)
 except OSError as e:
-    print('Could not process pButtons file because: {}'.format(str(e)))
+    print("Could not process pButtons file because: {}".format(str(e)))

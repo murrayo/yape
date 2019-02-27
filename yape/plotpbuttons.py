@@ -254,5 +254,6 @@ def monitor_disk(db, config):
 def sard(db, config):
     plot_subset_split(db, config, "sard", "device")
 
-def saru(db,config):
-    plot_subset_split(db,config,"sar-u","cpu")
+
+def saru(db, config):
+    plot_subset_split(db, config, "sar-u", "cpu")

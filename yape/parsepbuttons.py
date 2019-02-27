@@ -92,8 +92,8 @@ def parsepbuttons(file, db):
         "w_await": "REAL",
         "%usr": "INTEGER",
         "%sys": "INTEGER",
-        "%win": "INTEGER","%wio":"INTEGER",
-
+        "%win": "INTEGER",
+        "%wio": "INTEGER",
         "%busy": "INTEGER",
         "avque": "REAL",
         "r+w/s": "INTEGER",
@@ -477,10 +477,10 @@ def parsepbuttons(file, db):
                     currentdate = cols[0] + " " + cols[1]
                     cols = [currentdate] + cols[2:]
                 # deal with data not being logged on hp-ux sometimes with high load
-                if len(cols)==insertquery.count('?'):
+                if len(cols) == insertquery.count("?"):
                     colcache.append(cols)
                 else:
-                    logging.debug("invalid column found in sar-d"+str(line))
+                    logging.debug("invalid column found in sar-d" + str(line))
                 colcachenum += 1
                 if colcachenum == 10000:
                     cursor.executemany(insertquery, colcache)
@@ -666,7 +666,7 @@ def parsepbuttons(file, db):
                 if osmode == "hpux":
                     # hpux sar-u creates one line with all data, split it up chunks of 5
                     # first column of the line is the time
-                    timecol=[sardate + " " + cols[0]]
+                    timecol = [sardate + " " + cols[0]]
                     for splitcols in split(cols[1:], 5):
                         cols = timecol + splitcols
                         cursor.execute(insertquery, cols)
