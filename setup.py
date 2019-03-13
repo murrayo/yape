@@ -24,7 +24,7 @@ setup(
         "setuptools_scm==3.1.0",
         "gitchangelog>=3.0.4",
         "pre-commit>=1.14.4",
-        "black>=18",
+        "black>=18.9b0",
         "pystache>=0.5.4",
     ],
     version="2.2.0",
