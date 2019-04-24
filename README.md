@@ -2,7 +2,7 @@
 
 Yet Another pButtons Extractor 2
 
-Second revision. Complete rewrite based on the ideas and lessons learned of the first one. And yes, this is currently heavily in the alpha stage. Use at your own risk.
+Second revision of the original yape. Complete rewrite based on the ideas and lessons learned of the first one. Still in development, but mostly in a usable form now. Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
 The goals for the rewrite are:
 
@@ -10,9 +10,30 @@ The goals for the rewrite are:
 - add more interactivity with less waiting time
 - be able to handle bigger datasets
 
+
 ## Installation: Docker Container (recommended)
 
-To avoid any fighting with python versions there is a Dockerfile for building a container for the interactive version
+### Use image from docker hub
+
+
+[https://hub.docker.com/r/yape/yape/]
+
+The same usage information applies, for example:
+
+```
+docker container run --rm -v "$(pwd)":/data yape/yape --help
+```
+
+For example to extract mgstat and vmstat quietly and also output csv files:
+```
+cd <directory with your pButtons file.html>
+docker container run --rm -v "$(pwd)":/data yape/yape --mgstat --vmstat -qc /data/<name of your pButtons file.html>
+```
+
+
+### Create image yourself
+
+To avoid any fighting with python versions there is a Dockerfile for building a container
 
 ```
 cd <some place you want the files>
@@ -74,6 +95,22 @@ yape --config config.example.yml ...
 ```
 parameter. This allows to set things like the default output graph size. See `config.example.yml` for possible options and their default value.
 Yape will always check if there is a `~/.yape.yml` file and load that.
+
+### Dotgraphs plotting
+To switch to dotgraphs instead of linegraphs, define the following in your config:
+```
+plotting:
+  dim: 16,6
+  style: .
+  markersize: 0.5
+```
+The defaults are:
+```
+plotting:
+  dim: 16,6
+  style: "-"
+  markersize: 1
+```
 
 ### Weekly overview graphs
 

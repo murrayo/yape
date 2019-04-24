@@ -1,10 +1,6 @@
 FROM python:3
 
-COPY yape /yape/yape
-COPY setup.py /yape/setup.py
-WORKDIR /yape/
-RUN pip install --upgrade pip
-RUN cd /yape && pip install .
+RUN pip install -e git+https://github.com/murrayo/yape.git#egg=yape
 
 ENTRYPOINT ["yape"]
 CMD [ "-h" ]

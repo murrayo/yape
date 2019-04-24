@@ -1,2 +1,4 @@
 plotting:
   dim: 16,6
+  style: -
+  markersize: 1

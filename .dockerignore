@@ -8,6 +8,3 @@ testdata/*.zip
 testdata/*.html
 testdata/**png
 .DS_Store
-.vscode
-.vscode/*
-.vscode/settings.json
