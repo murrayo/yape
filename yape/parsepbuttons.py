@@ -78,6 +78,7 @@ def parsepbuttons(file, db):
         "us": "INTEGER",
         "sy": "INTEGER",
         "id": "INTEGER",
+#        "cpu": "INTEGER",
         "wa": "INTEGER",
         "st": "INTEGER",
         "Device": "TEXT",

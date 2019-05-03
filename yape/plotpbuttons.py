@@ -60,10 +60,18 @@ def genericplot(df, column, outfile, config):
         pass
     fig, ax = plt.subplots(figsize=dim, dpi=80, facecolor="w", edgecolor="dimgrey")
 
+    # Some customisation
+    # 
+    #print(column)  # Debug
+    # vmstat make chart top "100"
+    if column == "us" or  column == "sy" or column == "wa" :
+        ax.set_ylim(ymax=100)    
+
     if timeframe is not None and timeframe != "":
         ax.xaxis.set_minor_locator(AutoMinorLocator(n=20))
     else:
         ax.xaxis.set_minor_locator(mdates.HourLocator())
+
     ax.xaxis.set_major_locator(mdates.DayLocator())
     ax.xaxis.set_minor_formatter(mdates.DateFormatter("%H:%M:%S"))
     ax.xaxis.set_major_formatter(mdates.DateFormatter("\n\n %Y-%m-%d"))
@@ -79,8 +87,13 @@ def genericplot(df, column, outfile, config):
     ax.set_ylim(ymin=0)  # Always zero start
     # ax.set_ylim(ymax=0.005)
     # ax.yaxis.set_major_formatter(FormatStrFormatter('%.4g'))
-    ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
-    ax.get_yaxis().get_major_formatter().set_scientific(False)
+
+    if df[column].max() > 1000 :
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+    else:
+        ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
+        ax.get_yaxis().get_major_formatter().set_scientific(False)
+        
     plt.grid(which="both", axis="both")
     plt.title(column, fontsize=10)
     plt.xlabel("Time", fontsize=10)
