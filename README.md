@@ -66,13 +66,23 @@ Requires git, pip and Python installed aready as per Python Version as below. In
 
 Python can be a beast about versions, for the simplest experience a container is a good way to go.
 
-yape has been tested on the following Python version;
+yape has been tested on the following Python version - Anaconda 3.7
+
+See: https://www.anaconda.com/distribution
+
 ```
 $ python --version
-Python 3.6.4 :: Anaconda custom (64-bit)
+Python 3.7.1
+```
 
+If you are running anaconda;
+```
+$ conda install pip
+```
+
+```
 $ pip --version
-pip 18.0 from /Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages/pip (python 3.6)
+pip 18.1 from /Users/mo/anaconda3/lib/python3.7/site-packages/pip (python 3.7)
 ```
 
 ### Install for running locally
