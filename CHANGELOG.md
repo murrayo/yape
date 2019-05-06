@@ -1,6 +1,48 @@
 # Changelog
 
 
+## (unreleased)
+
+### Changes
+
+* Some massaging of the chart output to make more consistent and readable. Update AIX formats. Black code. [murrayo]
+
+### Other
+
+* Quite a lot of updates. - Some layout changes to the charts to make them a bit nicer for reports etc, including adding dates to the heading and some smarter x and y axis - vmstat now produces a Total CPU chart so you don't need to stand on your head and read the id chart. - Added some logic for AIX based on reports of failures. To be honest, I wouldnt be surprised if this caused some other AIX to fail... if so, sorry, please let me know. [murrayo]
+
+* Updated format y axis of vmstat (us, sy, wa) to 100 top, and numbers greater than 1,000. [murrayo]
+
+* Update readme for anaconda. [murrayo]
+
+* Update so that bokeh works with anaconda. [murrayo]
+
+* Merge pull request #19 from murrayo/Adding-styles-to-charts. [murrayo]
+
+  Adding styles to charts
+
+* Merge branch 'master' of https://github.com/murrayo/yape into Adding-styles-to-charts. [murrayo]
+
+  # Conflicts:
+  #	yape/plotpbuttons.py
+
+* Merge branch 'master' of github.com:murrayo/yape. [Fabian]
+
+* Merge pull request #15 from kazamatzuri/master. [Fabian]
+
+  doc: add github hint
+
+* Doc: add github hint. [Fabian]
+
+* Fix version indication for black. [Fabian]
+
+* Doc: fix formatting in contributing. [Fabian]
+
+* Doc: versioning adjustment, no auto commit. [Fabian]
+
+* Make charts dot chart to see effects, others may follow. [murrayo]
+
+
 ## 2.2.0 (2019-02-27)
 
 ### Changes
