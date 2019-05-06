@@ -19,28 +19,28 @@ def split(arr, size):
 
 def parsepbuttons(file, db):
 
-# Files are parsed by reading the input pButtons file line by line. 
-#
-# When a new section we care about is encountered, eg. "beg_mgstat" for mgstat;
-# An sqlite table is created using the column names in the OS command output
-# Each row is populated until the end of the section is encountered, eg. "end_mgstat".
-# Simple?
-#
-# Well the problem is different OS, and OS versions *may* output the same command in different ways.
-# Different column headings, or wildly different structure.
-# For example sar -u may be different in Red Hat and AIX. iostat is a terrible output to work with. 
-# Some commands dont even have a time stamp! Date strings, espeially in windows performn can be a real pia.
-# 
-# Over time exceptions are added to a section for the different operting systems and formats.
-# The version string determines can be used a filter, for example;
-# "Product Version String: Cache for UNIX (IBM AIX for System Power System-64) 2017.2.1 (Build 801) Wed Dec 6 2017 09:23:33 EST"
-# You now know its AIX at least.
-#
-# The basic steps are;
-# Set up a list of table columns and data types 
-# Filter the sections based on whether they are able to be charted
+    # Files are parsed by reading the input pButtons file line by line.
+    #
+    # When a new section we care about is encountered, eg. "beg_mgstat" for mgstat;
+    # An sqlite table is created using the column names in the OS command output
+    # Each row is populated until the end of the section is encountered, eg. "end_mgstat".
+    # Simple?
+    #
+    # Well the problem is different OS, and OS versions *may* output the same command in different ways.
+    # Different column headings, or wildly different structure.
+    # For example sar -u may be different in Red Hat and AIX. iostat is a terrible output to work with.
+    # Some commands dont even have a time stamp! Date strings, espeially in windows performn can be a real pia.
+    #
+    # Over time exceptions are added to a section for the different operting systems and formats.
+    # The version string determines can be used a filter, for example;
+    # "Product Version String: Cache for UNIX (IBM AIX for System Power System-64) 2017.2.1 (Build 801) Wed Dec 6 2017 09:23:33 EST"
+    # You now know its AIX at least.
+    #
+    # The basic steps are;
+    # Set up a list of table columns and data types
+    # Filter the sections based on whether they are able to be charted
 
-# Table columns and data types 
+    # Table columns and data types
 
     pbdtypes = {
         "tps": "REAL",
@@ -87,8 +87,8 @@ def parsepbuttons(file, db):
         "%iowait": "REAL",
         "%steal": "REAL",
         "%idle": "REAL",
-        "physc" : "REAL",
-        "%entc" : "REAL",
+        "physc": "REAL",
+        "%entc": "REAL",
         "r": "INTEGER",
         "b": "INTEGER",
         "swpd": "INTEGER",
@@ -157,11 +157,11 @@ def parsepbuttons(file, db):
         "Blk_wrtn": "INTEGER",
         "rsec/s": "REAL",
         "wsec/s": "REAL",
-# AIX vmstat
-        "fre" :"INTEGER",
+        # AIX vmstat
+        "fre": "INTEGER",
         "cy": "INTEGER",
         "pc": "REAL",
-        "ec": "REAL",        
+        "ec": "REAL",
     }
 
     # Some other useful variables
@@ -176,7 +176,7 @@ def parsepbuttons(file, db):
     colcache = []
     colcachenum = 0
     numcols = 0
-    mgstatdate= ""
+    mgstatdate = ""
 
     # Move generic items out of the loop we will not chart these
 
@@ -214,7 +214,7 @@ def parsepbuttons(file, db):
         "windowsinfo",
         "tasklist",
     ]
-  
+
     cursor.execute("CREATE TABLE IF NOT EXISTS sections (section TEXT)")
     conditions = [
         {"match": "id=license", "mode": "license"},
@@ -251,7 +251,7 @@ def parsepbuttons(file, db):
         {"match": "id=ipcs", "mode": "ipcs"},
     ]
 
-# Start reading the pButtons file
+    # Start reading the pButtons file
 
     with open(file, encoding="latin-1") as f:
         insertquery = ""
@@ -264,7 +264,7 @@ def parsepbuttons(file, db):
                 continue
             if "<pre>\n" == line:
                 continue
-            
+
             # determine parsing states
             if "Topofpage" in line and mode != "":
                 logging.debug("end of " + mode)
@@ -312,7 +312,7 @@ def parsepbuttons(file, db):
                     osmode = "ubuntu"
                     continue
 
-            # Is this one of the generic sections?        
+            # Is this one of the generic sections?
             matched = False
             for c in conditions:
                 if c["match"] in line:
@@ -326,12 +326,12 @@ def parsepbuttons(file, db):
             if matched:
                 continue
 
-            # vmstat    
+            # vmstat
             if "<pre><!-- beg_vmstat -->" == line:
                 continue
             if mode == "vmstat" and ("beg_vmstat" in line):
                 continue
-            if mode == "vmstat" and ("swpd" in line): # eg Red Hat
+            if mode == "vmstat" and ("swpd" in line):  # eg Red Hat
                 colnames = line.split()[2:]
                 numcols = len(colnames) + 2
                 added = []
@@ -385,9 +385,11 @@ def parsepbuttons(file, db):
                     insertquery = insertquery[:-1]
                     query += ")"
                     insertquery += ")"
-                elif osmode == "AIX":   
+                elif osmode == "AIX":
                     colnames = line.split("<pre>")[1].split()
-                    colnames = list(map(lambda x: x.strip(), colnames))[0:-3]     # time (hr mi se) will moved from end to datetime
+                    colnames = list(map(lambda x: x.strip(), colnames))[
+                        0:-3
+                    ]  # time (hr mi se) will moved from end to datetime
                     numcols = len(colnames) + 1
                     added = []
                     query = 'CREATE TABLE IF NOT EXISTS vmstat("datetime" TEXT,'
@@ -401,12 +403,12 @@ def parsepbuttons(file, db):
                             added.append(c)
                         query += '"' + t + '" ' + (pbdtypes.get(c) or "TEXT") + ","
                         insertquery += "?,"
-                    logging.debug(query)   
-                    logging.debug(insertquery)     
+                    logging.debug(query)
+                    logging.debug(insertquery)
                     query = query[:-1]
                     insertquery = insertquery[:-1]
                     query += ")"
-                    insertquery += ")"  
+                    insertquery += ")"
                 else:
                     # ugh :/
                     colnames = line.split("<pre>")[1].split()[2:]
@@ -427,14 +429,14 @@ def parsepbuttons(file, db):
                     insertquery = insertquery[:-1]
                     query += ")"
                     insertquery += ")"
-                    logging.debug(query)   
-                    logging.debug(insertquery)     
+                    logging.debug(query)
+                    logging.debug(insertquery)
 
                 cursor.execute(query)
                 db.commit()
                 count = 0
                 continue
- 
+
             if "id=sar-u" in line:
                 query = ""
                 count = 0
@@ -448,7 +450,7 @@ def parsepbuttons(file, db):
                 logging.debug("starting " + mode + " osmode " + osmode + ".")
                 continue
             if "id=iostat" in line:
-                query = "" 
+                query = ""
                 count = 0
                 insertquery = ""
                 mode = "iostat"
@@ -484,7 +486,7 @@ def parsepbuttons(file, db):
             # actual parsing things
             if mode == "sar-d":
                 if osmode == "AIX":  # Bail, TBD
-                    continue    
+                    continue
                 if "Linux" in line:
                     cols = line.split()
                     sardate = cols[3]
@@ -566,14 +568,14 @@ def parsepbuttons(file, db):
                     db.commit()
                     logging.debug(str(count) + ".")
 
-            if mode == "iostat":        # Build table column names
+            if mode == "iostat":  # Build table column names
                 if "avg-cpu:" in line:
                     skipline = 1
                     continue
-                if osmode == "hpux": # Bail, TBD
+                if osmode == "hpux":  # Bail, TBD
                     continue
                 if osmode == "AIX":  # Bail, TBD
-                    continue    
+                    continue
                 if len(line.split()) == 7 and "Linux" in line:
                     currentdate = line.split()[3]
                 if "Linux" in line:
@@ -621,7 +623,7 @@ def parsepbuttons(file, db):
 
                 if osmode == "AIX":
                     cols = [(mgstatdate + " " + cols[-1])] + cols[0:-1]
-                    #logging.debug(cols)
+                    # logging.debug(cols)
 
                 if len(cols) != numcols:
                     logging.debug(str(len(cols)) + "." + str(numcols))
@@ -696,7 +698,9 @@ def parsepbuttons(file, db):
 
                 cols = list(map(lambda x: x.strip(), line.split(",")))
                 cols = [(cols[0] + " " + cols[1])] + cols[2:]
-                if mgstatdate == "":    # Get start date for metrics that dont keep date like AIX vmstat
+                if (
+                    mgstatdate == ""
+                ):  # Get start date for metrics that dont keep date like AIX vmstat
                     mgstatdate = cols[0].split()[0]
 
                 try:
@@ -721,11 +725,13 @@ def parsepbuttons(file, db):
                 if "Linux" in line:
                     sardate = line.split()[3]
                     continue
-                if "AIX" in line:                   # 5 May 2019. AIX7.2 + Cache 2017.2 
+                if "AIX" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
                     sardate = line.split()[5]
-                    continue   
-                if "System" in line:                # 5 May 2019. AIX7.2 + Cache 2017.2, extra line in sar-u
-                    continue 
+                    continue
+                if (
+                    "System" in line
+                ):  # 5 May 2019. AIX7.2 + Cache 2017.2, extra line in sar-u
+                    continue
                 if not line.strip():  # Empty line
                     continue
                 if "beg_sar_u" in line:
@@ -762,13 +768,13 @@ def parsepbuttons(file, db):
                     cursor.execute(query)
                     db.commit()
                     continue
-                if "%entc" in line:                   # 5 May 2019. AIX7.2 + Cache 2017.2 
+                if "%entc" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
                     cols = list(map(lambda x: x.strip(), line.split()[1:]))
                     query = 'CREATE TABLE IF NOT EXISTS "sar-u"("datetime" TEXT,'
                     insertquery = 'INSERT INTO "sar-u" VALUES (?,'
                     for c in cols:
                         query += '"' + c + '" ' + (pbdtypes.get(c) or "TEXT") + ","
-                        insertquery += "?,"  
+                        insertquery += "?,"
                     query = query[:-1]
                     insertquery = insertquery[:-1]
                     query += ")"
@@ -776,7 +782,7 @@ def parsepbuttons(file, db):
                     logging.debug(query)
                     cursor.execute(query)
                     db.commit()
-                    continue 
+                    continue
 
                 cols = list(map(lambda x: x.strip(), line.split()))
                 if osmode == "hpux":
@@ -790,7 +796,7 @@ def parsepbuttons(file, db):
                 else:
                     if osmode == "sunos":
                         cols = [(sardate + " " + cols[0])] + cols[1:]
-                    elif osmode == "AIX":           # 5 May 2019. AIX7.2 + Cache 2017.2 
+                    elif osmode == "AIX":  # 5 May 2019. AIX7.2 + Cache 2017.2
                         cols = [(sardate + " " + cols[0])] + cols[1:]
                         cursor.execute(insertquery, cols)
                         count += 1
@@ -798,10 +804,10 @@ def parsepbuttons(file, db):
                         cols = [(sardate + " " + cols[0] + " " + cols[1])] + cols[2:]
                         cursor.execute(insertquery, cols)
                         count += 1
-                
+
                 if count % 10000 == 0:
-                        #logging.debug(insertquery)
-                        #logging.debug(cols)
+                    # logging.debug(insertquery)
+                    # logging.debug(cols)
                     db.commit()
                     logging.debug(str(count) + ".")
 
@@ -888,7 +894,7 @@ def parsepbuttons(file, db):
             if mode in generic_items:
                 query = 'insert into "' + mode + '" values(?)'
                 cursor.execute(query, [line])
-        logging.debug("Saftey Commit")        
+        logging.debug("Saftey Commit")
         db.commit()
 
     return

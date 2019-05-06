@@ -14,7 +14,13 @@ from matplotlib.dates import (
     DateFormatter,
     drange,
     IndexDateFormatter,
-    MO, TU, WE, TH, FR, SA, SU
+    MO,
+    TU,
+    WE,
+    TH,
+    FR,
+    SA,
+    SU,
 )
 from matplotlib.ticker import FormatStrFormatter
 from matplotlib.ticker import ScalarFormatter
@@ -51,9 +57,9 @@ def genericplot(df, column, outfile, config):
     style = "-"
 
     colormapName = "Set1"
-    plt.style.use('seaborn-whitegrid')
+    plt.style.use("seaborn-whitegrid")
     palette = plt.get_cmap(colormapName)
-    colour=palette(1)
+    colour = palette(1)
 
     try:
         dim = parse_tuple("(" + config["plotting"]["dim"] + ")")
@@ -71,43 +77,46 @@ def genericplot(df, column, outfile, config):
     fig, ax = plt.subplots(figsize=dim, dpi=80, facecolor="w", edgecolor="dimgrey")
 
     if timeframe is not None:
-        ax.plot(df[column][timeframe.split(",")[0] : timeframe.split(",")[1]], alpha=0.7, color=colour)
+        ax.plot(
+            df[column][timeframe.split(",")[0] : timeframe.split(",")[1]],
+            alpha=0.7,
+            color=colour,
+        )
     else:
         ax.plot(df[column], alpha=0.7, color=colour)
 
-    plt.grid(which="both", axis="both", linestyle='--')    
+    plt.grid(which="both", axis="both", linestyle="--")
 
     # vmstat make chart top "100"
-    if column == "us" or  column == "sy" or column == "wa" or column == "Total CPU":
-        ax.set_ylim(ymax=100)    
+    if column == "us" or column == "sy" or column == "wa" or column == "Total CPU":
+        ax.set_ylim(ymax=100)
 
-    # y axis    
+    # y axis
     ax.get_yaxis().set_major_formatter(
         plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x)))
     )
 
     ax.set_ylim(ymin=0)  # Always zero start
 
-    if df[column].max() > 999 :
-        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+    if df[column].max() > 999:
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
     else:
         ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
         ax.get_yaxis().get_major_formatter().set_scientific(False)
 
-    
     # Try to be smarter with the x axis. more to come
     if timeframe is not None and timeframe != "":
-        StartTime = datetime.strptime(timeframe.split(",")[0],'%Y-%m-%d %H:%M:%S')
-        EndTime   = datetime.strptime(timeframe.split(",")[-1],'%Y-%m-%d %H:%M:%S')
+        StartTime = datetime.strptime(timeframe.split(",")[0], "%Y-%m-%d %H:%M:%S")
+        EndTime = datetime.strptime(timeframe.split(",")[-1], "%Y-%m-%d %H:%M:%S")
 
-        TotalMinutes = (EndTime-StartTime).total_seconds()/60
-        logging.debug("TF Minutes: " + str(TotalMinutes))  
+        TotalMinutes = (EndTime - StartTime).total_seconds() / 60
+        logging.debug("TF Minutes: " + str(TotalMinutes))
     else:
         StartTime = df.index[0]
-        EndTime   = df.index[-1]
+        EndTime = df.index[-1]
 
-        TotalMinutes = (df.index[-1] - df.index[0]).total_seconds()/60
-        logging.debug("ALL Minutes: " + str(TotalMinutes))        
+        TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
+        logging.debug("ALL Minutes: " + str(TotalMinutes))
 
     if TotalMinutes <= 60:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
@@ -115,20 +124,22 @@ def genericplot(df, column, outfile, config):
 
     elif TotalMinutes <= 180:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.MinuteLocator()) 
+        ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 720:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
-    elif TotalMinutes >1445:
+    elif TotalMinutes > 1445:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m - %H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())                
+        ax.xaxis.set_major_locator(mdates.HourLocator())
     else:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())    
+        ax.xaxis.set_major_locator(mdates.HourLocator())
 
-    plt.title(column+" between "+str(StartTime)+" and "+str(EndTime), fontsize=12)
+    plt.title(
+        column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+    )
     plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=10)
 
@@ -248,11 +259,11 @@ def plot_subset(db, config, subsetname):
         data = fix_index(data)
 
     # if vmstat add an extra column
-    # 
+    #
     if subsetname == "vmstat":
-        data["Total CPU"] = 100 - data["id"]     
-    
-    for key in data.columns.values:     # key is the column name
+        data["Total CPU"] = 100 - data["id"]
+
+    for key in data.columns.values:  # key is the column name
 
         if timeframe is not None:
             file = os.path.join(
@@ -273,8 +284,8 @@ def plot_subset(db, config, subsetname):
                 + "."
                 + key.replace("\\", "_").replace("/", "_")
                 + ".png".replace("%", "_"),
-            ) 
-     
+            )
+
         dispatch_plot(data, key, file, config)
 
 
