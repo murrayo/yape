@@ -116,26 +116,38 @@ def genericplot(df, column, outfile, config):
         EndTime = df.index[-1]
 
         TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
-        logging.debug("ALL Minutes: " + str(TotalMinutes))
+        logging.debug("All Minutes: " + str(TotalMinutes))
 
-    if TotalMinutes <= 60:
+    if  TotalMinutes <= 1:
+        logging.debug("0 minutes: " + str(TotalMinutes))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
+        ax.xaxis.set_major_locator(mdates.HourLocator())
+
+    elif  TotalMinutes <= 60:
+        logging.debug("60 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 180:
+        logging.debug("180 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 720:
+        logging.debug("720 minutes: " + str(TotalMinutes))        
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
     elif TotalMinutes > 1445:
+        logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m - %H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
+
     else:
+        logging.debug("Got here: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
+
 
     plt.title(
         column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
@@ -324,4 +336,4 @@ def sard(db, config):
 
 
 def saru(db, config):
-    plot_subset_split(db, config, "sar-u", "cpu")
+    plot_subset_split(db, config, "sar-u", "CPU")
