@@ -4,7 +4,7 @@ import pandas as pd
 import sqlite3
 import logging
 import sys
-
+from datetime import date, datetime
 
 # splits an array into sub arrays with length size
 def split(arr, size):
@@ -16,6 +16,73 @@ def split(arr, size):
     arrs.append(arr)
     return arrs
 
+def validateDate(date_text):
+    try:
+        datetime.datetime.strptime(date_text, '%d/%m/%y')
+    except ValueError:
+        raise ValueError("Incorrect data format, should be mm/dd/yy")
+
+# Are the dates in mm/dd/yy format?
+def dateChecker(StartDate,dateStrIN):
+    lConvertDates = ""
+
+    # if date IN is yyyy convert test to mm/dd/yyyy
+    yyyy = False
+    if len(dateStrIN.split()[0]) > 8:
+        yyyy = True
+        StartDate = datetime.strptime(StartDate,'%m/%d/%y').strftime('%m/%d/%Y')
+        logging.debug("Date format yyyy")
+
+    # What did I get? "date" or "date time" or "date time AM"
+    if len(dateStrIN.split()) == 1:  # Date only
+        if dateStrIN != StartDate:
+        # Is this xx/xx/yy or xx/xx/yyyy
+            if yyyy :
+                lConvertDates = "%d/%m/%Y"
+            else:
+                lConvertDates = "%d/%m/%y"              
+
+    elif len(dateStrIN.split()) == 2: # date time
+        if dateStrIN.split()[0] != StartDate:
+            if yyyy :
+                lConvertDates = "%d/%m/%Y %H:%M:%S"
+            else:           
+                lConvertDates = "%d/%m/%y %H:%M:%S"             
+                
+    elif len(dateStrIN.split()) ==3 : # date time AM/PM    
+        if dateStrIN.split()[0]  != StartDate:
+            if yyyy :
+                lConvertDates = "%d/%m/%Y %I:%M:%S %p"
+            else:    
+                lConvertDates = "%d/%m/%y %I:%M:%S %p" 
+        else:   # OK, but make 24 hour
+            if yyyy :
+                lConvertDates = "%m/%d/%Y %I:%M:%S %p"
+            else:    
+                lConvertDates = "%m/%d/%y %I:%M:%S %p"         
+    
+    logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates) 
+
+    return lConvertDates
+
+# Make all date formats the same mm/dd/yy, especially bad in iostat and sar    
+def convertDateFormat(dateStrIN, lConvertDates):
+    dateOut = dateStrIN
+
+    if len(dateStrIN.split()) == 1:  # Date only
+        #logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates) 
+        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y')
+
+    elif len(dateStrIN.split()) == 2: # xx/xx/yy hh:mm:ss
+        #logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates)  
+        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y %H:%M:%S')
+                
+    if len(dateStrIN.split()) > 2: # xx/xx/yy hh:mm:ss AM  
+        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y %H:%M:%S')
+
+        #logging.info(dateOut)
+    
+    return dateOut    
 
 def parsepbuttons(file, db):
 
@@ -255,6 +322,7 @@ def parsepbuttons(file, db):
 
     with open(file, encoding="latin-1") as f:
         insertquery = ""
+        lConvertDates = ""
         skipline = 0
         for line in f:
             if skipline > 0:
@@ -275,24 +343,38 @@ def parsepbuttons(file, db):
                 query = ""
                 insertquery = ""
                 mode = ""
+                lConvertDates = ""
             if "end_mgstat" in line:
                 logging.debug("end of " + mode)
                 query = ""
                 count = 0
                 insertquery = ""
                 mode = ""
+                lConvertDates = ""
             if "end_sar_u" in line:
                 logging.debug("end of " + mode)
                 query = ""
                 count = 0
                 insertquery = ""
                 mode = ""
-
+                lConvertDates = ""
             if "An empty file was created." in line:
                 logging.debug("empty " + mode + " section")
                 continue
             # add better osmode detection
 
+            # Get start date and time and use for validating date formats of OS commands
+            # Profile run "24Hours_5Sec" started at 00:01:00 on Apr 08 2019.
+            if "Profile run" in line:
+                line = line.strip()
+                logging.info(line)
+                timeanddateList = line.split('at ')
+                StartTimeStr = timeanddateList[1].split(' on ')[0]
+                StartDateStr = timeanddateList[1].split(' on ')[1].rstrip(".")
+                StartDateStr = datetime.strptime(StartDateStr,'%b %d %Y').strftime('%m/%d/%y')
+                StartDateStartTimeStr = StartDateStr+" "+StartTimeStr
+                logging.info("Start at: "+StartDateStartTimeStr)
+                continue
             if "Version String" in line:
                 if "HP HP-UX for Itanium" in line:
                     osmode = "hpux"
@@ -357,7 +439,7 @@ def parsepbuttons(file, db):
             if "id=vmstat>" in line:
                 mode = "vmstat"
                 count = 0
-                logging.debug("starting " + mode)
+                logging.info("starting " + mode)
                 if "beg_vmstat" not in line:
                     continue
                 if (
@@ -439,6 +521,7 @@ def parsepbuttons(file, db):
 
             if "id=sar-u" in line:
                 query = ""
+                lConvertDates = ""
                 count = 0
                 if "SunOS" in line:
                     osmode = "sunos"
@@ -447,40 +530,45 @@ def parsepbuttons(file, db):
                     sardate = line.split()[-1]
                 insertquery = ""
                 mode = "sar-u"
-                logging.debug("starting " + mode + " osmode " + osmode + ".")
+                logging.info("starting " + mode + " osmode " + osmode + ".")
                 continue
             if "id=iostat" in line:
                 query = ""
                 count = 0
                 insertquery = ""
                 mode = "iostat"
-                logging.debug("starting " + mode)
+                lConvertDates = ""
+                logging.info("starting " + mode)
                 continue
             if "id=sar-d" in line:
                 query = ""
                 count = 0
                 insertquery = ""
                 mode = "sar-d"
-                logging.debug("starting " + mode)
+                lConvertDates = ""
+                logging.info("starting " + mode)
                 continue
             if "beg_mgstat" in line:
                 query = ""
                 insertquery = ""
                 mode = "mgstat"
-                logging.debug("starting " + mode)
+                lConvertDates = ""
+                logging.info("starting " + mode)
                 continue
             if "id=perfmon" in line:
                 query = ""
                 insertquery = ""
                 mode = "perfmon"
                 logging.debug("starting " + mode)
+                lConvertDates = ""
+                perfmon_time_separate = False
                 continue
-
             if "id=monitor" in line:
                 query = ""
                 insertquery = ""
-                mode = "monitor"
-                logging.debug("starting " + mode)
+                mode = "monitor"     
+                lConvertDates = ""
+                logging.info("starting " + mode)
                 continue
 
             # actual parsing things
@@ -490,16 +578,28 @@ def parsepbuttons(file, db):
                 if "Linux" in line:
                     cols = line.split()
                     sardate = cols[3]
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,sardate)
+                    if lConvertDates != "":  
+                        sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "HP-UX" in line:
                     osmode = "hpux"
                     sardate = line.split()[-1]
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,sardate)
+                    if lConvertDates != "":  
+                        sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "Average" in line:
                     continue
                 if "SunOS" in line:
                     osmode = "sunos"
                     sardate = line.split()[-1]
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,sardate)
+                    if lConvertDates != "":  
+                        sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if ("tps" in line or "device" in line) and query == "":
                     logging.debug("osmode:" + osmode)
@@ -572,17 +672,33 @@ def parsepbuttons(file, db):
                 if "avg-cpu:" in line:
                     skipline = 1
                     continue
-                if osmode == "hpux":  # Bail, TBD
+                if osmode == "hpux": # Bail, TBD
                     continue
                 if osmode == "AIX":  # Bail, TBD
-                    continue
+                    continue       
+                if "Linux" in line:
+                    continue             
                 if len(line.split()) == 7 and "Linux" in line:
                     currentdate = line.split()[3]
-                if "Linux" in line:
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,currentdate)
+                    if lConvertDates != "":    
+                        currentdate = convertDateFormat(currentdate, lConvertDates)
                     continue
-                if len(line.split()) == 3 or len(line.split()) == 2:
+                if len(line.split()) == 2: # date and time
                     currentdate = line.strip()
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,currentdate)
+                    if lConvertDates != "":  
+                        currentdate = convertDateFormat(currentdate, lConvertDates) 
                     continue
+                if len(line.split()) == 3: # date time AM
+                    currentdate = line.strip()
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,currentdate)
+                    if lConvertDates != "":    
+                        currentdate = convertDateFormat(currentdate, lConvertDates)
+                    continue    
                 if "avg-cpu" in line:
                     skipline = 1
                     continue
@@ -650,6 +766,10 @@ def parsepbuttons(file, db):
                 if query == "":
                     cols = line.split(",")
                     cols = list(map(lambda x: x[1:-1].replace('"', ""), cols))
+
+                    if cols[1] == "Time":
+                        perfmon_time_separate = True
+
                     query = "CREATE TABLE IF NOT EXISTS perfmon(datetime TEXT,"
                     insertquery = "INSERT INTO perfmon VALUES (?,"
                     for c in cols[1:]:
@@ -661,9 +781,13 @@ def parsepbuttons(file, db):
                     insertquery += ")"
                     cursor.execute(query)
                     db.commit()
-                    continue
+                    continue  
                 cols = list(map(lambda x: x[1:-1].replace('"', ""), line.split(",")))
                 cols = list(map(lambda x: 0.0 if x == " " else x, cols))
+
+                if perfmon_time_separate == True:
+                    cols[0] = cols[0]+" "+cols[1]
+
                 cursor.execute(insertquery, cols)
                 count += 1
                 if count % 10000 == 0:
@@ -724,9 +848,17 @@ def parsepbuttons(file, db):
             if mode == "sar-u":
                 if "Linux" in line:
                     sardate = line.split()[3]
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,sardate)
+                    if lConvertDates != "":  
+                        sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "AIX" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
                     sardate = line.split()[5]
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr,sardate)
+                    if lConvertDates != "":  
+                        sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if (
                     "System" in line
@@ -754,7 +886,7 @@ def parsepbuttons(file, db):
                     db.commit()
                     continue
                 if "CPU" in line:
-                    cols = list(map(lambda x: x.strip(), line.split()[2:]))
+                    cols = list(map(lambda x: x.strip(), line.split()[1:]))
                     query = 'CREATE TABLE IF NOT EXISTS "sar-u"("datetime" TEXT,'
                     insertquery = 'INSERT INTO "sar-u" VALUES (?,'
                     for c in cols:
@@ -801,7 +933,9 @@ def parsepbuttons(file, db):
                         cursor.execute(insertquery, cols)
                         count += 1
                     else:
-                        cols = [(sardate + " " + cols[0] + " " + cols[1])] + cols[2:]
+                        if cols[1] == "AM" or cols[1] == "PM" :
+                            cols[0] = datetime.strptime(cols[0]+" "+cols[1],"%I:%M:%S %p").strftime("%H:%M:%S")
+                        cols = [(sardate + " " + cols[0])] + cols[1:]
                         cursor.execute(insertquery, cols)
                         count += 1
 

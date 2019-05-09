@@ -61,6 +61,17 @@ def genericplot(df, column, outfile, config):
     palette = plt.get_cmap(colormapName)
     colour = palette(1)
 
+    # Is this a numeric column?
+    try:
+        column_type = str(df[column].dtype)
+    except AttributeError: 
+        column_type = "unknown" 
+
+    if(column_type == "float64" or column_type == "int64"):
+        logging.debug(column_type)
+    else:    
+        return
+
     try:
         dim = parse_tuple("(" + config["plotting"]["dim"] + ")")
     except KeyError:
@@ -110,44 +121,46 @@ def genericplot(df, column, outfile, config):
         EndTime = datetime.strptime(timeframe.split(",")[-1], "%Y-%m-%d %H:%M:%S")
 
         TotalMinutes = (EndTime - StartTime).total_seconds() / 60
-        logging.debug("TF Minutes: " + str(TotalMinutes))
+        #logging.debug("TF Minutes: " + str(TotalMinutes))
     else:
         StartTime = df.index[0]
         EndTime = df.index[-1]
+
+        #logging.debug("Sart Date: "+str(StartTime))
+        #logging.debug("End  Date: "+str(EndTime))
 
         TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
         logging.debug("All Minutes: " + str(TotalMinutes))
 
     if  TotalMinutes <= 1:
-        logging.debug("0 minutes: " + str(TotalMinutes))
+        #logging.debug("0 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
     elif  TotalMinutes <= 60:
-        logging.debug("60 minutes: " + str(TotalMinutes))
+        #logging.debug("60 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 180:
-        logging.debug("180 minutes: " + str(TotalMinutes))
+        #logging.debug("180 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 720:
-        logging.debug("720 minutes: " + str(TotalMinutes))        
+        #logging.debug("720 minutes: " + str(TotalMinutes))        
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
-    elif TotalMinutes > 1445:
-        logging.debug("1 Day: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m - %H:%M"))
+    elif TotalMinutes <= 1441:
+        #logging.debug("1 Day: " + str(TotalMinutes))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
     else:
-        logging.debug("Got here: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())
-
+        #logging.debug("More than 1 Day: " + str(TotalMinutes))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m-%H:%M"))
+        ax.xaxis.set_major_locator(mdates.DayLocator())    
 
     plt.title(
         column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
@@ -247,6 +260,7 @@ def plot_subset_split(db, config, subsetname, split_on):
                         + key.replace("/", "_")
                         + ".png",
                     )
+                logging.debug(key)    
                 dispatch_plot(data, key, file, config)
 
 
@@ -257,6 +271,7 @@ def plot_subset(db, config, subsetname):
     if not check_data(db, subsetname):
         return None
     data = pd.read_sql_query('select * from "' + subsetname + '"', db)
+
     if "datetime" not in data.columns.values:
         logging.debug("No datetime")
         size = data.shape[0]
