@@ -34,8 +34,8 @@ from datetime import datetime
 import logging
 
 
-def dispatch_plot(df, column, outfile, config):
-    genericplot(df, column, outfile, config)
+def dispatch_plot(df, column, outfile, config, device_name):
+    genericplot(df, column, outfile, config, device_name)
 
 
 def parse_tuple(string):
@@ -48,7 +48,7 @@ def parse_tuple(string):
         return
 
 
-def genericplot(df, column, outfile, config):
+def genericplot(df, column, outfile, config, device_name):
     timeframe = config["timeframe"]
     outfile = outfile.replace(":", ".")
     logging.info("creating " + outfile)
@@ -121,7 +121,7 @@ def genericplot(df, column, outfile, config):
         EndTime = datetime.strptime(timeframe.split(",")[-1], "%Y-%m-%d %H:%M:%S")
 
         TotalMinutes = (EndTime - StartTime).total_seconds() / 60
-        #logging.debug("TF Minutes: " + str(TotalMinutes))
+        logging.debug("TF Minutes: " + str(TotalMinutes))
     else:
         StartTime = df.index[0]
         EndTime = df.index[-1]
@@ -152,19 +152,28 @@ def genericplot(df, column, outfile, config):
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
-    elif TotalMinutes <= 1441:
+    elif TotalMinutes <= 1500:
         #logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
+    elif TotalMinutes <= 3000:
+        #logging.debug("1 Day: " + str(TotalMinutes))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
+        ax.xaxis.set_major_locator(mdates.HourLocator())
     else:
         #logging.debug("More than 1 Day: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m-%H:%M"))
-        ax.xaxis.set_major_locator(mdates.DayLocator())    
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
+        #ax.xaxis.set_major_locator(mdates.HourLocator())    
 
-    plt.title(
-        column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
-    )
+    if device_name == "":
+            plt.title(
+                column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+            )
+    else:
+        plt.title(
+            device_name+" : " + column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+        )
     plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=10)
 
@@ -261,7 +270,7 @@ def plot_subset_split(db, config, subsetname, split_on):
                         + ".png",
                     )
                 logging.debug(key)    
-                dispatch_plot(data, key, file, config)
+                dispatch_plot(data, key, file, config, column[0])
 
 
 def plot_subset(db, config, subsetname):
@@ -313,7 +322,7 @@ def plot_subset(db, config, subsetname):
                 + ".png".replace("%", "_"),
             )
 
-        dispatch_plot(data, key, file, config)
+        dispatch_plot(data, key, file, config, "")
 
 
 def check_data(db, name):
