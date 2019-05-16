@@ -163,7 +163,7 @@ def genericplot(df, column, outfile, config, device_name):
         ax.xaxis.set_major_locator(mdates.HourLocator())
     else:
         #logging.debug("More than 1 Day: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))
         #ax.xaxis.set_major_locator(mdates.HourLocator())    
 
     if device_name == "":
@@ -174,7 +174,7 @@ def genericplot(df, column, outfile, config, device_name):
         plt.title(
             device_name+" : " + column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
         )
-    plt.xlabel("Time", fontsize=10)
+    #plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=10)
 
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
