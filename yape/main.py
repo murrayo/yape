@@ -98,16 +98,19 @@ def parse_args(args):
         action="version",
         version="%(prog)s " + getVersion(),
     )
-    parser.add_argument("pButtons_file_name", help="path to pButtons file to use")
-    parser.add_argument(
-        "--filedb",
-        help="use specific file as DB, useful to be able to used afterwards or as standalone datasource.",
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "pButtons_file_name", nargs="?", help="path to pButtons file to use"
     )
-    parser.add_argument(
+    group.add_argument(
         "--skip-parse",
         dest="skipparse",
         help="disable parsing; requires filedb to be specified to supply data",
         action="store_true",
+    )
+    parser.add_argument(
+        "--filedb",
+        help="use specific file as DB, useful to be able to used afterwards or as standalone datasource.",
     )
     parser.add_argument(
         "-c",
@@ -152,13 +155,11 @@ def parse_args(args):
     parser.add_argument(
         "--plotDisks", dest="plotDisks", help="restrict list of disks to plot"
     )
-
     parser.add_argument(
         "--log",
         dest="loglevel",
         help="set log level:DEBUG,INFO,WARNING,ERROR,CRITICAL. The default is INFO",
     )
-
     parser.add_argument(
         "-a", "--all", dest="all", help="graph everything", action="store_true"
     )
@@ -212,6 +213,12 @@ def yape2(args=None):
         if not args.skipparse:
             # it's unrealistic to assume we wil have enough memory to hold the extracted pbuttons file
             # so we extract it to a temp directory and extract it there
+            if not args.pButtons_file_name:
+                logging.error(
+                    "pbuttons html file name required unless skipparse and filedb filename supplied"
+                )
+                exit(1)
+
             if args.pButtons_file_name.split(".")[-1] == "zip":
 
                 with tempfile.TemporaryDirectory() as tmpdir:
