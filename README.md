@@ -134,9 +134,9 @@ yape --filedb data.db pbuttons5.html
 yape --filedb data.db pbuttons6.html
 yape --filedb data.db pbuttons7.html
 ....
-yape --filedb data.db --timeframe "2018-06-11 00:00:00,2018-06-17 22:00:00" -a --skip-parse -o testdata/ pbuttons7.html
+yape --filedb data.db --timeframe "2018-06-11 00:00:00,2018-06-17 22:00:00" -a --skip-parse -o testdata/ 
 ```
-Note: the last positional argument is still required, but is going to get ignored completely. (todo: fix the argument parsing for that)
+Note: the last positional argument (pButtons file name) is not entered when --skip-parse and --filedb are used.
 
 ## Experimental interactive version
 

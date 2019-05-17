@@ -215,7 +215,7 @@ def yape2(args=None):
             # so we extract it to a temp directory and extract it there
             if not args.pButtons_file_name:
                 logging.error(
-                    "pbuttons html file name required unless skipparse and filedb filename supplied"
+                    "pbuttons html file name required unless skip-parse and filedb filename supplied"
                 )
                 exit(1)
 
