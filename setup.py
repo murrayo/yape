@@ -27,7 +27,7 @@ setup(
         "black>=18.9b0",
         "pystache>=0.5.4",
     ],
-    version="2.2.1",
+    version="2.2.2",
     setup_requires=["setuptools_scm"],
     zip_safe=False,
 )
