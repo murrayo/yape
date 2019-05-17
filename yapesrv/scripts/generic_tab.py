@@ -27,6 +27,7 @@ from bokeh.models.widgets import (
 from bokeh.layouts import column, row, WidgetBox
 
 import matplotlib
+
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt

@@ -64,12 +64,12 @@ def genericplot(df, column, outfile, config, device_name):
     # Is this a numeric column?
     try:
         column_type = str(df[column].dtype)
-    except AttributeError: 
-        column_type = "unknown" 
+    except AttributeError:
+        column_type = "unknown"
 
-    if(column_type == "float64" or column_type == "int64"):
+    if column_type == "float64" or column_type == "int64":
         logging.debug(column_type)
-    else:    
+    else:
         return
 
     try:
@@ -126,55 +126,62 @@ def genericplot(df, column, outfile, config, device_name):
         StartTime = df.index[0]
         EndTime = df.index[-1]
 
-        #logging.debug("Sart Date: "+str(StartTime))
-        #logging.debug("End  Date: "+str(EndTime))
+        # logging.debug("Sart Date: "+str(StartTime))
+        # logging.debug("End  Date: "+str(EndTime))
 
         TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
         logging.debug("All Minutes: " + str(TotalMinutes))
 
-    if  TotalMinutes <= 1:
-        #logging.debug("0 minutes: " + str(TotalMinutes))
+    if TotalMinutes <= 1:
+        # logging.debug("0 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
-    elif  TotalMinutes <= 60:
-        #logging.debug("60 minutes: " + str(TotalMinutes))
+    elif TotalMinutes <= 60:
+        # logging.debug("60 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 180:
-        #logging.debug("180 minutes: " + str(TotalMinutes))
+        # logging.debug("180 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.MinuteLocator())
 
     elif TotalMinutes <= 720:
-        #logging.debug("720 minutes: " + str(TotalMinutes))        
+        # logging.debug("720 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
     elif TotalMinutes <= 1500:
-        #logging.debug("1 Day: " + str(TotalMinutes))
+        # logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
 
     elif TotalMinutes <= 3000:
-        #logging.debug("1 Day: " + str(TotalMinutes))
+        # logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
     else:
-        #logging.debug("More than 1 Day: " + str(TotalMinutes))
+        # logging.debug("More than 1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))
-        #ax.xaxis.set_major_locator(mdates.HourLocator())    
+        # ax.xaxis.set_major_locator(mdates.HourLocator())
 
     if device_name == "":
-            plt.title(
-                column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
-            )
+        plt.title(
+            column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+        )
     else:
         plt.title(
-            device_name+" : " + column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+            device_name
+            + " : "
+            + column
+            + " between "
+            + str(StartTime)
+            + " and "
+            + str(EndTime),
+            fontsize=12,
         )
-    #plt.xlabel("Time", fontsize=10)
+    # plt.xlabel("Time", fontsize=10)
     plt.tick_params(labelsize=10)
 
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right")
@@ -269,7 +276,7 @@ def plot_subset_split(db, config, subsetname, split_on):
                         + key.replace("/", "_")
                         + ".png",
                     )
-                logging.debug(key)    
+                logging.debug(key)
                 dispatch_plot(data, key, file, config, column[0])
 
 

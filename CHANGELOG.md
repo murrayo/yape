@@ -5,9 +5,28 @@
 
 ### Changes
 
+* Some tidy up on the date format for multi-day charting. [murrayo]
+
+* Added device name to chart title for iostat and sar chg: bit more tidy up on date/time handling for charts. [murrayo]
+
+* Updated date handling. [murrayo]
+
+### Other
+
+* [fix] Fixed problem with sar on red hat not charting properly. [murrayo]
+
+* Doc: Bump Version. [murrayo]
+
+
+## 2.2.1 (2019-05-06)
+
+### Changes
+
 * Some massaging of the chart output to make more consistent and readable. Update AIX formats. Black code. [murrayo]
 
 ### Other
+
+* Doc: Updated changelog. [murrayo]
 
 * Quite a lot of updates. - Some layout changes to the charts to make them a bit nicer for reports etc, including adding dates to the heading and some smarter x and y axis - vmstat now produces a Total CPU chart so you don't need to stand on your head and read the id chart. - Added some logic for AIX based on reports of failures. To be honest, I wouldnt be surprised if this caused some other AIX to fail... if so, sorry, please let me know. [murrayo]
 

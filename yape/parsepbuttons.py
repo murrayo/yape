@@ -16,73 +16,81 @@ def split(arr, size):
     arrs.append(arr)
     return arrs
 
+
 def validateDate(date_text):
     try:
-        datetime.datetime.strptime(date_text, '%d/%m/%y')
+        datetime.datetime.strptime(date_text, "%d/%m/%y")
     except ValueError:
         raise ValueError("Incorrect data format, should be mm/dd/yy")
 
+
 # Are the dates in mm/dd/yy format?
-def dateChecker(StartDate,dateStrIN):
+def dateChecker(StartDate, dateStrIN):
     lConvertDates = ""
 
     # if date IN is yyyy convert test to mm/dd/yyyy
     yyyy = False
     if len(dateStrIN.split()[0]) > 8:
         yyyy = True
-        StartDate = datetime.strptime(StartDate,'%m/%d/%y').strftime('%m/%d/%Y')
+        StartDate = datetime.strptime(StartDate, "%m/%d/%y").strftime("%m/%d/%Y")
         logging.debug("Date format yyyy")
 
     # What did I get? "date" or "date time" or "date time AM"
     if len(dateStrIN.split()) == 1:  # Date only
         if dateStrIN != StartDate:
-        # Is this xx/xx/yy or xx/xx/yyyy
-            if yyyy :
+            # Is this xx/xx/yy or xx/xx/yyyy
+            if yyyy:
                 lConvertDates = "%d/%m/%Y"
             else:
-                lConvertDates = "%d/%m/%y"              
+                lConvertDates = "%d/%m/%y"
 
-    elif len(dateStrIN.split()) == 2: # date time
+    elif len(dateStrIN.split()) == 2:  # date time
         if dateStrIN.split()[0] != StartDate:
-            if yyyy :
+            if yyyy:
                 lConvertDates = "%d/%m/%Y %H:%M:%S"
-            else:           
-                lConvertDates = "%d/%m/%y %H:%M:%S"             
-                
-    elif len(dateStrIN.split()) ==3 : # date time AM/PM    
-        if dateStrIN.split()[0]  != StartDate:
-            if yyyy :
+            else:
+                lConvertDates = "%d/%m/%y %H:%M:%S"
+
+    elif len(dateStrIN.split()) == 3:  # date time AM/PM
+        if dateStrIN.split()[0] != StartDate:
+            if yyyy:
                 lConvertDates = "%d/%m/%Y %I:%M:%S %p"
-            else:    
-                lConvertDates = "%d/%m/%y %I:%M:%S %p" 
-        else:   # OK, but make 24 hour
-            if yyyy :
+            else:
+                lConvertDates = "%d/%m/%y %I:%M:%S %p"
+        else:  # OK, but make 24 hour
+            if yyyy:
                 lConvertDates = "%m/%d/%Y %I:%M:%S %p"
-            else:    
-                lConvertDates = "%m/%d/%y %I:%M:%S %p"         
-    
-    logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates) 
+            else:
+                lConvertDates = "%m/%d/%y %I:%M:%S %p"
+
+    logging.debug("Date format: " + dateStrIN + " converted from : " + lConvertDates)
 
     return lConvertDates
 
-# Make all date formats the same mm/dd/yy, especially bad in iostat and sar    
+
+# Make all date formats the same mm/dd/yy, especially bad in iostat and sar
 def convertDateFormat(dateStrIN, lConvertDates):
     dateOut = dateStrIN
 
     if len(dateStrIN.split()) == 1:  # Date only
-        #logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates) 
-        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y')
+        # logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates)
+        dateOut = datetime.strptime(dateStrIN, lConvertDates).strftime("%m/%d/%y")
 
-    elif len(dateStrIN.split()) == 2: # xx/xx/yy hh:mm:ss
-        #logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates)  
-        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y %H:%M:%S')
-                
-    if len(dateStrIN.split()) > 2: # xx/xx/yy hh:mm:ss AM  
-        dateOut = datetime.strptime(dateStrIN,lConvertDates).strftime('%m/%d/%y %H:%M:%S')
+    elif len(dateStrIN.split()) == 2:  # xx/xx/yy hh:mm:ss
+        # logging.debug("Date format: "+dateStrIN+" converted from : "+lConvertDates)
+        dateOut = datetime.strptime(dateStrIN, lConvertDates).strftime(
+            "%m/%d/%y %H:%M:%S"
+        )
 
-        #logging.info(dateOut)
-    
-    return dateOut    
+    if len(dateStrIN.split()) > 2:  # xx/xx/yy hh:mm:ss AM
+        dateOut = datetime.strptime(dateStrIN, lConvertDates).strftime(
+            "%m/%d/%y %H:%M:%S"
+        )
+
+        # logging.info(dateOut)
+
+    return dateOut
+
 
 def parsepbuttons(file, db):
 
@@ -368,12 +376,14 @@ def parsepbuttons(file, db):
             if "Profile run" in line:
                 line = line.strip()
                 logging.info(line)
-                timeanddateList = line.split('at ')
-                StartTimeStr = timeanddateList[1].split(' on ')[0]
-                StartDateStr = timeanddateList[1].split(' on ')[1].rstrip(".")
-                StartDateStr = datetime.strptime(StartDateStr,'%b %d %Y').strftime('%m/%d/%y')
-                StartDateStartTimeStr = StartDateStr+" "+StartTimeStr
-                logging.info("Start at: "+StartDateStartTimeStr)
+                timeanddateList = line.split("at ")
+                StartTimeStr = timeanddateList[1].split(" on ")[0]
+                StartDateStr = timeanddateList[1].split(" on ")[1].rstrip(".")
+                StartDateStr = datetime.strptime(StartDateStr, "%b %d %Y").strftime(
+                    "%m/%d/%y"
+                )
+                StartDateStartTimeStr = StartDateStr + " " + StartTimeStr
+                logging.info("Start at: " + StartDateStartTimeStr)
                 continue
             if "Version String" in line:
                 if "HP HP-UX for Itanium" in line:
@@ -566,7 +576,7 @@ def parsepbuttons(file, db):
             if "id=monitor" in line:
                 query = ""
                 insertquery = ""
-                mode = "monitor"     
+                mode = "monitor"
                 lConvertDates = ""
                 logging.info("starting " + mode)
                 continue
@@ -579,16 +589,16 @@ def parsepbuttons(file, db):
                     cols = line.split()
                     sardate = cols[3]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,sardate)
-                    if lConvertDates != "":  
+                        lConvertDates = dateChecker(StartDateStr, sardate)
+                    if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "HP-UX" in line:
                     osmode = "hpux"
                     sardate = line.split()[-1]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,sardate)
-                    if lConvertDates != "":  
+                        lConvertDates = dateChecker(StartDateStr, sardate)
+                    if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "Average" in line:
@@ -597,8 +607,8 @@ def parsepbuttons(file, db):
                     osmode = "sunos"
                     sardate = line.split()[-1]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,sardate)
-                    if lConvertDates != "":  
+                        lConvertDates = dateChecker(StartDateStr, sardate)
+                    if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if ("tps" in line or "device" in line) and query == "":
@@ -672,33 +682,33 @@ def parsepbuttons(file, db):
                 if "avg-cpu:" in line:
                     skipline = 1
                     continue
-                if osmode == "hpux": # Bail, TBD
+                if osmode == "hpux":  # Bail, TBD
                     continue
                 if osmode == "AIX":  # Bail, TBD
-                    continue       
+                    continue
                 if "Linux" in line:
-                    continue             
+                    continue
                 if len(line.split()) == 7 and "Linux" in line:
                     currentdate = line.split()[3]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,currentdate)
-                    if lConvertDates != "":    
+                        lConvertDates = dateChecker(StartDateStr, currentdate)
+                    if lConvertDates != "":
                         currentdate = convertDateFormat(currentdate, lConvertDates)
                     continue
-                if len(line.split()) == 2: # date and time
+                if len(line.split()) == 2:  # date and time
                     currentdate = line.strip()
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,currentdate)
-                    if lConvertDates != "":  
-                        currentdate = convertDateFormat(currentdate, lConvertDates) 
-                    continue
-                if len(line.split()) == 3: # date time AM
-                    currentdate = line.strip()
-                    if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,currentdate)
-                    if lConvertDates != "":    
+                        lConvertDates = dateChecker(StartDateStr, currentdate)
+                    if lConvertDates != "":
                         currentdate = convertDateFormat(currentdate, lConvertDates)
-                    continue    
+                    continue
+                if len(line.split()) == 3:  # date time AM
+                    currentdate = line.strip()
+                    if query == "":  # First time in check start date
+                        lConvertDates = dateChecker(StartDateStr, currentdate)
+                    if lConvertDates != "":
+                        currentdate = convertDateFormat(currentdate, lConvertDates)
+                    continue
                 if "avg-cpu" in line:
                     skipline = 1
                     continue
@@ -781,12 +791,12 @@ def parsepbuttons(file, db):
                     insertquery += ")"
                     cursor.execute(query)
                     db.commit()
-                    continue  
+                    continue
                 cols = list(map(lambda x: x[1:-1].replace('"', ""), line.split(",")))
                 cols = list(map(lambda x: 0.0 if x == " " else x, cols))
 
                 if perfmon_time_separate == True:
-                    cols[0] = cols[0]+" "+cols[1]
+                    cols[0] = cols[0] + " " + cols[1]
 
                 cursor.execute(insertquery, cols)
                 count += 1
@@ -849,15 +859,15 @@ def parsepbuttons(file, db):
                 if "Linux" in line:
                     sardate = line.split()[3]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,sardate)
-                    if lConvertDates != "":  
+                        lConvertDates = dateChecker(StartDateStr, sardate)
+                    if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if "AIX" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
                     sardate = line.split()[5]
                     if query == "":  # First time in check start date
-                        lConvertDates = dateChecker(StartDateStr,sardate)
-                    if lConvertDates != "":  
+                        lConvertDates = dateChecker(StartDateStr, sardate)
+                    if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
                 if (
@@ -933,8 +943,10 @@ def parsepbuttons(file, db):
                         cursor.execute(insertquery, cols)
                         count += 1
                     else:
-                        if cols[1] == "AM" or cols[1] == "PM" :
-                            cols[0] = datetime.strptime(cols[0]+" "+cols[1],"%I:%M:%S %p").strftime("%H:%M:%S")
+                        if cols[1] == "AM" or cols[1] == "PM":
+                            cols[0] = datetime.strptime(
+                                cols[0] + " " + cols[1], "%I:%M:%S %p"
+                            ).strftime("%H:%M:%S")
                         cols = [(sardate + " " + cols[0])] + cols[1:]
                         cursor.execute(insertquery, cols)
                         count += 1
