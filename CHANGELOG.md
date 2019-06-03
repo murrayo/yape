@@ -5,6 +5,21 @@
 
 ### Changes
 
+* Positional arg pButtons html or zip file name NOT required if passing filedb and skip-parse. [murrayo]
+
+### Other
+
+* Default output directory if using previously created database (--skip-parse) [murrayo]
+
+* Doc: Update readme with parameter details. [murrayo]
+
+* Doc: bump version. [murrayo]
+
+
+## 2.2.2 (2019-05-17)
+
+### Changes
+
 * Some tidy up on the date format for multi-day charting. [murrayo]
 
 * Added device name to chart title for iostat and sar chg: bit more tidy up on date/time handling for charts. [murrayo]
@@ -12,6 +27,8 @@
 * Updated date handling. [murrayo]
 
 ### Other
+
+* Doc: black latest changes. [murrayo]
 
 * [fix] Fixed problem with sar on red hat not charting properly. [murrayo]
 
