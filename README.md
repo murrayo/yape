@@ -15,12 +15,14 @@ The goals for the rewrite are:
 
 ### Use image from docker hub
 
+Of course, you need docker installed first :)
 
 [https://hub.docker.com/r/yape/yape/]
 
 The same usage information applies, for example:
 
 ```
+docker pull yape/yape
 docker container run --rm -v "$(pwd)":/data yape/yape --help
 ```
 
