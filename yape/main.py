@@ -198,6 +198,8 @@ def yape2(args=None):
             if args.filedb is None:
                 logging.error("filedb required with skip-parse set")
                 return -1
+            if args.out is None:
+                args.out = "output"  # Default output directory when no filename
         if args.filedb is not None:
             db = sqlite3.connect(args.filedb)
         else:
