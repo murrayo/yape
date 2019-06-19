@@ -52,6 +52,7 @@ def genericplot(df, column, outfile, config, device_name):
     timeframe = config["timeframe"]
     outfile = outfile.replace(":", ".")
     logging.info("creating " + outfile)
+
     dim = (16, 6)
     markersize = 1
     style = "-"
@@ -85,6 +86,8 @@ def genericplot(df, column, outfile, config, device_name):
     except KeyError:
         pass
 
+    # Defaults or override with config file
+
     fig, ax = plt.subplots(figsize=dim, dpi=80, facecolor="w", edgecolor="dimgrey")
 
     if timeframe is not None:
@@ -92,9 +95,14 @@ def genericplot(df, column, outfile, config, device_name):
             df[column][timeframe.split(",")[0] : timeframe.split(",")[1]],
             alpha=0.7,
             color=colour,
+            linestyle=style,
+            markersize=markersize
         )
     else:
-        ax.plot(df[column], alpha=0.7, color=colour)
+        ax.plot(df[column], alpha=0.7, 
+            color=colour,
+            linestyle=style,
+            markersize=markersize)
 
     plt.grid(which="both", axis="both", linestyle="--")
 
@@ -109,11 +117,18 @@ def genericplot(df, column, outfile, config, device_name):
 
     ax.set_ylim(ymin=0)  # Always zero start
 
-    if df[column].max() > 999:
-        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
+    if df[column].max() > 10:
+        ax.yaxis.set_major_formatter(
+            matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
     else:
-        ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
-        ax.get_yaxis().get_major_formatter().set_scientific(False)
+        ax.yaxis.set_major_formatter(
+            matplotlib.ticker.StrMethodFormatter('{x:,.2f}'))  
+
+    #if df[column].max() > 999:
+    #    ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
+    #else:
+    #    ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
+    #    ax.get_yaxis().get_major_formatter().set_scientific(False)
 
     # Try to be smarter with the x axis. more to come
     if timeframe is not None and timeframe != "":
@@ -132,39 +147,19 @@ def genericplot(df, column, outfile, config, device_name):
         TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
         logging.debug("All Minutes: " + str(TotalMinutes))
 
-    if TotalMinutes <= 1:
-        # logging.debug("0 minutes: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())
-
-    elif TotalMinutes <= 60:
-        # logging.debug("60 minutes: " + str(TotalMinutes))
+    if TotalMinutes <= 15:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-        ax.xaxis.set_major_locator(mdates.MinuteLocator())
-
+        ax.xaxis.set_major_locator(mdates.SecondLocator(interval=int((TotalMinutes*60)/10)))
     elif TotalMinutes <= 180:
-        # logging.debug("180 minutes: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.MinuteLocator())
-
-    elif TotalMinutes <= 720:
-        # logging.debug("720 minutes: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())
-
+        ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=int(TotalMinutes/10)))
     elif TotalMinutes <= 1500:
-        # logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
-
     elif TotalMinutes <= 3000:
-        # logging.debug("1 Day: " + str(TotalMinutes))
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
-        ax.xaxis.set_major_locator(mdates.HourLocator())
     else:
-        # logging.debug("More than 1 Day: " + str(TotalMinutes))
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))
-        # ax.xaxis.set_major_locator(mdates.HourLocator())
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))  
 
     if device_name == "":
         plt.title(
