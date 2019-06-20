@@ -5,9 +5,30 @@
 
 ### Changes
 
+* Update line style choices in config file. [murrayo]
+
+### Fix
+
+* Reinstate config file, make some more changes to smarter x and y axis. [murrayo]
+
+* Solve for yyyy dates and yy dates or bail out. [murrayo]
+
+### Other
+
+* Doc: Update readme. [murrayo]
+
+* Doc: bump version. [murrayo]
+
+
+## 2.2.3 (2019-06-03)
+
+### Changes
+
 * Positional arg pButtons html or zip file name NOT required if passing filedb and skip-parse. [murrayo]
 
 ### Other
+
+* Doc: Update change log ahead of version bump. [murrayo]
 
 * Default output directory if using previously created database (--skip-parse) [murrayo]
 
