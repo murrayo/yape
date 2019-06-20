@@ -379,17 +379,17 @@ def parsepbuttons(file, db):
                 timeanddateList = line.split("at ")
                 StartTimeStr = timeanddateList[1].split(" on ")[0]
                 StartDateStr = timeanddateList[1].split(" on ")[1].rstrip(".")
-                if len(StartDateStr) == 11: # 4 digit year
+                if len(StartDateStr) == 11:  # 4 digit year
                     StartDateStr = datetime.strptime(StartDateStr, "%b %d %Y").strftime(
                         "%m/%d/%y"
                     )
-                elif len(StartDateStr) == 9: # 2 digit year
+                elif len(StartDateStr) == 9:  # 2 digit year
                     StartDateStr = datetime.strptime(StartDateStr, "%b %d %y").strftime(
                         "%m/%d/%y"
                     )
                 else:
-                    logging.critical('Profile section date problem: %s', line)
-                    sys.exit(1)  
+                    logging.critical("Profile section date problem: %s", line)
+                    sys.exit(1)
 
                 StartDateStartTimeStr = StartDateStr + " " + StartTimeStr
                 logging.info("Start at: " + StartDateStartTimeStr)

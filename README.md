@@ -109,14 +109,23 @@ parameter. This allows to set things like the default output graph size. See `co
 Yape will always check if there is a `~/.yape.yml` file and load that.
 
 ### Dotgraphs plotting
-To switch to dotgraphs instead of linegraphs, define the following in your config:
+To switch to dot graphs instead of line graphs set the style to "". For example, define the following in your config:
 ```
 plotting:
   dim: 16,6
-  style: .
+  style: ""
   markersize: 0.5
 ```
-The defaults are:
+
+dim is dimensions in inches.
+
+Choices for style are:
+'-' solid line
+'--' dashed line
+'-.' dash-dotted line
+':' dotted line
+
+The defaults for configuration are:
 ```
 plotting:
   dim: 16,6

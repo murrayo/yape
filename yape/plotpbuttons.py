@@ -56,6 +56,7 @@ def genericplot(df, column, outfile, config, device_name):
     dim = (16, 6)
     markersize = 1
     style = "-"
+    marker = ""
 
     colormapName = "Set1"
     plt.style.use("seaborn-whitegrid")
@@ -86,6 +87,9 @@ def genericplot(df, column, outfile, config, device_name):
     except KeyError:
         pass
 
+    if style == "":
+        marker = "o"
+
     # Defaults or override with config file
 
     fig, ax = plt.subplots(figsize=dim, dpi=80, facecolor="w", edgecolor="dimgrey")
@@ -96,13 +100,18 @@ def genericplot(df, column, outfile, config, device_name):
             alpha=0.7,
             color=colour,
             linestyle=style,
-            markersize=markersize
+            markersize=markersize,
+            marker=marker,
         )
     else:
-        ax.plot(df[column], alpha=0.7, 
+        ax.plot(
+            df[column],
+            alpha=0.7,
             color=colour,
             linestyle=style,
-            markersize=markersize)
+            markersize=markersize,
+            marker=marker,
+        )
 
     plt.grid(which="both", axis="both", linestyle="--")
 
@@ -118,15 +127,13 @@ def genericplot(df, column, outfile, config, device_name):
     ax.set_ylim(ymin=0)  # Always zero start
 
     if df[column].max() > 10:
-        ax.yaxis.set_major_formatter(
-            matplotlib.ticker.StrMethodFormatter('{x:,.0f}'))
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
     else:
-        ax.yaxis.set_major_formatter(
-            matplotlib.ticker.StrMethodFormatter('{x:,.2f}'))  
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.2f}"))
 
-    #if df[column].max() > 999:
+    # if df[column].max() > 999:
     #    ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
-    #else:
+    # else:
     #    ax.yaxis.set_major_formatter(ScalarFormatter(useOffset=None))
     #    ax.get_yaxis().get_major_formatter().set_scientific(False)
 
@@ -149,17 +156,21 @@ def genericplot(df, column, outfile, config, device_name):
 
     if TotalMinutes <= 15:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
-        ax.xaxis.set_major_locator(mdates.SecondLocator(interval=int((TotalMinutes*60)/10)))
+        ax.xaxis.set_major_locator(
+            mdates.SecondLocator(interval=int((TotalMinutes * 60) / 10))
+        )
     elif TotalMinutes <= 180:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-        ax.xaxis.set_major_locator(mdates.MinuteLocator(interval=int(TotalMinutes/10)))
+        ax.xaxis.set_major_locator(
+            mdates.MinuteLocator(interval=int(TotalMinutes / 10))
+        )
     elif TotalMinutes <= 1500:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
         ax.xaxis.set_major_locator(mdates.HourLocator())
     elif TotalMinutes <= 3000:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%d-%H:%M"))
     else:
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))  
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))
 
     if device_name == "":
         plt.title(
