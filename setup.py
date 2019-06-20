@@ -18,7 +18,7 @@ setup(
     tests_require=["nose"],
     install_requires=[
         "pytz==2018.5",
-        "matplotlib==2.2.3",
+        "matplotlib==2.2.4",
         "numpy==1.15.1",
         "pandas==0.23.4",
         "setuptools_scm==3.1.0",
@@ -27,7 +27,7 @@ setup(
         "black>=18.9b0",
         "pystache>=0.5.4",
     ],
-    version="2.2.3",
+    version="2.2.4",
     setup_requires=["setuptools_scm"],
     zip_safe=False,
 )
