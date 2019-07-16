@@ -172,9 +172,12 @@ def genericplot(df, column, outfile, config, device_name):
     else:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%a %m/%d - %H:%M"))
 
+    StartTimeStr = datetime.strftime(StartTime, "%a %Y-%m-%d %H:%M:%S")
+    EndTimeStr = datetime.strftime(EndTime, "%a %Y-%m-%d %H:%M:%S")
+    
     if device_name == "":
         plt.title(
-            column + " between " + str(StartTime) + " and " + str(EndTime), fontsize=12
+            column + " between " + StartTimeStr + " and " + EndTimeStr, fontsize=12
         )
     else:
         plt.title(
@@ -182,9 +185,9 @@ def genericplot(df, column, outfile, config, device_name):
             + " : "
             + column
             + " between "
-            + str(StartTime)
+            + StartTimeStr
             + " and "
-            + str(EndTime),
+            + EndTimeStr,
             fontsize=12,
         )
     # plt.xlabel("Time", fontsize=10)
