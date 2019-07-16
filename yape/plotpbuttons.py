@@ -101,7 +101,7 @@ def genericplot(df, column, outfile, config, device_name):
             color=colour,
             linestyle=style,
             markersize=markersize,
-            marker=marker,
+            marker=marker
         )
     else:
         ax.plot(
@@ -110,7 +110,7 @@ def genericplot(df, column, outfile, config, device_name):
             color=colour,
             linestyle=style,
             markersize=markersize,
-            marker=marker,
+            marker=marker
         )
 
     plt.grid(which="both", axis="both", linestyle="--")
@@ -129,7 +129,7 @@ def genericplot(df, column, outfile, config, device_name):
     if df[column].max() > 10:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
     else:
-        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.2f}"))
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
 
     # if df[column].max() > 999:
     #    ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
