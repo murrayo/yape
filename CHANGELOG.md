@@ -3,6 +3,17 @@
 
 ## (unreleased)
 
+### Fix
+
+* Some minor fixes after update python libraries. [murrayo]
+
+### Other
+
+* Doc: update version. [murrayo]
+
+
+## 2.2.5 (2019-07-24)
+
 ### Changes
 
 * Make date string consistent for windows title (drop decimal places), add short day to title. [murrayo]
@@ -14,6 +25,8 @@
 * Order of case prevents action. [murrayo]
 
 ### Other
+
+* Doc: Prepare for docker version update. [murrayo]
 
 * Doc: Bump version. [murrayo]
 
