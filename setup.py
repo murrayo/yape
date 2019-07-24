@@ -30,7 +30,7 @@ setup(
         "bokeh==1.3.0",
         "PyYAML==5.1.1",
     ],
-    version="2.2.5",
+    version="2.2.6",
     setup_requires=["setuptools_scm"],
     zip_safe=False,
 )
