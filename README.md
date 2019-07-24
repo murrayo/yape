@@ -1,15 +1,8 @@
-# yape 2
+# yape
 
-Yet Another pButtons Extractor 2
+Yet Another pButtons Extractor
 
-Second revision of the original yape. Complete rewrite based on the ideas and lessons learned of the first one. Still in development, but mostly in a usable form now. Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
-
-The goals for the rewrite are:
-
-- make it a one-step-process
-- add more interactivity with less waiting time
-- be able to handle bigger datasets
-
+Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
 ## Installation: Docker Container (recommended)
 
@@ -66,25 +59,25 @@ Requires git, pip and Python installed aready as per Python Version as below. In
 
 ### About Python Version
 
-Python can be a beast about versions, for the simplest experience a container is a good way to go.
-
-yape has been tested on the following Python version - Anaconda 3.7
+Python can be a beast about versions, for the simplest experience a container is a good way to go. You have been warned.
 
 See: https://www.anaconda.com/distribution
 
+The following was used to test and build yape for the container version:
+
 ```
 $ python --version
-Python 3.7.1
+Python 3.7.3
 ```
 
-If you are running anaconda;
+To use pip to install packages to Anaconda Environment
 ```
-$ conda install pip
+$ sudo conda install pip
 ```
 
 ```
 $ pip --version
-pip 18.1 from /Users/mo/anaconda3/lib/python3.7/site-packages/pip (python 3.7)
+pip 19.1.1 from /Users/mo/anaconda3/lib/python3.7/site-packages/pip (python 3.7)
 ```
 
 ### Install for running locally
@@ -108,13 +101,13 @@ yape --config config.example.yml ...
 parameter. This allows to set things like the default output graph size. See `config.example.yml` for possible options and their default value.
 Yape will always check if there is a `~/.yape.yml` file and load that.
 
-### Dotgraphs plotting
+### Example: Dotgraphs plotting
 To switch to dot graphs instead of line graphs set the style to "". For example, define the following in your config:
 ```
 plotting:
   dim: 16,6
   style: ""
-  markersize: 0.5
+  markersize: 2
 ```
 
 dim is dimensions in inches.
@@ -153,7 +146,7 @@ Note: the last positional argument (pButtons file name) is not entered when --sk
 
 Change to the base of your checked out yape directory and run:
 ```
-bokeh serve --show yapesrv --args /Users/kazamatzuri/work/cases/898291/0503/squh-tc_TRAKCARE_20180503_000100_24hours_2_P1.html
+bokeh serve --show yapesrv --args /path/to/your.html
 ```
 
 This will give you (maybe) an interactive display of the pbuttons passed in. If you run into any errors, feel free to create an issue here: https://github.com/murrayo/yape/issues
