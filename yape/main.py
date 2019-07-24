@@ -33,7 +33,7 @@ def read_config(cfgfile, config):
         cfgfile = os.path.join(Path.home(), ".yape.yml")
     if os.path.isfile(cfgfile):
         with open(cfgfile, "r") as ymlfile:
-            cfg = yaml.load(ymlfile)
+            cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
             logging.debug(cfg)
             return {**config, **cfg}
     return config

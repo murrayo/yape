@@ -33,6 +33,10 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import logging
 
+from pandas.plotting import register_matplotlib_converters
+
+register_matplotlib_converters()
+
 
 def dispatch_plot(df, column, outfile, config, device_name):
     genericplot(df, column, outfile, config, device_name)
@@ -117,14 +121,14 @@ def genericplot(df, column, outfile, config, device_name):
 
     # vmstat make chart top "100"
     if column == "us" or column == "sy" or column == "wa" or column == "Total CPU":
-        ax.set_ylim(ymax=100)
+        ax.set_ylim(top=100)
 
     # y axis
     ax.get_yaxis().set_major_formatter(
         plt.FuncFormatter(lambda x, loc: "{:,}".format(float(x)))
     )
 
-    ax.set_ylim(ymin=0)  # Always zero start
+    ax.set_ylim(bottom=0)  # Always zero start
 
     if df[column].max() > 10:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
