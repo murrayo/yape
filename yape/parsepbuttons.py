@@ -695,8 +695,8 @@ def parsepbuttons(file, db):
                     continue
                 if osmode == "AIX":  # Bail, TBD
                     continue
-                # Linux 3.10.0-229.el7.x86_64 (BPH-PRODTRAK.bdms.co.th) 	06/14/2019 	_x86_64_	(12 CPU)  
-                if len(line.split()) in (6,7) and "Linux" in line: 
+                # Linux 3.10.0-229.el7.x86_64 (BPH-PRODTRAK.bdms.co.th) 	06/14/2019 	_x86_64_	(12 CPU)
+                if len(line.split()) in (6, 7) and "Linux" in line:
                     currentdate = line.split()[3]
                     if query == "":  # First time in check start date
                         lConvertDates = dateChecker(StartDateStr, currentdate)
@@ -704,7 +704,7 @@ def parsepbuttons(file, db):
                         currentdate = convertDateFormat(currentdate, lConvertDates)
                     continue
                 if "Linux" in line:
-                    continue    
+                    continue
                 if len(line.split()) == 2:  # date and time
                     currentdate = line.strip()
                     if query == "":  # First time in check start date

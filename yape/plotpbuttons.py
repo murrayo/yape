@@ -101,7 +101,7 @@ def genericplot(df, column, outfile, config, device_name):
             color=colour,
             linestyle=style,
             markersize=markersize,
-            marker=marker
+            marker=marker,
         )
     else:
         ax.plot(
@@ -110,7 +110,7 @@ def genericplot(df, column, outfile, config, device_name):
             color=colour,
             linestyle=style,
             markersize=markersize,
-            marker=marker
+            marker=marker,
         )
 
     plt.grid(which="both", axis="both", linestyle="--")
@@ -174,7 +174,7 @@ def genericplot(df, column, outfile, config, device_name):
 
     StartTimeStr = datetime.strftime(StartTime, "%a %Y-%m-%d %H:%M:%S")
     EndTimeStr = datetime.strftime(EndTime, "%a %Y-%m-%d %H:%M:%S")
-    
+
     if device_name == "":
         plt.title(
             column + " between " + StartTimeStr + " and " + EndTimeStr, fontsize=12

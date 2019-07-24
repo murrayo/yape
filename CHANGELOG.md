@@ -5,6 +5,23 @@
 
 ### Changes
 
+* Make date string consistent for windows title (drop decimal places), add short day to title. [murrayo]
+
+* Increase decimal precision for y axis less than 10, eg for windows sec/read is seconds not ms like linux. [murrayo]
+
+### Fix
+
+* Order of case prevents action. [murrayo]
+
+### Other
+
+* Doc: Bump version. [murrayo]
+
+
+## 2.2.4 (2019-06-20)
+
+### Changes
+
 * Update line style choices in config file. [murrayo]
 
 ### Fix
@@ -14,6 +31,8 @@
 * Solve for yyyy dates and yy dates or bail out. [murrayo]
 
 ### Other
+
+* Doc: Update change log. [murrayo]
 
 * Doc: Update readme. [murrayo]
 
