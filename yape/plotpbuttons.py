@@ -121,7 +121,10 @@ def genericplot(df, column, outfile, config, device_name):
 
     # vmstat make chart top "100"
     if column == "us" or column == "sy" or column == "wa" or column == "Total CPU":
-        ax.set_ylim(top=100)
+        ax.set_ylim(top=100)   
+          
+    if "%" in column:
+        ax.set_ylim(top=100)  
 
     # y axis
     ax.get_yaxis().set_major_formatter(
@@ -130,7 +133,7 @@ def genericplot(df, column, outfile, config, device_name):
 
     ax.set_ylim(bottom=0)  # Always zero start
 
-    if df[column].max() > 10:
+    if df[column].max() > 10 or "%" in column:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
     else:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
