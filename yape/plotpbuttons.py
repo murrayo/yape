@@ -146,6 +146,10 @@ def genericplot(df, column, outfile, config, device_name):
 
     # Try to be smarter with the x axis. more to come
     if timeframe is not None and timeframe != "":
+
+        if df[column][timeframe.split(",")[0] : timeframe.split(",")[1]].max() <= 10:
+            ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
+
         StartTime = datetime.strptime(timeframe.split(",")[0], "%Y-%m-%d %H:%M:%S")
         EndTime = datetime.strptime(timeframe.split(",")[-1], "%Y-%m-%d %H:%M:%S")
 
