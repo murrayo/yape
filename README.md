@@ -12,7 +12,7 @@ Below is the example chart of a weeks data.
 
 ![](images/mgstat.Glorefs.png)
 
-![](images/vmstat.Total CPU.png)
+![](images/vmstat.Total%20CPU.png)
 
 For more fancy charts or to combine mgstat, vmstat an iostat use [pretty_pButtons](https://github.com/murrayo/MUT)
 
