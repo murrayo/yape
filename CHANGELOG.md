@@ -3,6 +3,17 @@
 
 ## (unreleased)
 
+### Fix
+
+* Wring github repository. [murrayo]
+
+### Other
+
+* Doc: update version. [murrayo]
+
+
+## 2.2.7 (2019-08-18)
+
 ### Changes
 
 * If timeframe, test for max only on timeframe for y axis scale. [murrayo]
@@ -10,6 +21,8 @@
 * Charts with % y axis top is 100. [murrayo]
 
 ### Other
+
+* Doc: update changelog. [murrayo]
 
 * Doc: Commit black changes. [murrayo]
 
