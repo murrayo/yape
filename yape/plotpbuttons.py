@@ -121,10 +121,10 @@ def genericplot(df, column, outfile, config, device_name):
 
     # vmstat make chart top "100"
     if column == "us" or column == "sy" or column == "wa" or column == "Total CPU":
-        ax.set_ylim(top=100)   
-          
+        ax.set_ylim(top=100)
+
     if "%" in column:
-        ax.set_ylim(top=100)  
+        ax.set_ylim(top=100)
 
     # y axis
     ax.get_yaxis().set_major_formatter(
@@ -148,7 +148,9 @@ def genericplot(df, column, outfile, config, device_name):
     if timeframe is not None and timeframe != "":
 
         if df[column][timeframe.split(",")[0] : timeframe.split(",")[1]].max() <= 10:
-            ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
+            ax.yaxis.set_major_formatter(
+                matplotlib.ticker.StrMethodFormatter("{x:,.3f}")
+            )
 
         StartTime = datetime.strptime(timeframe.split(",")[0], "%Y-%m-%d %H:%M:%S")
         EndTime = datetime.strptime(timeframe.split(",")[-1], "%Y-%m-%d %H:%M:%S")
