@@ -4,7 +4,22 @@ Yet Another pButtons Extractor
 
 Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
-## Installation: Docker Container (recommended)
+There is a link to how-to videos on [InterSystems Developer Community](https://community.intersystems.com/post/unpacking-pbuttons-yape-update-notes-and-quick-guides).
+
+yape automatically creates charts that can be used for trouble-shooting performance issues or informing performance questions.
+
+Below is the example chart of a weeks data.
+
+![](images/mgstat.Glorefs.png)
+
+![](images/vmstat.Total CPU.png)
+
+For more fancy charts or to combine mgstat, vmstat an iostat use [pretty_pButtons](https://github.com/murrayo/MUT)
+
+![](images/temp_Glorefs_and_vmstat_-_Sample_Wednesday_31_Jul_2019.png)
+
+
+## Yape Installation: Docker Container (recommended)
 
 ### Use image from docker hub
 
