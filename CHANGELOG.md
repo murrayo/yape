@@ -3,11 +3,44 @@
 
 ## (unreleased)
 
+### Changes
+
+* If timeframe, test for max only on timeframe for y axis scale. [murrayo]
+
+* Charts with % y axis top is 100. [murrayo]
+
+### Other
+
+* Doc: Commit black changes. [murrayo]
+
+* Merge pull request #20 from casep/master. [murrayo]
+
+  Merging for lighter container image
+
+* Updated to minimise image size. [Carlos "casep" Sepulveda]
+
+* Dockerfile updated for alpine. [Carlos "casep" Sepulveda]
+
+* Relaxed restrictions on versions. [Carlos "casep" Sepulveda]
+
+* Doc: Update readme. [murrayo]
+
+* Doc: Update docs to include images. [murrayo]
+
+* Doc: Update read me. [murrayo]
+
+* Doc: Version change. [murrayo]
+
+
+## 2.2.6 (2019-07-24)
+
 ### Fix
 
 * Some minor fixes after update python libraries. [murrayo]
 
 ### Other
+
+* Doc: Update change log. [murrayo]
 
 * Doc: update version. [murrayo]
 
