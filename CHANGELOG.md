@@ -3,11 +3,24 @@
 
 ## (unreleased)
 
+### Other
+
+* After black. [murrayo]
+
+* Fix sar and euopean time. [murrayo]
+
+* Doc: Bump version. [murrayo]
+
+
+## 2.2.8 (2019-08-18)
+
 ### Fix
 
 * Wring github repository. [murrayo]
 
 ### Other
+
+* Doc: Fix repository. [murrayo]
 
 * Doc: update version. [murrayo]
 
