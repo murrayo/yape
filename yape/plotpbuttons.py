@@ -53,9 +53,12 @@ def parse_tuple(string):
 
 
 def genericplot(df, column, outfile, config, device_name):
+
+    logger = logging.getLogger(__name__)
+
     timeframe = config["timeframe"]
     outfile = outfile.replace(":", ".")
-    logging.info("creating " + outfile)
+    logging.info(f"creating {outfile} for column {column}")
 
     dim = (16, 6)
     markersize = 1
@@ -74,18 +77,22 @@ def genericplot(df, column, outfile, config, device_name):
         column_type = "unknown"
 
     if column_type == "float64" or column_type == "int64":
-        logging.debug(column_type)
+        pass
     else:
-        return
+        # TryEuropean
+        df[column] = [x.replace(',', '.') for x in df[column]]
+        df[column] = df[column].astype(float)
 
     try:
         dim = parse_tuple("(" + config["plotting"]["dim"] + ")")
     except KeyError:
         pass
+
     try:
         markersize = float(config["plotting"]["markersize"])
     except KeyError:
         pass
+
     try:
         style = config["plotting"]["style"]
     except KeyError:
@@ -133,8 +140,11 @@ def genericplot(df, column, outfile, config, device_name):
 
     ax.set_ylim(bottom=0)  # Always zero start
 
+    #print('max {:,.4f}'.format(df[column].max()))
     if df[column].max() > 10 or "%" in column:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
+    elif df[column].max() < .002:
+        ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.4f}"))
     else:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
 
@@ -161,11 +171,20 @@ def genericplot(df, column, outfile, config, device_name):
         StartTime = df.index[0]
         EndTime = df.index[-1]
 
-        # logging.debug("Sart Date: "+str(StartTime))
-        # logging.debug("End  Date: "+str(EndTime))
+        # if the data wraps around (usually a few minutes where we have created the datetime artificially)
+        if StartTime > EndTime:
+            logger.debug(f"Wrapping dates {str(StartTime)} {str(EndTime)}")
+
+            df = df.sort_index()
+            StartTime = df.index[0]
+            EndTime = df.index[-1]
+            logger.debug(f"Sorted dates {str(StartTime)} {str(EndTime)}")
+
+            # Compare to previous value
+            # logger.info(f"{df.iloc[:,[0]].lt(df.iloc[:,[0]].shift())}")
 
         TotalMinutes = (df.index[-1] - df.index[0]).total_seconds() / 60
-        logging.debug("All Minutes: " + str(TotalMinutes))
+        # logging.info("All Minutes: " + str(TotalMinutes))
 
     if TotalMinutes <= 15:
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M:%S"))
@@ -224,12 +243,16 @@ def fix_index(df):
 
 
 def plot_subset_split(db, config, subsetname, split_on):
+
+    logger = logging.getLogger(__name__)
+
     fileprefix = config["fileprefix"]
     timeframe = config["timeframe"]
     basename = config["basefilename"]
     plotDisks = config["plotDisks"]
 
     if not check_data(db, subsetname):
+        print("fail")
         return None
     c = db.cursor()
     c.execute("select distinct " + split_on + ' from "' + subsetname + '"')
@@ -298,9 +321,7 @@ def plot_subset_split(db, config, subsetname, split_on):
                         + key.replace("/", "_")
                         + ".png",
                     )
-                logging.debug(key)
                 dispatch_plot(data, key, file, config, column[0])
-
 
 def plot_subset(db, config, subsetname):
     fileprefix = config["fileprefix"]

@@ -4,7 +4,7 @@ import pandas as pd
 import sqlite3
 import logging
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta 
 
 # splits an array into sub arrays with length size
 def split(arr, size):
@@ -63,7 +63,7 @@ def dateChecker(StartDate, dateStrIN):
             else:
                 lConvertDates = "%m/%d/%y %I:%M:%S %p"
 
-    logging.debug("Date format: " + dateStrIN + " converted from : " + lConvertDates)
+    logging.info("Date format: " + dateStrIN + " converted from : " + lConvertDates)
 
     return lConvertDates
 
@@ -93,6 +93,9 @@ def convertDateFormat(dateStrIN, lConvertDates):
 
 
 def parsepbuttons(file, db):
+
+    logger = logging.getLogger(__name__)
+
 
     # Files are parsed by reading the input pButtons file line by line.
     #
@@ -252,6 +255,7 @@ def parsepbuttons(file, db):
     colcachenum = 0
     numcols = 0
     mgstatdate = ""
+    started_before_midnight = False
 
     # Move generic items out of the loop we will not chart these
 
@@ -378,6 +382,15 @@ def parsepbuttons(file, db):
                 logging.info(line)
                 timeanddateList = line.split("at ")
                 StartTimeStr = timeanddateList[1].split(" on ")[0]
+
+                StartTimeHour = datetime.strptime(StartTimeStr,'%H:%M:%S' ).time()
+                StartTimeCheck = datetime.strptime('23:45:00','%H:%M:%S' ).time()
+
+                # Probably meant to start at midnight - results without dates will be fudged to be next day
+                if StartTimeHour > StartTimeCheck:
+                    logger.info(f"Started before midnight ({str(StartTimeHour)})")
+                    started_before_midnight = True
+
                 StartDateStr = timeanddateList[1].split(" on ")[1].rstrip(".")
                 if len(StartDateStr) == 11:  # 4 digit year
                     StartDateStr = datetime.strptime(StartDateStr, "%b %d %Y").strftime(
@@ -578,7 +591,7 @@ def parsepbuttons(file, db):
                 query = ""
                 insertquery = ""
                 mode = "perfmon"
-                logging.debug("starting " + mode)
+                logging.info("starting " + mode)
                 lConvertDates = ""
                 perfmon_time_separate = False
                 continue
@@ -601,6 +614,13 @@ def parsepbuttons(file, db):
                         lConvertDates = dateChecker(StartDateStr, sardate)
                     if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
+                    # Increment date if most of the activity is the next day
+                    if started_before_midnight:
+                        logger.info(f"sardate is {sardate}")
+                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date += timedelta(days=1)
+                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        logger.info(f"new sardate is {sardate}")
                     continue
                 if "HP-UX" in line:
                     osmode = "hpux"
@@ -609,6 +629,13 @@ def parsepbuttons(file, db):
                         lConvertDates = dateChecker(StartDateStr, sardate)
                     if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
+                    # Increment date if most of the activity is the next day
+                    if started_before_midnight:
+                        logger.info(f"sardate is {sardate}")
+                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date += timedelta(days=1)
+                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        logger.info(f"new sardate is {sardate}")
                     continue
                 if "Average" in line:
                     continue
@@ -786,6 +813,8 @@ def parsepbuttons(file, db):
                 if query == "":
                     cols = line.split(",")
                     cols = list(map(lambda x: x[1:-1].replace('"', ""), cols))
+                    cols = list(map(lambda x: x[1:-1].replace('(', '_'), cols))
+                    cols = list(map(lambda x: x[1:-1].replace(')', '_'), cols))
 
                     if cols[1] == "Time":
                         perfmon_time_separate = True
@@ -872,6 +901,13 @@ def parsepbuttons(file, db):
                         lConvertDates = dateChecker(StartDateStr, sardate)
                     if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
+                    # Increment date if most of the activity is the next day
+                    if started_before_midnight:
+                        logger.info(f"sardate is {sardate}")
+                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date += timedelta(days=1)
+                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        logger.info(f"new sardate is {sardate}")
                     continue
                 if "AIX" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
                     sardate = line.split()[5]
@@ -880,6 +916,13 @@ def parsepbuttons(file, db):
                     if lConvertDates != "":
                         sardate = convertDateFormat(sardate, lConvertDates)
                     continue
+                    # Increment date if most of the activity is the next day
+                    if started_before_midnight:
+                        logger.info(f"sardate is {sardate}")
+                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date += timedelta(days=1)
+                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        logger.info(f"new sardate is {sardate}")
                 if (
                     "System" in line
                 ):  # 5 May 2019. AIX7.2 + Cache 2017.2, extra line in sar-u
@@ -943,7 +986,7 @@ def parsepbuttons(file, db):
                     timecol = [sardate + " " + cols[0]]
                     for splitcols in split(cols[1:], 5):
                         cols = timecol + splitcols
-                        cursor.execute(insertquery, cols)
+                        #cursor.execute(insertquery, cols)
                         count += 1
                 else:
                     if osmode == "sunos":
