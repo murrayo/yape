@@ -30,7 +30,7 @@ setup(
 		"pytz==2019.3",
 		"PyYAML==5.3.1"
     ],
-    version="2.2.8",
+    version="2.2.9",
     setup_requires=["setuptools_scm"],
     zip_safe=False,
 )

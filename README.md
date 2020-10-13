@@ -66,7 +66,7 @@ docker container run --rm -v "$(pwd)":/data yape2 --mgstat --vmstat -qc /data/<n
 >Note:
 >This installs the command line version only, for the interactive version you will need to install locally in your OS (see below).
 
-
+If you want to remove the container version. Stop all containers and remove images.
 
 ## Installation: Local
 
@@ -82,7 +82,7 @@ The following was used to test and build yape for the container version:
 
 ```
 $ python --version
-Python 3.7.3
+Python 3.7.4
 ```
 
 To use pip to install packages to Anaconda Environment
@@ -92,7 +92,7 @@ $ sudo conda install pip
 
 ```
 $ pip --version
-pip 19.1.1 from /Users/mo/anaconda3/lib/python3.7/site-packages/pip (python 3.7)
+pip 19.2.3 from /Users/mo/opt/anaconda3/lib/python3.7/site-packages/pip (python 3.7)
 ```
 
 ### Install for running locally
