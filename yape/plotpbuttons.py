@@ -80,7 +80,7 @@ def genericplot(df, column, outfile, config, device_name):
         pass
     else:
         # TryEuropean
-        df[column] = [x.replace(',', '.') for x in df[column]]
+        df[column] = [x.replace(",", ".") for x in df[column]]
         df[column] = df[column].astype(float)
 
     try:
@@ -140,10 +140,10 @@ def genericplot(df, column, outfile, config, device_name):
 
     ax.set_ylim(bottom=0)  # Always zero start
 
-    #print('max {:,.4f}'.format(df[column].max()))
+    # print('max {:,.4f}'.format(df[column].max()))
     if df[column].max() > 10 or "%" in column:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.0f}"))
-    elif df[column].max() < .002:
+    elif df[column].max() < 0.002:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.4f}"))
     else:
         ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:,.3f}"))
@@ -322,6 +322,7 @@ def plot_subset_split(db, config, subsetname, split_on):
                         + ".png",
                     )
                 dispatch_plot(data, key, file, config, column[0])
+
 
 def plot_subset(db, config, subsetname):
     fileprefix = config["fileprefix"]

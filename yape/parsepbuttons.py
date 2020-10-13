@@ -4,7 +4,7 @@ import pandas as pd
 import sqlite3
 import logging
 import sys
-from datetime import date, datetime, timedelta 
+from datetime import date, datetime, timedelta
 
 # splits an array into sub arrays with length size
 def split(arr, size):
@@ -95,7 +95,6 @@ def convertDateFormat(dateStrIN, lConvertDates):
 def parsepbuttons(file, db):
 
     logger = logging.getLogger(__name__)
-
 
     # Files are parsed by reading the input pButtons file line by line.
     #
@@ -383,8 +382,8 @@ def parsepbuttons(file, db):
                 timeanddateList = line.split("at ")
                 StartTimeStr = timeanddateList[1].split(" on ")[0]
 
-                StartTimeHour = datetime.strptime(StartTimeStr,'%H:%M:%S' ).time()
-                StartTimeCheck = datetime.strptime('23:45:00','%H:%M:%S' ).time()
+                StartTimeHour = datetime.strptime(StartTimeStr, "%H:%M:%S").time()
+                StartTimeCheck = datetime.strptime("23:45:00", "%H:%M:%S").time()
 
                 # Probably meant to start at midnight - results without dates will be fudged to be next day
                 if StartTimeHour > StartTimeCheck:
@@ -617,9 +616,9 @@ def parsepbuttons(file, db):
                     # Increment date if most of the activity is the next day
                     if started_before_midnight:
                         logger.info(f"sardate is {sardate}")
-                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date = datetime.strptime(sardate, "%m/%d/%y").date()
                         early_date += timedelta(days=1)
-                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        sardate = datetime.strftime(early_date, "%m/%d/%y")
                         logger.info(f"new sardate is {sardate}")
                     continue
                 if "HP-UX" in line:
@@ -632,9 +631,9 @@ def parsepbuttons(file, db):
                     # Increment date if most of the activity is the next day
                     if started_before_midnight:
                         logger.info(f"sardate is {sardate}")
-                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date = datetime.strptime(sardate, "%m/%d/%y").date()
                         early_date += timedelta(days=1)
-                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        sardate = datetime.strftime(early_date, "%m/%d/%y")
                         logger.info(f"new sardate is {sardate}")
                     continue
                 if "Average" in line:
@@ -813,8 +812,8 @@ def parsepbuttons(file, db):
                 if query == "":
                     cols = line.split(",")
                     cols = list(map(lambda x: x[1:-1].replace('"', ""), cols))
-                    cols = list(map(lambda x: x[1:-1].replace('(', '_'), cols))
-                    cols = list(map(lambda x: x[1:-1].replace(')', '_'), cols))
+                    cols = list(map(lambda x: x[1:-1].replace("(", "_"), cols))
+                    cols = list(map(lambda x: x[1:-1].replace(")", "_"), cols))
 
                     if cols[1] == "Time":
                         perfmon_time_separate = True
@@ -904,9 +903,9 @@ def parsepbuttons(file, db):
                     # Increment date if most of the activity is the next day
                     if started_before_midnight:
                         logger.info(f"sardate is {sardate}")
-                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date = datetime.strptime(sardate, "%m/%d/%y").date()
                         early_date += timedelta(days=1)
-                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        sardate = datetime.strftime(early_date, "%m/%d/%y")
                         logger.info(f"new sardate is {sardate}")
                     continue
                 if "AIX" in line:  # 5 May 2019. AIX7.2 + Cache 2017.2
@@ -919,9 +918,9 @@ def parsepbuttons(file, db):
                     # Increment date if most of the activity is the next day
                     if started_before_midnight:
                         logger.info(f"sardate is {sardate}")
-                        early_date = datetime.strptime(sardate,'%m/%d/%y' ).date()
+                        early_date = datetime.strptime(sardate, "%m/%d/%y").date()
                         early_date += timedelta(days=1)
-                        sardate = datetime.strftime(early_date,'%m/%d/%y')
+                        sardate = datetime.strftime(early_date, "%m/%d/%y")
                         logger.info(f"new sardate is {sardate}")
                 if (
                     "System" in line
@@ -986,7 +985,7 @@ def parsepbuttons(file, db):
                     timecol = [sardate + " " + cols[0]]
                     for splitcols in split(cols[1:], 5):
                         cols = timecol + splitcols
-                        #cursor.execute(insertquery, cols)
+                        # cursor.execute(insertquery, cols)
                         count += 1
                 else:
                     if osmode == "sunos":
