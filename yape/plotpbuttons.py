@@ -73,6 +73,8 @@ def genericplot(df, column, outfile, config, device_name):
     # Is this a numeric column?
     try:
         column_type = str(df[column].dtype)
+
+        # logger.info(f"Column type: {column_type}")
     except AttributeError:
         column_type = "unknown"
 

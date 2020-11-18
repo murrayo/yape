@@ -3,6 +3,7 @@ import pandas as pd
 
 import sqlite3
 import logging
+import re
 import sys
 from datetime import date, datetime, timedelta
 
@@ -376,19 +377,24 @@ def parsepbuttons(file, db):
 
             # Get start date and time and use for validating date formats of OS commands
             # Profile run "24Hours_5Sec" started at 00:01:00 on Apr 08 2019.
+            # or e.g. HH:MM no SS
+            # Profile run "24Hour_5Sec" started at 00:01 on Oct 15 2020.
+
             if "Profile run" in line:
                 line = line.strip()
                 logging.info(line)
                 timeanddateList = line.split("at ")
+
                 StartTimeStr = timeanddateList[1].split(" on ")[0]
-
-                StartTimeHour = datetime.strptime(StartTimeStr, "%H:%M:%S").time()
-                StartTimeCheck = datetime.strptime("23:45:00", "%H:%M:%S").time()
-
-                # Probably meant to start at midnight - results without dates will be fudged to be next day
-                if StartTimeHour > StartTimeCheck:
-                    logger.info(f"Started before midnight ({str(StartTimeHour)})")
-                    started_before_midnight = True
+                if len(StartTimeStr) == 8:  # HH:MM:SS
+                    pass
+                elif len(StartTimeStr) == 5:  # HH:MM
+                    StartTimeStr = datetime.strptime(StartTimeStr, "%H:%M").strftime(
+                        "%H:%M:%S"
+                    )
+                else:
+                    logging.critical("Profile section time problem: %s", line)
+                    sys.exit(1)
 
                 StartDateStr = timeanddateList[1].split(" on ")[1].rstrip(".")
                 if len(StartDateStr) == 11:  # 4 digit year
@@ -403,9 +409,18 @@ def parsepbuttons(file, db):
                     logging.critical("Profile section date problem: %s", line)
                     sys.exit(1)
 
+                StartTimeHour = datetime.strptime(StartTimeStr, "%H:%M:%S").time()
+                StartTimeCheck = datetime.strptime("23:45:00", "%H:%M:%S").time()
+
+                # Probably meant to start at midnight - results without dates will be fudged to be next day
+                if StartTimeHour > StartTimeCheck:
+                    logger.info(f"Started before midnight ({str(StartTimeHour)})")
+                    started_before_midnight = True
+
                 StartDateStartTimeStr = StartDateStr + " " + StartTimeStr
                 logging.info("Start at: " + StartDateStartTimeStr)
                 continue
+
             if "Version String" in line:
                 if "HP HP-UX for Itanium" in line:
                     osmode = "hpux"
@@ -810,10 +825,20 @@ def parsepbuttons(file, db):
                 if "end_win_perfmon" in line:
                     continue
                 if query == "":
+
+                    # Use a regular expression to find any (column names) within quotes and substitue
+                    # e.g. get rid of  commas  in  column names
+                    for quoted_part in re.findall(r'\"(.+?)\"', line):
+                        line = line.replace(quoted_part, quoted_part.replace(",", "ken"))
+
+                    # Could combine with above, but keeping in spirit of original structure
                     cols = line.split(",")
-                    cols = list(map(lambda x: x[1:-1].replace('"', ""), cols))
-                    cols = list(map(lambda x: x[1:-1].replace("(", "_"), cols))
-                    cols = list(map(lambda x: x[1:-1].replace(")", "_"), cols))
+
+                    cols = list(map(lambda x: x[1:].replace('"', ""), cols))
+                    cols = list(map(lambda x: x[1:].replace("(", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace(")", "_"), cols))
+
+                    # logger.info(list(map(lambda x: f"{x}", cols)))
 
                     if cols[1] == "Time":
                         perfmon_time_separate = True

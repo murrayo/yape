@@ -6,7 +6,7 @@ RUN apk update && \
 
 RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir numpy pandas matplotlib pytz gitchangelog pre-commit black pystache bokeh PyYAML pillow setuptools_scm setuptools
+    pip install --no-cache-dir Cython numpy pandas matplotlib pytz gitchangelog pre-commit black pystache bokeh PyYAML pillow setuptools_scm setuptools
 
 RUN pip install --no-cache-dir -e git+https://github.com/murrayo/yape.git#egg=yape
 

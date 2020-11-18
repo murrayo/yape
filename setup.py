@@ -17,6 +17,7 @@ setup(
     test_suite="nose.collector",
     tests_require=["nose"],
     install_requires=[
+        "Cython==0.29.13",
         "setuptools_scm>=3.1.0",
         "setuptools>=41.0.1",
         "gitchangelog>=3.0.4",
