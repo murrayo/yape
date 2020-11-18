@@ -3,7 +3,26 @@
 
 ## (unreleased)
 
+### Fix
+
+* Commas in PERFMON names. [murrayo]
+
 ### Other
+
+* After blkack. [murrayo]
+
+* Update version and readme. [murrayo]
+
+
+## 2.2.9 (2020-10-13)
+
+### Other
+
+* Version fix. [murrayo]
+
+* Update setup. [murrayo]
+
+* Doc: new version. [murrayo]
 
 * After black. [murrayo]
 
