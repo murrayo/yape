@@ -828,8 +828,10 @@ def parsepbuttons(file, db):
 
                     # Use a regular expression to find any (column names) within quotes and substitue
                     # e.g. get rid of  commas  in  column names
-                    for quoted_part in re.findall(r'\"(.+?)\"', line):
-                        line = line.replace(quoted_part, quoted_part.replace(",", "ken"))
+                    for quoted_part in re.findall(r"\"(.+?)\"", line):
+                        line = line.replace(
+                            quoted_part, quoted_part.replace(",", "ken")
+                        )
 
                     # Could combine with above, but keeping in spirit of original structure
                     cols = line.split(",")
