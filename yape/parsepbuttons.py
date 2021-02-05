@@ -8,6 +8,8 @@ import sys
 from datetime import date, datetime, timedelta
 
 # splits an array into sub arrays with length size
+
+
 def split(arr, size):
     arrs = []
     while len(arr) > size:
@@ -861,7 +863,7 @@ def parsepbuttons(file, db):
                 cols = list(map(lambda x: x[1:-1].replace('"', ""), line.split(",")))
                 cols = list(map(lambda x: 0.0 if x == " " else x, cols))
 
-                if perfmon_time_separate == True:
+                if perfmon_time_separate is True:
                     cols[0] = cols[0] + " " + cols[1]
 
                 cursor.execute(insertquery, cols)
@@ -871,6 +873,7 @@ def parsepbuttons(file, db):
                     logging.debug(str(count) + ".")
 
             if mode == "mgstat":
+                lastgood = ""
                 if "MGSTAT" in line:
                     continue
                 if "No output file was created." in line:
