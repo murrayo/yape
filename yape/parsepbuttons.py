@@ -842,6 +842,11 @@ def parsepbuttons(file, db):
                     cols = list(map(lambda x: x[1:].replace('"', ""), cols))
                     cols = list(map(lambda x: x[1:].replace("(", "_"), cols))
                     cols = list(map(lambda x: x[1:].replace(")", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace("]", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace("[", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace("{", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace("}", "_"), cols))
+                    cols = list(map(lambda x: x[1:].replace(".", "_"), cols))
 
                     # logger.info(list(map(lambda x: f"{x}", cols)))
 
