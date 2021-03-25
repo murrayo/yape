@@ -29,7 +29,7 @@ setup(
 		"pandas==0.25.1",
 		"bokeh==1.3.4",
 		"pytz==2019.3",
-		"PyYAML==5.3.1"
+		"PyYAML==5.4"
     ],
     version="2.2.10",
     setup_requires=["setuptools_scm"],
