@@ -25,7 +25,7 @@ setup(
         "black>=18.9b0",
         "pystache>=0.5.4",
        	"matplotlib==3.1.1",
-		"numpy==1.17.2",
+		"numpy==1.22.0",
 		"pandas==0.25.1",
 		"bokeh==1.3.4",
 		"pytz==2019.3",
