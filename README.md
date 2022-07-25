@@ -2,6 +2,10 @@
 
 Yet Another pButtons Extractor
 
+>NOTE: Development of `yape` stopped in February 2021. Replaced by `yaspe`  
+> See: https://github.com/murrayo/yaspe
+> `yaspe` has a different internal structure and additional reporting and exporting options.
+
 Use at your own risk and if you find any issues, please feel free to file it [here](https://github.com/murrayo/yape/issues).
 
 There is a link to how-to videos on [InterSystems Developer Community](https://community.intersystems.com/post/unpacking-pbuttons-yape-update-notes-and-quick-guides).
