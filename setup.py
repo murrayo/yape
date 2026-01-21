@@ -27,7 +27,7 @@ setup(
        	"matplotlib==3.1.1",
 		"numpy==1.22.0",
 		"pandas==0.25.1",
-		"bokeh==1.3.4",
+		"bokeh==3.8.2",
 		"pytz==2019.3",
 		"PyYAML==5.4"
     ],
